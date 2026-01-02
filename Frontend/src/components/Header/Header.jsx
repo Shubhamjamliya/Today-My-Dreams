@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import { useAuth } from '../../context/AuthContext';
 import { useCity } from '../../context/CityContext';
+import { cityAPI } from '../../services/api';
 
 // --- CONFIG & ASSETS ---
 import config from '../../config/config.js';
@@ -29,9 +30,6 @@ import {
     Building2, Grid, Option, OptionIcon, Package, Package2, User, User2Icon, BookOpen, Video
 } from '../../utils/iconImports';
 
-// --- DYNAMIC CITY DATA ---
-const CITY_API_URL = 'https://api.todaymydream.com/api/cities';
-
 // --- SUB-COMPONENTS ---
 
 const LocationModal = ({ isOpen, onClose, onSelectLocation, currentLocation }) => {
@@ -42,8 +40,7 @@ const LocationModal = ({ isOpen, onClose, onSelectLocation, currentLocation }) =
     useEffect(() => {
         if (isOpen) {
             setLoading(true);
-            // Add timestamp to prevent caching
-            axios.get(`${CITY_API_URL}?_t=${Date.now()}`)
+            cityAPI.getCities()
                 .then(res => {
                     // Filter to only show active cities (isActive !== false)
                     const allCities = res.data.cities || [];

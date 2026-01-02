@@ -1,10 +1,10 @@
 // File: admin/src/components/SidebarLayout.jsx
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { 
-  ShoppingBag, 
-  Package, 
-  Users, 
+import {
+  ShoppingBag,
+  Package,
+  Users,
   LogOut,
   Tag,
   Store,
@@ -34,10 +34,10 @@ const SidebarLayout = ({ children }) => {
     { path: '/admin/categories', icon: <Tag size={20} />, label: 'Categories' },
     { path: '/admin/videos', icon: <Video size={20} />, label: 'Videos' },
     { path: '/admin/orders', icon: <Users size={20} />, label: 'Orders' },
-    { path: '/admin/venue', icon: <Store size={20} />, label: 'Venue' },  
+    { path: '/admin/venue', icon: <Store size={20} />, label: 'Venue' },
     { path: '/admin/data', icon: <File size={20} />, label: 'Data' },
     { path: '/admin/coupons', icon: <Users size={20} />, label: 'Coupons' },
-    {path :'/admin/cities', icon: <Users size={20} />, label: 'City'},
+    { path: '/admin/cities', icon: <Users size={20} />, label: 'City' },
     { path: '/admin/blog', icon: <BookOpen size={20} />, label: 'Blog' },
     { path: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];
@@ -49,10 +49,27 @@ const SidebarLayout = ({ children }) => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+      <style>
+        {`
+          .sidebar-scrollbar::-webkit-scrollbar {
+            width: 5px;
+          }
+          .sidebar-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+          }
+          .sidebar-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+          }
+          .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #FCD24C;
+          }
+        `}
+      </style>
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
@@ -60,29 +77,33 @@ const SidebarLayout = ({ children }) => {
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out
+        fixed lg:static inset-y-0 left-0 z-50 w-72 bg-slate-900 shadow-2xl transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="flex flex-col h-full overflow-y-auto">
-          {/* Header */}
-          <div className="p-6 border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <Link to="/admin">
-              <div className="flex items-center space-x-3">
-               
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  <img src="/logo.png" alt="decoryy Logo" className="w-full h-full rounded-full shadow" />
-                </h2>
+        <div className="flex flex-col h-full overflow-y-auto sidebar-scrollbar">
+          {/* Header with Logo */}
+          <div className="relative border-b-2 border-slate-800 bg-slate-950/50">
+            <Link to="/admin" className="block w-full">
+              <div className="flex items-center justify-center p-4">
+                <img
+                  src="/TodayMyDream.png"
+                  alt="Today My Dream Logo"
+                  className="w-full h-auto max-h-24 object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-300"
+                />
               </div>
-              </Link>
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <X size={20} className="text-gray-600" />
-              </button>
+            </Link>
+
+            {/* Mobile Close Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="lg:hidden absolute top-4 right-4 p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="pb-4 text-center">
+              <p className="text-xs font-bold tracking-[0.2em] text-[#FCD24C] uppercase opacity-80">Admin Portal</p>
             </div>
-            <p className="text-sm text-gray-500 mt-1">Manage your store</p>
           </div>
 
           {/* Navigation */}
@@ -93,33 +114,33 @@ const SidebarLayout = ({ children }) => {
                 to={item.path}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`
-                  flex items-center px-4 py-3 rounded-xl text-gray-600 transition-all duration-200 group
-                  ${isActive(item.path) 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
-                    : 'hover:bg-gray-100 hover:text-blue-600 hover:shadow-md'
+                  flex items-center px-4 py-3 rounded-xl transition-all duration-200 group
+                  ${isActive(item.path)
+                    ? 'bg-[#FCD24C] text-slate-900 shadow-lg font-bold'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-[#FCD24C] hover:shadow-sm'
                   }
                 `}
               >
                 <div className={`
-                  ${isActive(item.path) ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}
+                  ${isActive(item.path) ? 'text-slate-900' : 'text-slate-500 group-hover:text-[#FCD24C]'}
                 `}>
                   {item.icon}
                 </div>
                 <span className="ml-3 font-medium">{item.label}</span>
                 {isActive(item.path) && (
-                  <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+                  <div className="ml-auto w-2 h-2 bg-slate-900 rounded-full"></div>
                 )}
               </Link>
             ))}
           </nav>
 
           {/* Logout Button */}
-          <div className="p-4 border-t border-gray-100">
+          <div className="p-4 border-t border-slate-800">
             <button
               onClick={handleLogout}
-              className="flex items-center w-full px-4 py-3 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
+              className="flex items-center w-full px-4 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-500 transition-all duration-200 group"
             >
-              <LogOut size={20} className="text-gray-500 group-hover:text-red-600" />
+              <LogOut size={20} className="text-slate-500 group-hover:text-red-500" />
               <span className="ml-3 font-medium">Logout</span>
             </button>
           </div>
@@ -129,21 +150,21 @@ const SidebarLayout = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header */}
-        <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 px-4 py-3">
+        <div className="lg:hidden bg-slate-900 shadow-sm border-b border-slate-800 px-4 py-3">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
             >
-              <Menu size={20} className="text-gray-600" />
+              <Menu size={20} className="text-white" />
             </button>
             <Link to="/admin">
-            <div className="flex items-center space-x-2">
-             
-              <img src="/logo.png" alt="decoryy Logo" className="w-8 h-8 rounded-full shadow" />
-              <span className="text-lg font-semibold text-gray-800">decoryy</span>
-             
-            </div>
+              <div className="flex items-center space-x-2">
+
+                <img src="/TodayMyDream.png" alt="Today My Dream Logo" className="w-10 h-10 object-contain" />
+                <span className="text-lg font-bold text-white">Today My Dream</span>
+
+              </div>
             </Link>
           </div>
         </div>

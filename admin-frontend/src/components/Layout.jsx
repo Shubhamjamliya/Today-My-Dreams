@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  ShoppingBag, 
-  Package, 
-  Users, 
-  Settings, 
+import {
+  ShoppingBag,
+  Package,
+  Users,
+  Settings,
   LogOut,
   Tag
 } from 'lucide-react';
@@ -34,17 +34,17 @@ const Layout = ({ children }) => {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
-        <div className="p-4">
-          <h2 className="text-2xl font-bold text-gray-800">Admin Panel</h2>
+        <div className="p-4 flex items-center space-x-2">
+          <img src="/TodayMyDream.png" alt="Logo" className="w-8 h-8 object-contain" />
+          <h2 className="text-xl font-bold text-gray-800">Admin</h2>
         </div>
         <nav className="mt-4">
           {menuItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 ${
-                isActive(item.path) ? 'bg-gray-100 border-r-4 border-blue-500' : ''
-              }`}
+              className={`flex items-center px-4 py-2 text-gray-600 hover:bg-[#FCD24C]/10 ${isActive(item.path) ? 'bg-[#FCD24C]/20 border-r-4 border-[#FCD24C]' : ''
+                }`}
             >
               {item.icon}
               <span className="ml-3">{item.label}</span>

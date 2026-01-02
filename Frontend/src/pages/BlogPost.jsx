@@ -17,6 +17,7 @@ import {
 import { FaPinterest } from 'react-icons/fa';
 import { blogAPI } from '../services/api';
 import Loader from '../components/Loader';
+import { BlogPostSkeleton } from '../components/Loader/Skeleton';
 import SEO from '../components/SEO/SEO';
 import { toast } from 'react-hot-toast';
 
@@ -88,11 +89,7 @@ const BlogPost = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader size="lg" text="Loading blog post..." showLogo={true} />
-      </div>
-    );
+    return <BlogPostSkeleton />;
   }
 
   if (!blog) {

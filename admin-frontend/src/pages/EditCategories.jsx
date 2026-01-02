@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Upload, X, ImagePlus, Video, AlertCircle, CheckCircle, Loader2, Trash2, Pencil } from 'lucide-react';
+import { Upload, X, ImagePlus, Video, AlertCircle, CheckCircle, Trash2, Pencil } from 'lucide-react';
 import apiService from "../services/api";
+import Loader from "../components/Loader";
 
 const EditCategories = () => {
   const { id } = useParams();
@@ -42,16 +43,16 @@ const EditCategories = () => {
   const [subCategoryLoading, setSubCategoryLoading] = useState(false);
   const [currentSubCategory, setCurrentSubCategory] = useState({ name: '', description: '', image: '' });
   const [editingSubCategoryId, setEditingSubCategoryId] = useState(null);
-  
+
   // State for subcategory file uploads
   const [subCategoryFiles, setSubCategoryFiles] = useState({
     image: null,
   });
-  
+
   const [subCategoryPreviewUrls, setSubCategoryPreviewUrls] = useState({
     image: "",
   });
-  
+
   const [subCategoryDragOver, setSubCategoryDragOver] = useState({
     image: false,
   });
@@ -81,7 +82,7 @@ const EditCategories = () => {
           console.error("Failed to fetch category", error);
           showToast("Error loading category", "error");
         });
-      
+
       // Fetch associated sub-categories
       fetchSubCategories();
     }
@@ -135,17 +136,17 @@ const EditCategories = () => {
       }
     }
   };
-  
+
   const handleFileChange = (e, fieldName) => handleFile(e.target.files?.[0], fieldName);
   const handleDrop = (e, fieldName) => {
     e.preventDefault();
     setDragOver(prev => ({ ...prev, [fieldName]: false }));
     handleFile(e.dataTransfer.files[0], fieldName);
   };
-  
+
   const handleDragOver = (e, fieldName) => { e.preventDefault(); setDragOver(prev => ({ ...prev, [fieldName]: true })); };
   const handleDragLeave = (e, fieldName) => { e.preventDefault(); setDragOver(prev => ({ ...prev, [fieldName]: false })); };
-  
+
   const removeImage = (fieldName) => {
     setFiles(prev => ({ ...prev, [fieldName]: null }));
     setPreviewUrls(prev => ({ ...prev, [fieldName]: "" }));
@@ -199,7 +200,7 @@ const EditCategories = () => {
   const handleSubCategoryFileChange = (fieldName, file) => {
     if (file) {
       setSubCategoryFiles(prev => ({ ...prev, [fieldName]: file }));
-      
+
       // Create preview URL
       const previewUrl = URL.createObjectURL(file);
       setSubCategoryPreviewUrls(prev => ({ ...prev, [fieldName]: previewUrl }));
@@ -219,7 +220,7 @@ const EditCategories = () => {
   const handleSubCategoryDrop = (e, fieldName) => {
     e.preventDefault();
     setSubCategoryDragOver(prev => ({ ...prev, [fieldName]: false }));
-    
+
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       handleSubCategoryFileChange(fieldName, files[0]);
@@ -244,7 +245,7 @@ const EditCategories = () => {
       const formData = new FormData();
       formData.append('name', currentSubCategory.name);
       formData.append('description', currentSubCategory.description);
-      
+
       // Add image file if available
       if (subCategoryFiles.image) {
         formData.append('image', subCategoryFiles.image);
@@ -266,20 +267,20 @@ const EditCategories = () => {
       setSubCategoryLoading(false);
     }
   };
-  
+
   const handleEditClick = (subCategory) => {
     setEditingSubCategoryId(subCategory._id);
     setCurrentSubCategory({ name: subCategory.name, description: subCategory.description, image: subCategory.image });
     setSubCategoryPreviewUrls({ image: subCategory.image || "" });
   };
-  
+
   const handleCancelEdit = () => {
     setEditingSubCategoryId(null);
     setCurrentSubCategory({ name: '', description: '', image: '' });
     setSubCategoryFiles({ image: null });
     setSubCategoryPreviewUrls({ image: "" });
   };
-  
+
   const handleDeleteSubCategory = async (subCategoryId) => {
     if (window.confirm("Are you sure you want to delete this sub-category? This action cannot be undone.")) {
       try {
@@ -305,9 +306,8 @@ const EditCategories = () => {
       <div className="col-span-1">
         <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
         <div
-          className={`relative border-2 border-dashed rounded-lg p-4 text-center ${
-            isDragging ? 'border-blue-500 bg-blue-50' : hasPreview ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-gray-400'
-          }`}
+          className={`relative border-2 border-dashed rounded-lg p-4 text-center ${isDragging ? 'border-blue-500 bg-blue-50' : hasPreview ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-gray-400'
+            }`}
           onDrop={(e) => handleDrop(e, fieldName)}
           onDragOver={(e) => handleDragOver(e, fieldName)}
           onDragLeave={(e) => handleDragLeave(e, fieldName)}
@@ -351,9 +351,8 @@ const EditCategories = () => {
             </h1>
 
             {toast.show && (
-              <div className={`mb-6 p-4 rounded-lg flex items-center space-x-2 ${
-                  toast.type === "error" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
-              }`}>
+              <div className={`mb-6 p-4 rounded-lg flex items-center space-x-2 ${toast.type === "error" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
+                }`}>
                 {toast.type === "error" ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
                 <span>{toast.message}</span>
               </div>
@@ -373,12 +372,12 @@ const EditCategories = () => {
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700">Sort Order</label>
-                    <input 
-                      type="number" 
-                      name="sortOrder" 
-                      value={category.sortOrder} 
-                      onChange={handleChange} 
-                      className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+                    <input
+                      type="number"
+                      name="sortOrder"
+                      value={category.sortOrder}
+                      onChange={handleChange}
+                      className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       placeholder="0"
                       min="0"
                     />
@@ -386,7 +385,7 @@ const EditCategories = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gray-50 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Category Media</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -394,11 +393,11 @@ const EditCategories = () => {
                   {renderFileInput('video', 'Category Video')}
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-end space-x-4">
                 <button type="button" onClick={() => navigate("/admin/categories")} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
                 <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2">
-                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {loading && <Loader size="tiny" inline text="" />}
                   <span>{isNew ? "Create Category" : "Update Category"}</span>
                 </button>
               </div>
@@ -407,7 +406,7 @@ const EditCategories = () => {
             {!isNew && (
               <div className="mt-12 pt-8 border-t border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Sub-Categories</h2>
-                
+
                 <div className="bg-gray-50 rounded-xl p-6 mb-8">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">{editingSubCategoryId ? 'Edit Sub-Category' : 'Add New Sub-Category'}</h3>
                   <form onSubmit={handleSubCategorySubmit} className="space-y-4">
@@ -422,11 +421,10 @@ const EditCategories = () => {
                     <div>
                       <label className="block font-medium text-gray-700 text-sm">Sub-Category Image</label>
                       <div
-                        className={`mt-1 border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-                          subCategoryDragOver.image
-                            ? 'border-blue-400 bg-blue-50'
-                            : 'border-gray-300 hover:border-gray-400'
-                        }`}
+                        className={`mt-1 border-2 border-dashed rounded-lg p-4 text-center transition-colors ${subCategoryDragOver.image
+                          ? 'border-blue-400 bg-blue-50'
+                          : 'border-gray-300 hover:border-gray-400'
+                          }`}
                         onDragOver={(e) => handleSubCategoryDragOver(e, 'image')}
                         onDragLeave={(e) => handleSubCategoryDragLeave(e, 'image')}
                         onDrop={(e) => handleSubCategoryDrop(e, 'image')}
@@ -473,7 +471,7 @@ const EditCategories = () => {
                         <button type="button" onClick={handleCancelEdit} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
                       )}
                       <button type="submit" disabled={subCategoryLoading} className="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center">
-                        {subCategoryLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                        {subCategoryLoading && <Loader size="tiny" inline text="" />}
                         {editingSubCategoryId ? 'Update' : 'Add Sub-Category'}
                       </button>
                     </div>

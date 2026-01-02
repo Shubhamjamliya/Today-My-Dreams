@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Grid, List, Star, Loader2, AlertCircle, Heart } from "lucide-react";
+import { Plus, Search, Grid, List, Star, AlertCircle, Heart } from "lucide-react";
 import apiService from "../services/api";
+import Loader from "../components/Loader";
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return '';
@@ -146,17 +147,15 @@ const FeaturedProducts = () => {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-colors ${
-                viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-              }`}
+              className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                }`}
             >
               <Grid className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg transition-colors ${
-                viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-              }`}
+              className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                }`}
             >
               <List className="w-4 h-4" />
             </button>
@@ -165,9 +164,7 @@ const FeaturedProducts = () => {
 
         {/* Loading State */}
         {loading && (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-          </div>
+          <Loader text="Loading featured products..." />
         )}
 
         {/* Error State */}
@@ -235,9 +232,8 @@ const FeaturedProducts = () => {
                             )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                            }`}>
+                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                              }`}>
                               {product.inStock ? 'In Stock' : 'Out of Stock'}
                             </span>
                           </td>

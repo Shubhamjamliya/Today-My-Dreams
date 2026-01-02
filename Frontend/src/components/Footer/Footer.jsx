@@ -6,13 +6,10 @@ import { Facebook, Instagram, Award, Sparkles, ThumbsUp, ChevronDown } from 'luc
 import { FaCcVisa, FaCcMastercard, FaCcAmex, FaCcPaypal } from 'react-icons/fa';
 // DELETED: Removed static category import
 // import { categories } from '../../data/categories'; 
-import { categoryAPI } from '../../services/api'; // NEW: Import your category API
+import { categoryAPI, cityAPI } from '../../services/api'; // NEW: Import your category API
 import axios from 'axios';
 import { useCity } from '../../context/CityContext';
 import logo from '/TodayMyDream.png';
-
-// --- DYNAMIC CITY DATA ---
-const CITY_API_URL = 'https://api.decoryy.com/api/cities';
 
 // --- Accordion Component (No changes here) ---
 const FooterAccordion = ({ title, items }) => {
@@ -108,7 +105,7 @@ const Footer = () => {
   useEffect(() => {
     const fetchFooterCities = async () => {
       try {
-        const response = await axios.get(`${CITY_API_URL}?_t=${Date.now()}`);
+        const response = await cityAPI.getCities();
         // Filter to only show active cities (isActive !== false)
         const allCities = response.data.cities || [];
         const activeCities = allCities.filter(city => city.isActive !== false);
@@ -276,7 +273,7 @@ const Footer = () => {
         <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-slate-500">
           {/* Left Side: Copyright */}
           <p className="order-3 md:order-1 text-center md:text-left mb-16 md:mb-0">
-            &copy; {new Date().getFullYear()} TodayMyDream. All Rights Reserved.
+            &copy; {new Date().getFullYear()} Today My Dream. All Rights Reserved.
           </p>
 
           {/* Right Side: Socials & App Wrapper */}
@@ -295,7 +292,7 @@ const Footer = () => {
                   <Facebook size={16} />
                 </a>
                 <a
-                  href="https://www.instagram.com/decoryy.official?igsh=MXBuaGhyenhqbHBmYw=="
+                  href="https://www.instagram.com/todaymydream.official?igsh=MXBuaGhyenhqbHBmYw=="
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white transition-all hover:scale-110"

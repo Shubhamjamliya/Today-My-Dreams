@@ -62,13 +62,13 @@ const handleUpload = (req, res, next) => {
 // Middleware to transform local paths to URLs
 const transformPathsToUrls = (req, res, next) => {
   if (req.files) {
-    const baseUrl = process.env.BACKEND_URL || 'https://api.decoryy.com';
+    const baseUrl = `${req.protocol}://${req.get('host')}/todaymydream/data/`;
 
     Object.keys(req.files).forEach(key => {
       req.files[key].forEach(file => {
         // Convert absolute path to URL
         const filename = file.filename;
-        file.path = `${baseUrl}/decoryy/data/categories/${filename}`;
+        file.path = `${baseUrl}categories/${filename}`;
       });
     });
   }

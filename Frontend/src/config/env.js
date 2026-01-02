@@ -6,12 +6,12 @@
 
 const env = {
   // API Configuration
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5175' : 'https://api.decoryy.com'),
-  
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5175' : 'https://api.todaymydream.com'),
+
   // Feature Flags
   ENABLE_ANALYTICS: import.meta.env.VITE_ENABLE_ANALYTICS === 'true',
   ENABLE_LOGGING: import.meta.env.VITE_ENABLE_LOGGING === 'true',
-  
+
   // PhonePe Payment Gateway
   PHONEPE: {
     CLIENT_ID: import.meta.env.VITE_PHONEPE_CLIENT_ID || '',
@@ -19,58 +19,58 @@ const env = {
     CLIENT_VERSION: import.meta.env.VITE_PHONEPE_CLIENT_VERSION || '1',
     ENV: import.meta.env.VITE_PHONEPE_ENV || 'production',
     FRONTEND_URL: import.meta.env.VITE_FRONTEND_URL || 'https://pawn-shop-git-local-host-api-used-aditya200410s-projects.vercel.app',
-    BACKEND_URL: import.meta.env.VITE_BACKEND_URL || 'https://api.decoryy.com/api/',
+    BACKEND_URL: import.meta.env.VITE_BACKEND_URL || 'https://api.todaymydream.com/api/',
   },
-  
+
   // Image CDN
-  IMAGE_CDN_URL: import.meta.env.VITE_IMAGE_CDN_URL || 'https://api.decoryy.com/api/',
-  
+  IMAGE_CDN_URL: import.meta.env.VITE_IMAGE_CDN_URL || 'https://api.todaymydream.com/api/',
+
   // App Configuration
   APP: {
-    NAME: import.meta.env.VITE_APP_NAME || 'DECORYY',
+    NAME: import.meta.env.VITE_APP_NAME || 'TODAY MY DREAM',
     DESCRIPTION: import.meta.env.VITE_APP_DESCRIPTION || 'Premium decoration materials and celebration supplies for birthdays, weddings, and anniversaries',
-    CONTACT_EMAIL: import.meta.env.VITE_CONTACT_EMAIL || 'support@decoryy.com',
+    CONTACT_EMAIL: import.meta.env.VITE_CONTACT_EMAIL || 'support@todaymydream.com',
     SUPPORT_PHONE: import.meta.env.VITE_SUPPORT_PHONE || '+91 98765 43210',
   },
-  
+
   // Social Media Links
   SOCIAL: {
     FACEBOOK: import.meta.env.VITE_FACEBOOK_URL || '',
     INSTAGRAM: import.meta.env.VITE_INSTAGRAM_URL || '',
     TWITTER: import.meta.env.VITE_TWITTER_URL || '',
   },
-  
+
   // Security
   SECURITY: {
     JWT_EXPIRY: import.meta.env.VITE_JWT_EXPIRY || '7d',
     ENABLE_RECAPTCHA: import.meta.env.VITE_ENABLE_RECAPTCHA === 'true',
     RECAPTCHA_SITE_KEY: import.meta.env.VITE_RECAPTCHA_SITE_KEY || '',
   },
-  
+
   // Cache Configuration
   CACHE: {
     DURATION: parseInt(import.meta.env.VITE_CACHE_DURATION || '3600', 10),
     ENABLE_SERVICE_WORKER: import.meta.env.VITE_ENABLE_SERVICE_WORKER === 'true',
   },
-  
+
   // Environment Detection
   IS_DEVELOPMENT: import.meta.env.DEV,
   IS_PRODUCTION: import.meta.env.PROD,
   IS_TESTING: import.meta.env.MODE === 'test',
-  
+
   // Performance Monitoring
   PERFORMANCE: {
     ENABLE_METRICS: import.meta.env.VITE_ENABLE_PERFORMANCE_METRICS === 'true',
     SAMPLE_RATE: parseFloat(import.meta.env.VITE_PERFORMANCE_SAMPLE_RATE || '0.1'),
   },
-  
+
   // Error Reporting
   ERROR_REPORTING: {
     ENABLE_SENTRY: import.meta.env.VITE_ENABLE_SENTRY === 'true',
     SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
     SENTRY_ENVIRONMENT: import.meta.env.VITE_SENTRY_ENVIRONMENT || 'development',
   },
-  
+
   // CORS Configuration
   CORS: {
     WITH_CREDENTIALS: true,
@@ -79,55 +79,55 @@ const env = {
       'Accept': 'application/json',
     },
   },
-  
+
   // Utility Functions
   fixImageUrl: (imagePath) => {
     if (!imagePath) return '';
-    
+
     // If it's already a full URL, return as is
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return imagePath;
     }
-    
+
     // Remove any leading slashes and clean the path
     const cleanPath = imagePath.replace(/^\/+/, '').replace(/\/+/g, '/');
-    
+
     // If it's a path to a backend data file
-    if (cleanPath.includes('decoryy.com') || !cleanPath.includes('/')) {
+    if (cleanPath.includes('todaymydream.com') || !cleanPath.includes('/')) {
       // Always use /pawnbackend/data/ prefix for backend files
       const basePath = cleanPath.startsWith('pawnbackend/data/') ? '' : 'pawnbackend/data/';
       return `${env.API_BASE_URL}/${basePath}${cleanPath}`;
     }
-    
+
     // By default, assume it's a frontend public asset
     return `/${cleanPath}`;
   },
-  
+
   // Development helpers
   get isDev() {
     return this.IS_DEVELOPMENT;
   },
-  
+
   get isProd() {
     return this.IS_PRODUCTION;
   },
-  
+
   // API URL builder
   getApiUrl: (endpoint) => {
     return `${env.API_BASE_URL}${endpoint}`;
   },
-  
+
   // Log helper for development
   log: (...args) => {
     if (env.IS_DEVELOPMENT && env.ENABLE_LOGGING) {
-     
+
     }
   },
-  
+
   // Error helper for development
   logError: (...args) => {
     if (env.IS_DEVELOPMENT && env.ENABLE_LOGGING) {
-   
+
     }
   },
 };

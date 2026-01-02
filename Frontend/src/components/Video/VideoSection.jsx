@@ -4,6 +4,7 @@ import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import VideoCard from './VideoCard';
 import config from '../../config/config';
 import Loader from '../Loader';
+import { VideoSkeleton } from '../Loader/Skeleton';
 
 const VideoSection = ({ 
   title = "Our Videos", 
@@ -65,8 +66,10 @@ const VideoSection = ({
     return (
       <section className={`py-1 ${className}`}>
         <div className="container mx-auto px-4">
-          <div className="text-center">
-            <Loader size="medium" text="Loading videos..." />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(limit)].map((_, i) => (
+              <VideoSkeleton key={i} />
+            ))}
           </div>
         </div>
       </section>

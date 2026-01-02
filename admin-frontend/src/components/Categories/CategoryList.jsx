@@ -16,12 +16,12 @@ const CategoryList = () => {
   const getImageUrl = (imgPath) => {
     if (!imgPath) return '';
     if (imgPath.startsWith('http')) return imgPath;
-    
+
     // Handle video files from category.json (they are stored as filenames like "1.mp4")
     if (isVideoFile(imgPath)) {
       return `https://api.rikocraft.com/api/data/${imgPath}`;
     }
-    
+
     // Handle regular image paths
     return `https://api.rikocraft.com/${imgPath}`;
   };
@@ -37,7 +37,7 @@ const CategoryList = () => {
   const renderMedia = (url, alt) => {
     try {
       const absoluteUrl = getImageUrl(url);
-      
+
       if (!absoluteUrl) {
         return (
           <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
@@ -152,13 +152,13 @@ const CategoryList = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Manage Categories</h2>
-      
+
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
           {error}
         </div>
       )}
-      
+
       {success && (
         <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
           {success}
@@ -173,7 +173,7 @@ const CategoryList = () => {
             placeholder="Category Name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCD24C]"
             required
           />
           <input
@@ -181,7 +181,7 @@ const CategoryList = () => {
             placeholder="Description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCD24C]"
             required
           />
           <input
@@ -189,13 +189,13 @@ const CategoryList = () => {
             placeholder="Image/Video URL (supports .mp4, .jpg, .png, etc.)"
             value={formData.image}
             onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCD24C]"
             required
           />
         </div>
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-4 py-2 bg-[#FCD24C] text-gray-900 font-bold rounded-md hover:bg-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#FCD24C]"
         >
           {editingCategory ? 'Update Category' : 'Add Category'}
         </button>
@@ -226,7 +226,7 @@ const CategoryList = () => {
                   <div className="space-x-2">
                     <button
                       onClick={() => handleEdit(category)}
-                      className="px-3 py-1 text-blue-600 hover:text-blue-900 focus:outline-none"
+                      className="px-3 py-1 text-[#F59E0B] hover:text-[#FCD24C] focus:outline-none"
                     >
                       Edit
                     </button>

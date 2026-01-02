@@ -11,7 +11,7 @@ const nodemailer = require('nodemailer');
 // Utility function to format scheduled delivery time
 const formatScheduledDelivery = (scheduledDelivery) => {
   if (!scheduledDelivery) return null;
-  
+
   const deliveryDate = new Date(scheduledDelivery);
   return {
     date: deliveryDate.toISOString().split('T')[0], // YYYY-MM-DD format
@@ -44,7 +44,7 @@ const createOrder = async (req, res) => {
   try {
     console.log('=== ORDER CREATION REQUEST ===');
     console.log('Request body items:', JSON.stringify(req.body.items, null, 2));
-    
+
     const {
       customerName,
       email,
@@ -68,17 +68,17 @@ const createOrder = async (req, res) => {
     const missingFields = requiredFields.filter(field => !req.body[field]);
 
     if (missingFields.length > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: `Missing required fields: ${missingFields.join(', ')}` 
+      return res.status(400).json({
+        success: false,
+        message: `Missing required fields: ${missingFields.join(', ')}`
       });
     }
 
     // Validate items array
     if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Items array is required and must not be empty.' 
+      return res.status(400).json({
+        success: false,
+        message: 'Items array is required and must not be empty.'
       });
     }
 
@@ -87,14 +87,14 @@ const createOrder = async (req, res) => {
       const item = items[i];
       const itemRequiredFields = ['name', 'price', 'quantity'];
       const missingItemFields = itemRequiredFields.filter(field => !item[field]);
-      
+
       if (missingItemFields.length > 0) {
-        return res.status(400).json({ 
-          success: false, 
-          message: `Item ${i + 1} is missing required fields: ${missingItemFields.join(', ')}` 
+        return res.status(400).json({
+          success: false,
+          message: `Item ${i + 1} is missing required fields: ${missingItemFields.join(', ')}`
         });
       }
-      
+
       // Clean the item data to only include necessary fields
       items[i] = {
         productId: item.productId || null,
@@ -104,7 +104,7 @@ const createOrder = async (req, res) => {
         image: item.image || null
       };
     }
-    
+
     console.log('Cleaned items:', JSON.stringify(items, null, 2));
 
     // Process scheduled delivery time if provided
@@ -114,37 +114,37 @@ const createOrder = async (req, res) => {
         // Ensure the scheduled delivery is a valid date
         const deliveryDate = new Date(scheduledDelivery);
         if (isNaN(deliveryDate.getTime())) {
-          return res.status(400).json({ 
-            success: false, 
-            message: 'Invalid scheduled delivery date format.' 
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid scheduled delivery date format.'
           });
         }
-        
+
         // Validate that the delivery date is at least 5 days in the future
         const minDeliveryDate = new Date();
         minDeliveryDate.setDate(minDeliveryDate.getDate() + 5);
-        
+
         if (deliveryDate < minDeliveryDate) {
-          return res.status(400).json({ 
-            success: false, 
-            message: 'Scheduled delivery must be at least 5 days in the future.' 
+          return res.status(400).json({
+            success: false,
+            message: 'Scheduled delivery must be at least 5 days in the future.'
           });
         }
-        
+
         // Validate that the delivery time is within business hours (9 AM to 9 PM)
         const deliveryTime = deliveryDate.getHours();
         if (deliveryTime < 9 || deliveryTime > 21) {
-          return res.status(400).json({ 
-            success: false, 
-            message: 'Scheduled delivery time must be between 9:00 AM and 9:00 PM.' 
+          return res.status(400).json({
+            success: false,
+            message: 'Scheduled delivery time must be between 9:00 AM and 9:00 PM.'
           });
         }
-        
+
         processedScheduledDelivery = deliveryDate;
       } catch (error) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Invalid scheduled delivery date/time format.' 
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid scheduled delivery date/time format.'
         });
       }
     }
@@ -177,7 +177,7 @@ const createOrder = async (req, res) => {
     // --- Commission and Stock Logic (unchanged) ---
     let commission = 0;
     let seller = null;
-    
+
     if (sellerToken) {
       seller = await Seller.findOne({ sellerToken });
       if (seller) {
@@ -214,16 +214,16 @@ const createOrder = async (req, res) => {
 
     // Send the redesigned order confirmation email
     sendOrderConfirmationEmail(savedOrder);
-    
+
     // Format the response with additional scheduled delivery info
     const orderResponse = {
       ...savedOrder.toObject(),
       scheduledDeliveryFormatted: formatScheduledDelivery(savedOrder.scheduledDelivery)
     };
 
-    res.status(201).json({ 
-      success: true, 
-      message: 'Order created successfully!', 
+    res.status(201).json({
+      success: true,
+      message: 'Order created successfully!',
       order: orderResponse,
       commission: seller ? { amount: commission, sellerName: seller.businessName } : null
     });
@@ -237,7 +237,7 @@ const createOrder = async (req, res) => {
 // Helper to send the NEW redesigned order confirmation email
 async function sendOrderConfirmationEmail(order) {
   const { email, customerName, items, addOns, totalAmount, address, scheduledDelivery, _id, customOrderId, paymentMethod, paymentStatus, upfrontAmount, remainingAmount, transactionId, phone } = order;
-  const subject = '🎉 Congratulations! Your Order is Confirmed - Decoryy';
+  const subject = '🎉 Congratulations! Your Order is Confirmed - Today My Dream';
 
   // Calculate subtotal from items
   const itemsSubtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -266,13 +266,13 @@ async function sendOrderConfirmationEmail(order) {
     </tr>
   `;
   }).join('');
-  
+
   // Build add-ons table (if they exist)
   let addOnsHtml = '';
   if (addOns && addOns.length > 0) {
-      const addOnRows = addOns.map(addOn => {
-        const addOnTotal = addOn.price * (addOn.quantity || 1);
-        return `
+    const addOnRows = addOns.map(addOn => {
+      const addOnTotal = addOn.price * (addOn.quantity || 1);
+      return `
           <tr>
               <td style="padding: 10px; border: 1px solid #FFECB3;">+ ${addOn.name} ${addOn.quantity > 1 ? `(x${addOn.quantity})` : ''}</td>
               <td style="padding: 10px; border: 1px solid #FFECB3; text-align: center;">${addOn.quantity || 1}</td>
@@ -280,8 +280,8 @@ async function sendOrderConfirmationEmail(order) {
               <td style="padding: 10px; border: 1px solid #FFECB3; text-align: right; font-weight: bold;">₹${addOnTotal.toFixed(2)}</td>
           </tr>
       `;
-      }).join('');
-      addOnsHtml = `<h3 style="color: #444; border-bottom: 2px solid #FFD700; padding-bottom: 5px; margin-top: 25px; margin-bottom: 10px; font-size: 18px;">✨ Add-Ons</h3>
+    }).join('');
+    addOnsHtml = `<h3 style="color: #444; border-bottom: 2px solid #FFD700; padding-bottom: 5px; margin-top: 25px; margin-bottom: 10px; font-size: 18px;">✨ Add-Ons</h3>
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
           <thead>
             <tr>
@@ -298,8 +298,8 @@ async function sendOrderConfirmationEmail(order) {
   // Format Address with Map Link
   let mapLink = '';
   if (address.location && address.location.coordinates && address.location.coordinates.length === 2) {
-      const [lng, lat] = address.location.coordinates;
-      mapLink = `<br/><a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="color: #E65100; font-weight: bold; text-decoration: none;">📍 View on Map</a>`;
+    const [lng, lat] = address.location.coordinates;
+    mapLink = `<br/><a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="color: #E65100; font-weight: bold; text-decoration: none;">📍 View on Map</a>`;
   }
   const addressHtml = `
     <p style="margin: 0; line-height: 1.8; font-size: 14px;">
@@ -314,10 +314,10 @@ async function sendOrderConfirmationEmail(order) {
   // Format Scheduled Delivery
   let scheduledDeliveryHtml = '';
   if (scheduledDelivery) {
-      const deliveryDate = new Date(scheduledDelivery);
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' };
-      const formattedDate = deliveryDate.toLocaleString('en-IN', options);
-      scheduledDeliveryHtml = `
+    const deliveryDate = new Date(scheduledDelivery);
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' };
+    const formattedDate = deliveryDate.toLocaleString('en-IN', options);
+    scheduledDeliveryHtml = `
           <div style="margin-bottom: 20px; padding: 12px; background-color: #FFF9C4; border-left: 4px solid #FBC02D; border-radius: 5px; color: #444;">
               <strong style="font-size: 16px;">📅 Scheduled Delivery:</strong><br/>
               <span style="font-size: 15px;">${formattedDate}</span>
@@ -329,7 +329,7 @@ async function sendOrderConfirmationEmail(order) {
   const paymentMethodText = paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod === 'online' ? 'Online Payment (PhonePe)' : paymentMethod || 'N/A';
   const paymentStatusText = paymentStatus === 'completed' ? '✅ Paid' : paymentStatus === 'pending' ? '⏳ Pending' : paymentStatus || 'N/A';
   const paymentStatusColor = paymentStatus === 'completed' ? '#4CAF50' : paymentStatus === 'pending' ? '#FF9800' : '#757575';
-  
+
   let paymentDetailsHtml = '';
   if (paymentMethod === 'cod') {
     paymentDetailsHtml = `
@@ -455,7 +455,7 @@ async function sendOrderConfirmationEmail(order) {
         <!-- Footer -->
         <div style="border-top: 2px dashed #FFC107; padding-top: 20px; margin-top: 25px; text-align: center; background-color: #FFF9C4; padding: 20px; border-radius: 8px;">
           <p style="color: #555; font-size: 15px; margin: 0 0 10px 0; line-height: 1.6;">
-            <strong>🎊 Thank you for choosing Decoryy!</strong><br/>
+            <strong>🎊 Thank you for choosing Today My Dream!</strong><br/>
             We're excited to be part of your celebration journey.
           </p>
           <p style="color: #666; font-size: 14px; margin: 15px 0 0 0;">
@@ -463,7 +463,7 @@ async function sendOrderConfirmationEmail(order) {
           </p>
           <p style="color: #E65100; font-size: 16px; margin: 20px 0 0 0; font-weight: bold;">
             Happy Celebrating! 🥳<br/>
-            <span style="font-size: 14px; color: #666;">The Decoryy Team</span>
+            <span style="font-size: 14px; color: #666;">The Today My Dream Team</span>
           </p>
         </div>
       </div>
@@ -510,16 +510,16 @@ Subtotal: ₹${subtotal.toFixed(2)}
 ${shipping > 0 ? `Shipping: ₹${shipping.toFixed(2)}\n` : ''}
 Grand Total: ₹${totalAmount.toFixed(2)}
 
-🎊 Thank you for choosing Decoryy! We're excited to help make your event special.
+🎊 Thank you for choosing Today My Dream! We're excited to help make your event special.
 
 If you have any questions, just reply to this email. We're here to help!
 
 Happy Celebrating! 🥳
-The Decoryy Team`;
+The Today My Dream Team`;
 
   try {
     await transporter.sendMail({
-      from: `"Decoryy" <${process.env.EMAIL_USER}>`,
+      from: `"Today My Dream" <${process.env.EMAIL_USER}>`,
       to: email,
       subject,
       text: textBody,
@@ -543,13 +543,13 @@ const getOrdersByEmail = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email query parameter is required.' });
     }
     const orders = await Order.find({ email: { $regex: new RegExp(`^${userEmail}$`, 'i') } }).sort({ createdAt: -1 });
-    
+
     // Format orders with scheduled delivery information
     const formattedOrders = orders.map(order => ({
       ...order.toObject(),
       scheduledDeliveryFormatted: formatScheduledDelivery(order.scheduledDelivery)
     }));
-    
+
     res.status(200).json({ success: true, orders: formattedOrders });
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -563,13 +563,13 @@ const getOrderById = async (req, res) => {
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found.' });
     }
-    
+
     // Format order with scheduled delivery information
     const formattedOrder = {
       ...order.toObject(),
       scheduledDeliveryFormatted: formatScheduledDelivery(order.scheduledDelivery)
     };
-    
+
     res.status(200).json({ success: true, order: formattedOrder });
   } catch (error) {
     console.error('Error fetching order by ID:', error);
@@ -603,7 +603,7 @@ async function sendOrderStatusUpdateEmail(order) {
   const htmlBody = `
     <div style="font-family: 'Comic Sans MS', 'Chalkboard SE', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FFFDE7; border: 5px solid #FFD700; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
       <div style="text-align: center; border-bottom: 2px dashed #FFC107; padding-bottom: 15px; margin-bottom: 25px;">
-        <h1 style="color: #FF6F00; margin: 0; font-size: 32px;">Decoryy!</h1>
+        <h1 style="color: #FF6F00; margin: 0; font-size: 32px;">Today My Dream!</h1>
         <p style="color: #666; margin: 5px 0; font-size: 16px;">An Update on Your Celebration!</p>
       </div>
       <div style="padding: 0 10px;">
@@ -623,18 +623,18 @@ async function sendOrderStatusUpdateEmail(order) {
         <div style="border-top: 2px dashed #FFC107; padding-top: 20px; margin-top: 20px; text-align: center;">
           <p style="color: #555; font-size: 16px; margin: 15px 0;">
             <strong>Cheers,</strong><br>
-            The Decoryy Team 🥳
+            The Today My Dream Team 🥳
           </p>
         </div>
       </div>
     </div>
   `;
-  
-  const textBody = `Hi ${customerName},\n\nAn update on your Decoryy order #${customOrderId}.\nDatabase ID: ${_id}\nNew Status: ${orderStatus.charAt(0).toUpperCase() + orderStatus.slice(1)}\n\nCheers,\nThe Decoryy Team 🥳`;
+
+  const textBody = `Hi ${customerName},\n\nAn update on your Today My Dream order #${customOrderId}.\nDatabase ID: ${_id}\nNew Status: ${orderStatus.charAt(0).toUpperCase() + orderStatus.slice(1)}\n\nCheers,\nThe Today My Dream Team 🥳`;
 
   try {
     await transporter.sendMail({
-      from: `"Decoryy" <${process.env.EMAIL_USER}>`,
+      from: `"Today My Dream" <${process.env.EMAIL_USER}>`,
       to: email,
       subject,
       text: textBody,

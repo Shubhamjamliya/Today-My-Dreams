@@ -656,9 +656,7 @@ const SellerManagement = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader />
-      </div>
+      <Loader fullScreen text="Loading venue management..." />
     );
   }
 

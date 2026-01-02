@@ -2,9 +2,9 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://decoryy.com/api/sitemap.xml
-Sitemap: https://decoryy.com/api/sitemap-index.xml
-Sitemap: https://decoryy.com/api/blog/sitemap.xml
+Sitemap: https://todaymydream.com/api/sitemap.xml
+Sitemap: https://todaymydream.com/api/sitemap-index.xml
+Sitemap: https://todaymydream.com/api/blog/sitemap.xml
 
 # Disallow admin areas
 Disallow: /admin/
@@ -33,4 +33,4 @@ Allow: /product/
 Crawl-delay: 1
 
 # Additional directives for better SEO
-Host: https://decoryy.com
+Host: https://todaymydream.com

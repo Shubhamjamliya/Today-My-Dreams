@@ -9,6 +9,7 @@ void motion;
 import config from '../../config/config';
 import { useNavigate } from 'react-router-dom';
 import { useCity } from '../../context/CityContext';
+import { HeroSkeleton } from '../Loader/Skeleton';
 
 const isVideo = (url) =>
   url && (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm'));
@@ -42,23 +43,23 @@ const Offerpage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const navigate = useNavigate();
   const { selectedCity } = useCity();
-  
+
   // Separate states for odd and even carousels (desktop)
   const [[oddPage, oddDirection], setOddPage] = useState([0, 0]);
   const [[evenPage, evenDirection], setEvenPage] = useState([0, 0]);
-  
+
   // Single state for mobile carousel (all items)
   const [[mobilePage, mobileDirection], setMobilePage] = useState([0, 0]);
-  
+
   // Split data into odd and even indexed items for desktop
   const oddIndexedData = useMemo(() => {
     return carouselData.filter((_, index) => index % 2 === 0);
   }, [carouselData]);
-  
+
   const evenIndexedData = useMemo(() => {
     return carouselData.filter((_, index) => index % 2 === 1);
   }, [carouselData]);
-  
+
   const oddImageIndex = wrap(0, oddIndexedData.length, oddPage);
   const evenImageIndex = wrap(0, evenIndexedData.length, evenPage);
   const mobileImageIndex = wrap(0, carouselData.length, mobilePage);
@@ -79,11 +80,11 @@ const Offerpage = () => {
         if (selectedCity) {
           urlParams.append('city', selectedCity);
         }
-        
+
         const response = await fetch(`${config.API_BASE_URL}/api/hero-carousel/active?${urlParams.toString()}`);
         if (!response.ok) throw new Error('Failed to fetch carousel data');
         const data = await response.json();
-      
+
         // Adjust filter key depending on backend field name
         const filteredData = data.filter((item) => item.isMobile === false);
 
@@ -156,11 +157,13 @@ const Offerpage = () => {
 
   if (loading || error || carouselData.length === 0) {
     return (
-      <div className="w-full h-[200px] md:h-[200px] rounded-2xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="w-full h-[200px] md:h-[250px] rounded-2xl shadow-2xl overflow-hidden">
         {loading ? (
-          <div className="w-10 h-10 border-4 border-amber-100 border-t-amber-500 rounded-2xl animate-spin" />
+          <HeroSkeleton isMobile={isMobile} />
         ) : (
-          <p className="text-slate-600 text-center p-8">{error || 'No promotions available.'}</p>
+          <div className="flex items-center justify-center h-full bg-gray-100">
+            <p className="text-slate-600 text-center p-8">{error || 'No promotions available.'}</p>
+          </div>
         )}
       </div>
     );
@@ -211,6 +214,7 @@ const Offerpage = () => {
               loop
               muted
               playsInline
+              fetchpriority="high"
               onError={handleMediaError}
               src={item.image}
             />
@@ -219,6 +223,7 @@ const Offerpage = () => {
               src={item.image}
               alt={item.title || 'Promotion'}
               className="w-full h-full rounded-2xl object-fill"
+              fetchpriority="high"
               onError={handleMediaError}
             />
           )}
@@ -244,7 +249,7 @@ const Offerpage = () => {
             }}
             className="absolute left-3 top-1/2 -translate-y-1/2 z-[3] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 hover:bg-white shadow-md flex items-center justify-center"
           >
-            <ChevronLeft/>
+            <ChevronLeft />
           </button>
 
           <button
@@ -263,11 +268,11 @@ const Offerpage = () => {
             }}
             className="absolute right-3 top-1/2 -translate-y-1/2 z-[3] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 hover:bg-white shadow-md flex items-center justify-center"
           >
-            <ChevronRight/>
+            <ChevronRight />
           </button>
         </>
       )}
-      
+
       {/* Pagination dots */}
       {dataLength > 1 && (
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-[2]">
@@ -285,9 +290,8 @@ const Offerpage = () => {
                   setEvenPage([index, newDirection]);
                 }
               }}
-              className={`h-2 rounded-2xl transition-all duration-300 cursor-pointer ${
-                imageIndex === index ? 'w-6 bg-white shadow-md' : 'w-2 bg-white/60'
-              }`}
+              className={`h-2 rounded-2xl transition-all duration-300 cursor-pointer ${imageIndex === index ? 'w-6 bg-white shadow-md' : 'w-2 bg-white/60'
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
@@ -327,7 +331,7 @@ const Offerpage = () => {
                 isMobileCarousel={false}
               />
             )}
-            
+
             {/* Second Carousel - Even indexed items (1, 3, 5...) */}
             {evenIndexedData.length > 0 && (
               <CarouselCard

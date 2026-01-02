@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Power, PowerOff, Package } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import config from '../config/config';
+import Loader from "../components/Loader";
 
 const Addons = () => {
   const [addons, setAddons] = useState([]);
@@ -19,9 +20,9 @@ const Addons = () => {
       const response = await fetch(`${config.API_BASE_URL}/api/addons`, {
         credentials: 'include'
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         setAddons(data.data);
       } else {
@@ -46,9 +47,9 @@ const Addons = () => {
           'Content-Type': 'application/json'
         }
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         toast.success(data.message);
         fetchAddons();
@@ -72,9 +73,9 @@ const Addons = () => {
           'Content-Type': 'application/json'
         }
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         toast.success('Add-on deleted successfully');
         fetchAddons();
@@ -91,12 +92,7 @@ const Addons = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading add-ons...</p>
-        </div>
-      </div>
+      <Loader fullScreen text="Loading add-ons..." />
     );
   }
 
@@ -158,9 +154,8 @@ const Addons = () => {
           {addons.map((addon) => (
             <div
               key={addon._id}
-              className={`bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 ${
-                !addon.isActive ? 'opacity-60' : ''
-              }`}
+              className={`bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 ${!addon.isActive ? 'opacity-60' : ''
+                }`}
             >
               {/* Image */}
               <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative">
@@ -179,7 +174,7 @@ const Addons = () => {
                     <Package size={64} className="text-gray-400" />
                   </div>
                 )}
-                
+
                 {/* Status Badge */}
                 <div className="absolute top-3 right-3">
                   {addon.isActive ? (
@@ -215,11 +210,10 @@ const Addons = () => {
                   </Link>
                   <button
                     onClick={() => handleToggleStatus(addon._id)}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                      addon.isActive
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors ${addon.isActive
                         ? 'bg-orange-50 text-orange-600 hover:bg-orange-100'
                         : 'bg-green-50 text-green-600 hover:bg-green-100'
-                    }`}
+                      }`}
                   >
                     {addon.isActive ? <PowerOff size={16} /> : <Power size={16} />}
                     {addon.isActive ? 'Disable' : 'Enable'}

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Users, Star, Search, ArrowRight, IndianRupee, Building2, Sparkles, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import { VenueSkeleton } from "../components/Loader/Skeleton";
 import config from '../config/config';
 import SEO from '../components/SEO/SEO';
 
@@ -396,23 +397,11 @@ const VenuePage = () => {
           >
             <AnimatePresence mode="wait">
               {loading ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="col-span-full text-center py-12 md:py-16"
-                >
-                  <div className="relative inline-flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-4 border-amber-200"></div>
-                    <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-t-4 border-amber-500 absolute"></div>
-                  </div>
-                  <h3 className="text-base md:text-xl font-bold text-slate-900 mt-4 md:mt-6">
-                    Finding Perfect Venues...
-                  </h3>
-                  <p className="text-xs md:text-sm text-slate-600 mt-1.5 md:mt-2">
-                    Please wait while we load the best venues for you
-                  </p>
-                </motion.div>
+                <>
+                  {[...Array(8)].map((_, i) => (
+                    <VenueSkeleton key={i} />
+                  ))}
+                </>
               ) : error ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}

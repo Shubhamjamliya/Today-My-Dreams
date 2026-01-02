@@ -52,8 +52,8 @@ router.post('/upload', auth, upload.single('image'), (req, res) => {
       });
     }
 
-    const baseUrl = process.env.BACKEND_URL || 'https://api.decoryy.com';
-    const imageUrl = `${baseUrl}/decoryy/data/addons/${req.file.filename}`;
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const imageUrl = `${baseUrl}/todaymydream/data/addons/${req.file.filename}`;
 
     res.status(200).json({
       success: true,

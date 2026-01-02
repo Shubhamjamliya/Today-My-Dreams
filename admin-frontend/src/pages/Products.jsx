@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Grid, List, Image as ImageIcon, Loader2, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Search, Grid, List, Image as ImageIcon, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import apiService from "../services/api";
+import Loader from "../components/Loader";
+import { CardGridSkeleton } from "../components/Skeleton";
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return '';
@@ -73,7 +75,7 @@ const Products = () => {
     const product = products.find(p => p._id === productId);
     const images = getProductImages(product);
     const currentIndex = selectedImageIndex[productId] || 0;
-    
+
     if (direction === 'next') {
       setSelectedImageIndex(prev => ({ ...prev, [productId]: (currentIndex + 1) % images.length }));
     } else {
@@ -85,7 +87,7 @@ const Products = () => {
     const product = products.find(p => p._id === productId);
     const images = getProductImages(product);
     if (images.length <= 1) return;
-    if (e.key === 'ArrowLeft') { e.preventDefault(); handleImageChange(productId, 'prev'); } 
+    if (e.key === 'ArrowLeft') { e.preventDefault(); handleImageChange(productId, 'prev'); }
     else if (e.key === 'ArrowRight') { e.preventDefault(); handleImageChange(productId, 'next'); }
   };
 
@@ -99,10 +101,10 @@ const Products = () => {
       const sectionKey = sectionsMap[section];
       const product = products.find(p => p._id === productId);
       const currentValue = product[sectionKey] || false;
-      
+
       await apiService.updateProductSections(productId, { [sectionKey]: !currentValue });
-      
-      setProducts(prev => prev.map(p => 
+
+      setProducts(prev => prev.map(p =>
         p._id === productId ? { ...p, [sectionKey]: !currentValue } : p
       ));
     } catch (error) {
@@ -124,7 +126,7 @@ const Products = () => {
     const hasImageError = imageErrors[`${product._id}-${currentImageIndex}`];
 
     return (
-      <div 
+      <div
         className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden"
         tabIndex={0}
         onKeyDown={(e) => handleKeyDown(e, product._id)}
@@ -159,7 +161,7 @@ const Products = () => {
               <ImageIcon className="w-8 h-8 text-gray-400" />
             </div>
           )}
-          
+
           <div className="absolute top-3 left-3 flex flex-col gap-1">
             <button onClick={() => handleSectionToggle(product._id, 'bestsellers')} className={`px-2 py-1 rounded-full text-xs font-semibold transition-colors ${product.isBestSeller ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-yellow-100'}`}>
               Best Seller
@@ -192,7 +194,7 @@ const Products = () => {
             {product.category?.name || 'Uncategorized'}
             {product.subCategory?.name && ` > ${product.subCategory.name}`}
           </p>
-          
+
           <div className="flex items-center justify-between mb-3">
             <div>
               <div className="font-bold text-green-600 text-lg">₹{product.price?.toFixed(2) || '0.00'}</div>
@@ -266,9 +268,7 @@ const Products = () => {
       )}
 
       {loading && (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
+        <CardGridSkeleton count={8} />
       )}
 
       {!loading && (

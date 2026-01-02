@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Upload, X, ImagePlus, AlertCircle, CheckCircle, Plus, Loader2, Copy, Hash } from 'lucide-react';
+import { Upload, X, ImagePlus, AlertCircle, CheckCircle, Plus, Copy, Hash } from 'lucide-react';
 import apiService from "../services/api";
+import Loader from "../components/Loader";
 
 const EditProduct = () => {
   const { id } = useParams();
@@ -13,12 +14,12 @@ const EditProduct = () => {
     _id: "", // MongoDB ID
     name: "",
     material: "",
-   
+
     size: "",
     colour: "",
     category: "",
     subCategory: "", // NEW: Added subCategory to state
-   
+
     utility: "",
     care: "",
     included: [],
@@ -80,7 +81,7 @@ const EditProduct = () => {
   const [subCategories, setSubCategories] = useState([]); // NEW: State for sub-categories
   const [isAddingNewCategory, setIsAddingNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState({ name: "", description: "" });
-  
+
   // NOTE: Review logic is unchanged, so it has been removed for brevity.
 
   // Fetch all categories on component mount
@@ -96,7 +97,7 @@ const EditProduct = () => {
     };
     fetchCategories();
   }, []);
-  
+
   // Fetch product data if editing an existing product
   useEffect(() => {
     if (!isNew) {
@@ -160,7 +161,7 @@ const EditProduct = () => {
       setSubCategories([]); // Clear sub-categories on error
     }
   };
-  
+
   const showToast = (message, type = "success", details = "") => {
     setToast({ show: true, message, type, details });
     setTimeout(() => setToast({ show: false, message: "", type: "", details: "" }), 8000); // Longer timeout for detailed errors
@@ -186,7 +187,7 @@ const EditProduct = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     // NEW: Special handling for category change to fetch sub-categories
     if (name === 'category') {
       fetchSubCategories(value);
@@ -194,7 +195,7 @@ const EditProduct = () => {
       setProduct((prev) => ({
         ...prev,
         category: value,
-        subCategory: "", 
+        subCategory: "",
       }));
     } else {
       setProduct((prev) => ({
@@ -246,8 +247,8 @@ const EditProduct = () => {
     setLoading(true);
 
     const requiredFields = [
-      "name", "material", "size", "colour", 
-      "category", "utility",  "price", "regularPrice", "stock"
+      "name", "material", "size", "colour",
+      "category", "utility", "price", "regularPrice", "stock"
     ];
 
     const missingFields = requiredFields.filter(field => !product[field] || product[field].toString().trim() === "");
@@ -261,31 +262,31 @@ const EditProduct = () => {
     const price = parseFloat(product.price);
     const regularPrice = parseFloat(product.regularPrice);
     const stock = Number(product.stock);
-    
+
     if (isNaN(price) || price < 0) {
       showToast("Please enter a valid price", "error");
       setLoading(false);
       return;
     }
-    
+
     if (isNaN(regularPrice) || regularPrice < 0) {
       showToast("Please enter a valid regular price", "error");
       setLoading(false);
       return;
     }
-    
+
     if (price > regularPrice) {
       showToast("Price cannot be greater than regular price", "error");
       setLoading(false);
       return;
     }
-    
+
     if (isNaN(stock) || stock < 0) {
       showToast("Please enter a valid stock quantity", "error");
       setLoading(false);
       return;
     }
-    
+
     if (isNew && !files.mainImage) {
       showToast("Please upload a main image.", "error");
       setLoading(false);
@@ -307,7 +308,7 @@ const EditProduct = () => {
     try {
       // Clear any previous error details
       setErrorDetails(null);
-      
+
       if (isNew) {
         await apiService.createProduct(formData);
         showToast("Product created successfully!");
@@ -323,11 +324,11 @@ const EditProduct = () => {
       console.error('Error data:', error.response?.data);
       console.error('Product data being sent:', product);
       console.error('Files being sent:', files);
-      
+
       // Extract detailed error message
       let errorMessage = "Error saving product";
       let errorDetails = "";
-      
+
       // Handle network errors specifically
       if (error.isNetworkError || error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
         errorMessage = "Network Connection Error";
@@ -340,7 +341,7 @@ Error: ${error.message}`;
       } else if (error.response?.data) {
         const errorData = error.response.data;
         errorMessage = errorData.message || errorData.error || errorMessage;
-        
+
         if (errorData.details) {
           if (Array.isArray(errorData.details)) {
             errorDetails = errorData.details.join(', ');
@@ -351,11 +352,11 @@ Error: ${error.message}`;
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       // Show detailed error message in UI
       const fullErrorMessage = errorMessage;
       showToast(fullErrorMessage, "error", errorDetails);
-      
+
       // Set detailed error information for inline display
       setErrorDetails({
         message: fullErrorMessage,
@@ -368,11 +369,11 @@ Error: ${error.message}`;
           file: files[key] ? { name: files[key].name, size: files[key].size, type: files[key].type } : null
         }))
       });
-      
+
       // Also log to console for debugging
       console.error('Full error message:', fullErrorMessage);
       console.error('Error details:', errorDetails);
-      
+
       // Show additional debug info in development
       if (process.env.NODE_ENV === 'development') {
         console.error('=== DEBUG INFO ===');
@@ -406,9 +407,8 @@ Error: ${error.message}`;
           {label} {required && <span className="text-red-500">*</span>}
         </label>
         <div
-          className={`relative h-48 rounded-lg border-2 border-dashed transition-all duration-200 ${
-            isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-          } ${hasPreview ? 'bg-gray-50' : 'bg-white'}`}
+          className={`relative h-48 rounded-lg border-2 border-dashed transition-all duration-200 ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+            } ${hasPreview ? 'bg-gray-50' : 'bg-white'}`}
           onDrop={(e) => handleDrop(e, fieldName)}
           onDragOver={(e) => handleDragOver(e, fieldName)}
           onDragLeave={(e) => handleDragLeave(e, fieldName)}
@@ -435,7 +435,7 @@ Error: ${error.message}`;
       </div>
     );
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -506,8 +506,8 @@ Error: ${error.message}`;
                           <div className="ml-2 mt-1">
                             {errorDetails.filesData.map((fileInfo, index) => (
                               <div key={index} className="text-red-600 text-xs">
-                                {fileInfo.field}: {fileInfo.file ? 
-                                  `${fileInfo.file.name} (${fileInfo.file.size} bytes, ${fileInfo.file.type})` : 
+                                {fileInfo.field}: {fileInfo.file ?
+                                  `${fileInfo.file.name} (${fileInfo.file.size} bytes, ${fileInfo.file.type})` :
                                   'No file selected'
                                 }
                               </div>
@@ -515,7 +515,7 @@ Error: ${error.message}`;
                           </div>
                         </div>
                       </div>
-                      <button 
+                      <button
                         type="button"
                         onClick={() => setErrorDetails(null)}
                         className="mt-3 text-xs text-red-600 hover:text-red-800 underline"
@@ -556,10 +556,10 @@ Error: ${error.message}`;
                             </option>
                           ))}
                         </select>
-                        
+
                       </div>
                     ) : (
-                      {/* New Category Form is unchanged */}
+                      {/* New Category Form is unchanged */ }
                     )}
                   </div>
 
@@ -575,11 +575,11 @@ Error: ${error.message}`;
                       disabled={!product.category || subCategories.length === 0}
                     >
                       <option value="">
-                        { !product.category 
-                          ? "Select a category first" 
+                        {!product.category
+                          ? "Select a category first"
                           : subCategories.length === 0
-                          ? "No sub-categories found"
-                          : "Select a sub-category"
+                            ? "No sub-categories found"
+                            : "Select a sub-category"
                         }
                       </option>
                       {subCategories.map((sub) => (
@@ -599,67 +599,67 @@ Error: ${error.message}`;
                     <label className="block font-medium text-gray-700">Colour <span className="text-red-500">*</span></label>
                     <input type="text" name="colour" value={product.colour} onChange={handleChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
                   </div>
-                   
+
                 </div>
               </div>
-              
+
               {/* Pricing & Stock */}
               <div className="bg-gray-50 rounded-xl p-6">
-                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Pricing & Stock</h2>
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block font-medium text-gray-700">Price <span className="text-red-500">*</span></label>
-                        <input 
-                          type="number" 
-                          name="price" 
-                          value={product.price} 
-                          onChange={handleChange}
-                          onWheel={handleWheel}
-                          onFocus={handleFocus}
-                          onBlur={handleBlur}
-                          className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
-                          step="0.01" 
-                          required 
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium text-gray-700">Regular Price <span className="text-red-500">*</span></label>
-                        <input 
-                          type="number" 
-                          name="regularPrice" 
-                          value={product.regularPrice} 
-                          onChange={handleChange}
-                          onWheel={handleWheel}
-                          onFocus={handleFocus}
-                          onBlur={handleBlur}
-                          className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
-                          step="0.01" 
-                          required 
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium text-gray-700">Stock Quantity <span className="text-red-500">*</span></label>
-                        <input 
-                          type="number" 
-                          name="stock" 
-                          min="0" 
-                          value={product.stock} 
-                          onChange={handleChange}
-                          onWheel={handleWheel}
-                          onFocus={handleFocus}
-                          onBlur={handleBlur}
-                          className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
-                          required 
-                        />
-                    </div>
-                 </div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Pricing & Stock</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block font-medium text-gray-700">Price <span className="text-red-500">*</span></label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={product.price}
+                      onChange={handleChange}
+                      onWheel={handleWheel}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
+                      className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-gray-700">Regular Price <span className="text-red-500">*</span></label>
+                    <input
+                      type="number"
+                      name="regularPrice"
+                      value={product.regularPrice}
+                      onChange={handleChange}
+                      onWheel={handleWheel}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
+                      className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-gray-700">Stock Quantity <span className="text-red-500">*</span></label>
+                    <input
+                      type="number"
+                      name="stock"
+                      min="0"
+                      value={product.stock}
+                      onChange={handleChange}
+                      onWheel={handleWheel}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
+                      className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-              
+
               {/* Additional Information */}
               <div className="bg-gray-50 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Additional Information</h2>
                 <div className="grid grid-cols-1 gap-6">
-                  
+
                   <div>
                     <label className="block font-medium text-gray-700">Utility <span className="text-red-500">*</span></label>
                     <textarea name="utility" value={product.utility} onChange={handleChange} rows={3} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
@@ -668,8 +668,8 @@ Error: ${error.message}`;
                     <label className="block font-medium text-gray-700">Care Instructions  <span className="text-red-500">*</span></label>
                     <textarea name="care" value={product.care} onChange={handleChange} rows={3} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
                   </div>
-                  
-                
+
+
 
                   {/* Excluded Items */}
                   <div>
@@ -715,25 +715,25 @@ Error: ${error.message}`;
 
               {/* Product Sections & Toggles */}
               <div className="bg-gray-50 rounded-xl p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Settings & Sections</h2>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <label className="flex items-center space-x-2">
-                        <input type="checkbox" name="isBestSeller" checked={product.isBestSeller} onChange={handleChange} className="toggle-style" />
-                        <span className="text-sm text-gray-700">Best Seller</span>
-                    </label>
-                     <label className="flex items-center space-x-2">
-                        <input type="checkbox" name="isTrending" checked={product.isTrending} onChange={handleChange} className="toggle-style" />
-                        <span className="text-sm text-gray-700">Trending</span>
-                    </label>
-                     <label className="flex items-center space-x-2">
-                        <input type="checkbox" name="isMostLoved" checked={product.isMostLoved} onChange={handleChange} className="toggle-style" />
-                        <span className="text-sm text-gray-700">Most Loved</span>
-                    </label>
-                     <label className="flex items-center space-x-2">
-                        <input type="checkbox" name="codAvailable" checked={product.codAvailable} onChange={handleChange} className="toggle-style" />
-                        <span className="text-sm text-gray-700">COD Available</span>
-                    </label>
-                  </div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Settings & Sections</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <label className="flex items-center space-x-2">
+                    <input type="checkbox" name="isBestSeller" checked={product.isBestSeller} onChange={handleChange} className="toggle-style" />
+                    <span className="text-sm text-gray-700">Best Seller</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input type="checkbox" name="isTrending" checked={product.isTrending} onChange={handleChange} className="toggle-style" />
+                    <span className="text-sm text-gray-700">Trending</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input type="checkbox" name="isMostLoved" checked={product.isMostLoved} onChange={handleChange} className="toggle-style" />
+                    <span className="text-sm text-gray-700">Most Loved</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input type="checkbox" name="codAvailable" checked={product.codAvailable} onChange={handleChange} className="toggle-style" />
+                    <span className="text-sm text-gray-700">COD Available</span>
+                  </label>
+                </div>
               </div>
 
               {/* Product Images */}
@@ -752,14 +752,14 @@ Error: ${error.message}`;
                   {renderFileInput('image9', 'Additional Image 9')}
                 </div>
               </div>
-              
+
               {/* Form Actions */}
               <div className="flex items-center justify-end space-x-4">
                 <button type="button" onClick={() => navigate("/admin/products")} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
                   Cancel
                 </button>
                 <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2">
-                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {loading && <Loader size="tiny" inline text="" />}
                   <span>{isNew ? "Create Product" : "Update Product"}</span>
                 </button>
               </div>
@@ -769,9 +769,8 @@ Error: ${error.message}`;
 
         {/* Enhanced Toast Notification */}
         {toast.show && (
-          <div className={`fixed bottom-4 right-4 max-w-md px-6 py-4 rounded-lg shadow-lg text-white ${
-            toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'
-          }`}>
+          <div className={`fixed bottom-4 right-4 max-w-md px-6 py-4 rounded-lg shadow-lg text-white ${toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'
+            }`}>
             <div className="flex items-start space-x-2">
               {toast.type === 'error' ? <AlertCircle size={20} className="mt-0.5 flex-shrink-0" /> : <CheckCircle size={20} className="mt-0.5 flex-shrink-0" />}
               <div className="flex-1 min-w-0">
@@ -783,7 +782,7 @@ Error: ${error.message}`;
                   </div>
                 )}
               </div>
-              <button 
+              <button
                 onClick={() => setToast({ show: false, message: "", type: "", details: "" })}
                 className="ml-2 text-white hover:text-gray-200 flex-shrink-0"
               >

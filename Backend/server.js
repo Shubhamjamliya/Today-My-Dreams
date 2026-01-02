@@ -39,10 +39,10 @@ const allowedOrigins = [
   'http://localhost:5174',
 
   'http://localhost:5175', // Backend port (for testing)
-  'https://www.decoryy.com',
+  'https://www.todaymydream.com',
   'https://ballon-frontend.vercel.app',
   'https://ballon-admin-beta.vercel.app',
-  'https://admin.decoryy.com'
+  'https://admin.todaymydream.com'
 ];
 
 
@@ -115,7 +115,7 @@ const userProductDir = path.join(dataDir, 'userproduct');
 });
 
 // Serve static files with proper MIME types
-app.use('/decoryy/data', (req, res, next) => {
+app.use('/todaymydream/data', (req, res, next) => {
   const filePath = path.join(__dirname, 'data', req.path);
   const ext = path.extname(filePath).toLowerCase();
 
@@ -202,7 +202,7 @@ app.use((err, req, res, next) => {
 });
 
 // Port from environment variable
-const PORT = process.env.PORT || 5175;
+const PORT = process.env.PORT || 5000;
 
 // Async function to start server after MongoDB connection
 async function startServer() {

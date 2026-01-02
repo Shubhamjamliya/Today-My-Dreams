@@ -99,9 +99,9 @@ const handleMultipleImages = (req, res, next) => {
 
     // Transform paths to URLs
     if (req.files && req.files.length > 0) {
-      const baseUrl = process.env.BACKEND_URL || 'https://api.decoryy.com';
+      const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
       req.files.forEach(file => {
-        file.path = `${baseUrl}/decoryy/data/seller-images/${file.filename}`;
+        file.path = `${baseUrl}/todaymydream/data/seller-images/${file.filename}`;
       });
     }
 
@@ -132,8 +132,8 @@ const handleProfileImage = (req, res, next) => {
 
     // Transform path to URL
     if (req.file) {
-      const baseUrl = process.env.BACKEND_URL || 'https://api.decoryy.com';
-      req.file.path = `${baseUrl}/decoryy/data/seller-profiles/${req.file.filename}`;
+      const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
+      req.file.path = `${baseUrl}/todaymydream/data/seller-profiles/${req.file.filename}`;
     }
 
     next();

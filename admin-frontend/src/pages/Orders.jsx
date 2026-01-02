@@ -3,6 +3,8 @@ import apiService from '../services/api';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, MapPin, PlusCircle, ExternalLink, Hash, Copy } from 'lucide-react'; // Import necessary icons
+import Loader from '../components/Loader';
+import { TableSkeleton } from '../components/Skeleton';
 
 function toIST(dateString) {
   if (!dateString) return 'N/A';
@@ -19,7 +21,7 @@ const Orders = () => {
   const [updatingOrder, setUpdatingOrder] = useState(null);
   const [stateFilter, setStateFilter] = useState([]);
   const [showStateFilter, setShowStateFilter] = useState(false);
-  
+
   const indianStates = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir", "Ladakh", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Lakshadweep", "Puducherry", "Andaman and Nicobar Islands"];
 
   useEffect(() => {
@@ -53,7 +55,7 @@ const Orders = () => {
       : [...stateFilter, state];
     handleStateFilterChange(newFilter);
   };
-  
+
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       setUpdatingOrder(orderId);
@@ -90,7 +92,12 @@ const Orders = () => {
   const statusColors = { processing: 'bg-yellow-100 text-yellow-800', confirmed: 'bg-blue-100 text-blue-800', manufacturing: 'bg-purple-100 text-purple-800', shipped: 'bg-indigo-100 text-indigo-800', delivered: 'bg-green-100 text-green-800' };
   const paymentStatusColors = { pending: 'bg-yellow-100 text-yellow-800', pending_upfront: 'bg-blue-100 text-blue-800', completed: 'bg-green-100 text-green-800', failed: 'bg-red-100 text-red-800' };
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div></div>;
+  if (loading) return (
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <h1 className="text-2xl font-bold mb-6">Orders Management</h1>
+      <TableSkeleton rows={10} columns={6} />
+    </div>
+  );
   if (error && !success) return <div className="text-red-600 text-center p-4">Error: {error}</div>;
 
   return (
@@ -126,43 +133,43 @@ const Orders = () => {
                 const firstItem = order.items && order.items[0];
                 const orderName = firstItem?.name || 'Order';
                 return (
-                <tr key={order._id} className="hover:bg-gray-50">
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-bold text-gray-900">{orderName}</div>
-                    <div className="text-xs text-indigo-600 font-semibold">{order.customOrderId || order._id}</div>
-                    {order.customOrderId && (
-                      <div className="text-xs text-gray-400">DB: {order._id}</div>
-                    )}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div>{order.customerName}</div>
-                    <div className="text-xs text-gray-400">{order.email}</div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{toIST(order.createdAt)}</td>
-                  {/* NEW: Schedule Data */}
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {order.scheduledDelivery ? (
-                      <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        <Clock size={14} className="mr-1" />
-                        {format(new Date(order.scheduledDelivery), "MMM d, h:mm a")}
-                      </div>
-                    ) : (
-                      <span>N/A</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">₹{order.totalAmount}</td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <select value={order.orderStatus} onChange={(e) => updateOrderStatus(order._id, e.target.value)} disabled={updatingOrder === order._id} className={`text-sm rounded-full px-3 py-1 font-semibold ${statusColors[order.orderStatus]} ${updatingOrder === order._id ? 'opacity-50' : ''}`}>
-                      {Object.keys(statusColors).map((status) => (<option key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</option>))}
-                    </select>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${paymentStatusColors[order.paymentStatus]}`}>{order.paymentStatus === 'pending_upfront' ? 'Upfront Paid' : order.paymentStatus}</span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button onClick={() => setSelectedOrder(order)} className="text-indigo-600 hover:text-indigo-900">View Details</button>
-                  </td>
-                </tr>
+                  <tr key={order._id} className="hover:bg-gray-50">
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="text-sm font-bold text-gray-900">{orderName}</div>
+                      <div className="text-xs text-indigo-600 font-semibold">{order.customOrderId || order._id}</div>
+                      {order.customOrderId && (
+                        <div className="text-xs text-gray-400">DB: {order._id}</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div>{order.customerName}</div>
+                      <div className="text-xs text-gray-400">{order.email}</div>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{toIST(order.createdAt)}</td>
+                    {/* NEW: Schedule Data */}
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {order.scheduledDelivery ? (
+                        <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <Clock size={14} className="mr-1" />
+                          {format(new Date(order.scheduledDelivery), "MMM d, h:mm a")}
+                        </div>
+                      ) : (
+                        <span>N/A</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">₹{order.totalAmount}</td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <select value={order.orderStatus} onChange={(e) => updateOrderStatus(order._id, e.target.value)} disabled={updatingOrder === order._id} className={`text-sm rounded-full px-3 py-1 font-semibold ${statusColors[order.orderStatus]} ${updatingOrder === order._id ? 'opacity-50' : ''}`}>
+                        {Object.keys(statusColors).map((status) => (<option key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</option>))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${paymentStatusColors[order.paymentStatus]}`}>{order.paymentStatus === 'pending_upfront' ? 'Upfront Paid' : order.paymentStatus}</span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <button onClick={() => setSelectedOrder(order)} className="text-indigo-600 hover:text-indigo-900">View Details</button>
+                    </td>
+                  </tr>
                 );
               })}
             </tbody>
@@ -172,7 +179,7 @@ const Orders = () => {
 
       {/* Order Details Modal */}
       <AnimatePresence>
-      {selectedOrder && (
+        {selectedOrder && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4">
             <motion.div initial={{ scale: 0.95, y: 40 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 40 }} className="relative w-full max-w-lg mx-auto bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-200 max-h-[90vh] overflow-y-auto">
               <button onClick={() => setSelectedOrder(null)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 bg-white bg-opacity-70 rounded-full p-2 shadow">×</button>
@@ -183,147 +190,147 @@ const Orders = () => {
                   <div className="text-xs text-gray-400 mt-1">Database ID: {selectedOrder._id}</div>
                 )}
               </div>
-            
-            <div className="space-y-4 text-sm">
-              {/* Customer Info */}
-              <div className="border-b pb-4"><h4 className="font-semibold mb-2">Customer Information</h4><p><strong>Name:</strong> {selectedOrder.customerName}</p><p><strong>Email:</strong> {selectedOrder.email}</p><p><strong>Phone:</strong> {selectedOrder.phone}</p></div>
 
-              {/* NEW: Scheduled Delivery Section */}
-              {selectedOrder.scheduledDelivery && (
-                <div className="border-b pb-4">
-                  <h4 className="font-semibold mb-2 flex items-center"><Clock size={16} className="mr-2 text-indigo-500" />Scheduled Delivery</h4>
-                  <p className="pl-1 font-bold text-indigo-700">{format(new Date(selectedOrder.scheduledDelivery), "eeee, MMMM d, yyyy 'at' h:mm a")}</p>
-                  <p className="pl-1 text-sm text-gray-600 mt-1">
-                    {new Date(selectedOrder.scheduledDelivery).toLocaleDateString('en-GB', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })} at {new Date(selectedOrder.scheduledDelivery).toLocaleTimeString('en-US', { 
-                      hour: 'numeric', 
-                      minute: '2-digit', 
-                      hour12: true 
-                    })}
-                  </p>
-                </div>
-              )}
-              
-              {/* Shipping Address with NEW Map Link */}
-              <div className="border-b pb-4">
-                <h4 className="font-semibold mb-2">Shipping Address</h4>
-                <p>{selectedOrder.address.street}</p>
-                <p>{selectedOrder.address.city}, {selectedOrder.address.state}, {selectedOrder.address.pincode}</p>
-                {selectedOrder.address.location && selectedOrder.address.location.coordinates && (
-                  <a href={`https://www.google.com/maps?q=${selectedOrder.address.location.coordinates[1]},${selectedOrder.address.location.coordinates[0]}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 font-semibold mt-2 inline-flex items-center">
-                    <MapPin size={14} className="mr-1" />View on Map
-                  </a>
-                )}
-              </div>
+              <div className="space-y-4 text-sm">
+                {/* Customer Info */}
+                <div className="border-b pb-4"><h4 className="font-semibold mb-2">Customer Information</h4><p><strong>Name:</strong> {selectedOrder.customerName}</p><p><strong>Email:</strong> {selectedOrder.email}</p><p><strong>Phone:</strong> {selectedOrder.phone}</p></div>
 
-              {/* Order Items */}
-              <div>
-                <h4 className="font-semibold mb-3 flex items-center">
-                  🛍️ Order Items ({selectedOrder.items.length})
-                </h4>
-                <div className="space-y-2">
-                  {selectedOrder.items.map((item, index) => (
-                    <div key={index} className="border rounded-lg p-3 bg-blue-50 border-blue-200">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">{item.name}</p>
-                          <p className="text-xs text-gray-600 mt-1">
-                            ₹{item.price.toFixed(2)} × {item.quantity}
-                          </p>
-                          {/* Product ID and Link Section */}
-                          {item.productId && (
-                            <div className="mt-2 flex items-center space-x-2">
-                              <div className="flex items-center space-x-1">
-                                <Hash size={12} className="text-blue-600" />
-                                <span className="text-xs text-blue-600 font-mono">{item.productId}</span>
-                                <button
-                                  onClick={() => copyProductId(item.productId)}
-                                  className="text-blue-600 hover:text-blue-800 transition-colors"
-                                  title="Copy Product ID"
-                                >
-                                  <Copy size={12} />
-                                </button>
-                              </div>
-                              <a
-                                href={`https://decoryy.com/product/${item.productId}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800 transition-colors"
-                                title="View Product Details"
-                              >
-                                <ExternalLink size={12} />
-                              </a>
-                            </div>
-                          )}
-                        </div>
-                        <span className="font-semibold text-blue-700">
-                          ₹{(item.price * item.quantity).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="flex justify-between items-center pt-2 border-t border-blue-200">
-                    <span className="font-semibold text-gray-700">Items Total:</span>
-                    <span className="font-bold text-blue-600">
-                      ₹{selectedOrder.items.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}
-                    </span>
+                {/* NEW: Scheduled Delivery Section */}
+                {selectedOrder.scheduledDelivery && (
+                  <div className="border-b pb-4">
+                    <h4 className="font-semibold mb-2 flex items-center"><Clock size={16} className="mr-2 text-indigo-500" />Scheduled Delivery</h4>
+                    <p className="pl-1 font-bold text-indigo-700">{format(new Date(selectedOrder.scheduledDelivery), "eeee, MMMM d, yyyy 'at' h:mm a")}</p>
+                    <p className="pl-1 text-sm text-gray-600 mt-1">
+                      {new Date(selectedOrder.scheduledDelivery).toLocaleDateString('en-GB', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })} at {new Date(selectedOrder.scheduledDelivery).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                    </p>
                   </div>
-                </div>
-              </div>
+                )}
 
-              {/* NEW: Add-Ons Section */}
-              {selectedOrder.addOns && selectedOrder.addOns.length > 0 && (
-                <div className="border-t pt-4">
+                {/* Shipping Address with NEW Map Link */}
+                <div className="border-b pb-4">
+                  <h4 className="font-semibold mb-2">Shipping Address</h4>
+                  <p>{selectedOrder.address.street}</p>
+                  <p>{selectedOrder.address.city}, {selectedOrder.address.state}, {selectedOrder.address.pincode}</p>
+                  {selectedOrder.address.location && selectedOrder.address.location.coordinates && (
+                    <a href={`https://www.google.com/maps?q=${selectedOrder.address.location.coordinates[1]},${selectedOrder.address.location.coordinates[0]}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 font-semibold mt-2 inline-flex items-center">
+                      <MapPin size={14} className="mr-1" />View on Map
+                    </a>
+                  )}
+                </div>
+
+                {/* Order Items */}
+                <div>
                   <h4 className="font-semibold mb-3 flex items-center">
-                    <PlusCircle size={18} className="mr-2 text-amber-600" />
-                    Add-Ons ({selectedOrder.addOns.length})
+                    🛍️ Order Items ({selectedOrder.items.length})
                   </h4>
                   <div className="space-y-2">
-                    {selectedOrder.addOns.map((addOn, index) => (
-                      <div key={index} className="border rounded-lg p-3 bg-amber-50 border-amber-200">
+                    {selectedOrder.items.map((item, index) => (
+                      <div key={index} className="border rounded-lg p-3 bg-blue-50 border-blue-200">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <p className="font-medium text-gray-900">{addOn.name}</p>
+                            <p className="font-medium text-gray-900">{item.name}</p>
                             <p className="text-xs text-gray-600 mt-1">
-                              ₹{addOn.price.toFixed(2)} × {addOn.quantity || 1}
+                              ₹{item.price.toFixed(2)} × {item.quantity}
                             </p>
+                            {/* Product ID and Link Section */}
+                            {item.productId && (
+                              <div className="mt-2 flex items-center space-x-2">
+                                <div className="flex items-center space-x-1">
+                                  <Hash size={12} className="text-blue-600" />
+                                  <span className="text-xs text-blue-600 font-mono">{item.productId}</span>
+                                  <button
+                                    onClick={() => copyProductId(item.productId)}
+                                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                                    title="Copy Product ID"
+                                  >
+                                    <Copy size={12} />
+                                  </button>
+                                </div>
+                                <a
+                                  href={`https://todaymydream.com/product/${item.productId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 transition-colors"
+                                  title="View Product Details"
+                                >
+                                  <ExternalLink size={12} />
+                                </a>
+                              </div>
+                            )}
                           </div>
-                          <span className="font-semibold text-amber-700">
-                            ₹{(addOn.price * (addOn.quantity || 1)).toFixed(2)}
+                          <span className="font-semibold text-blue-700">
+                            ₹{(item.price * item.quantity).toFixed(2)}
                           </span>
                         </div>
                       </div>
                     ))}
-                    <div className="flex justify-between items-center pt-2 border-t border-amber-200">
-                      <span className="font-semibold text-gray-700">Add-ons Total:</span>
-                      <span className="font-bold text-amber-600">
-                        ₹{selectedOrder.addOns.reduce((total, addOn) => total + (addOn.price * (addOn.quantity || 1)), 0).toFixed(2)}
+                    <div className="flex justify-between items-center pt-2 border-t border-blue-200">
+                      <span className="font-semibold text-gray-700">Items Total:</span>
+                      <span className="font-bold text-blue-600">
+                        ₹{selectedOrder.items.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
                 </div>
-              )}
 
-              {/* Payment Info */}
-              <div className="border-t pt-4">
-                <h4 className="font-semibold mb-2">Payment Information</h4>
-                <p><strong>Method:</strong> {selectedOrder.paymentMethod?.toUpperCase()}</p>
-                <p><strong>Status:</strong> {selectedOrder.paymentStatus}</p>
-                {selectedOrder.paymentMethod === 'cod' && selectedOrder.upfrontAmount > 0 && (
-                  <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs"><p className="text-blue-800 font-medium">COD Breakdown:</p><p className="text-blue-700">✅ Upfront Paid: ₹{selectedOrder.upfrontAmount}</p><p className="text-blue-700">💰 On Delivery: ₹{selectedOrder.remainingAmount}</p></div>
+                {/* NEW: Add-Ons Section */}
+                {selectedOrder.addOns && selectedOrder.addOns.length > 0 && (
+                  <div className="border-t pt-4">
+                    <h4 className="font-semibold mb-3 flex items-center">
+                      <PlusCircle size={18} className="mr-2 text-amber-600" />
+                      Add-Ons ({selectedOrder.addOns.length})
+                    </h4>
+                    <div className="space-y-2">
+                      {selectedOrder.addOns.map((addOn, index) => (
+                        <div key={index} className="border rounded-lg p-3 bg-amber-50 border-amber-200">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-900">{addOn.name}</p>
+                              <p className="text-xs text-gray-600 mt-1">
+                                ₹{addOn.price.toFixed(2)} × {addOn.quantity || 1}
+                              </p>
+                            </div>
+                            <span className="font-semibold text-amber-700">
+                              ₹{(addOn.price * (addOn.quantity || 1)).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                      <div className="flex justify-between items-center pt-2 border-t border-amber-200">
+                        <span className="font-semibold text-gray-700">Add-ons Total:</span>
+                        <span className="font-bold text-amber-600">
+                          ₹{selectedOrder.addOns.reduce((total, addOn) => total + (addOn.price * (addOn.quantity || 1)), 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 )}
-              </div>
 
-              <div className="flex justify-end pt-4 border-t mt-4">
-                <p className="text-lg font-bold">Total Amount: ₹{selectedOrder.totalAmount}</p>
+                {/* Payment Info */}
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold mb-2">Payment Information</h4>
+                  <p><strong>Method:</strong> {selectedOrder.paymentMethod?.toUpperCase()}</p>
+                  <p><strong>Status:</strong> {selectedOrder.paymentStatus}</p>
+                  {selectedOrder.paymentMethod === 'cod' && selectedOrder.upfrontAmount > 0 && (
+                    <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs"><p className="text-blue-800 font-medium">COD Breakdown:</p><p className="text-blue-700">✅ Upfront Paid: ₹{selectedOrder.upfrontAmount}</p><p className="text-blue-700">💰 On Delivery: ₹{selectedOrder.remainingAmount}</p></div>
+                  )}
+                </div>
+
+                <div className="flex justify-end pt-4 border-t mt-4">
+                  <p className="text-lg font-bold">Total Amount: ₹{selectedOrder.totalAmount}</p>
+                </div>
               </div>
-            </div>
             </motion.div>
           </motion.div>
-      )}
+        )}
       </AnimatePresence>
     </div>
   );

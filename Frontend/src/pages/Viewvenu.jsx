@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Phone, Mail, Star, IndianRupee, ExternalLink, X, Building2, Wifi, Car, Utensils, Music, Camera, Shield, CheckCircle, Calendar, Clock3, Home, FileText, ChefHat, Bed, Settings, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { VenueDetailSkeleton } from '../components/Loader/Skeleton';
 import SEO from '../components/SEO/SEO';
 import config from '../config/config';
 import VenuePage from './Venupage';
@@ -39,7 +40,7 @@ const ViewVenue = () => {
             setError(null);
             try {
                 const response = await fetch(`${config.API_URLS.SELLER}/${venueId}`);
-                
+
                 if (!response.ok) {
                     throw new Error('Venue not found. The link may be incorrect or the venue is no longer available.');
                 }
@@ -79,20 +80,20 @@ const ViewVenue = () => {
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (fullscreenImageIndex === null || !venue?.images?.length) return;
-            
+
             switch (e.key) {
                 case 'Escape':
                     setFullscreenImageIndex(null);
                     break;
                 case 'ArrowLeft':
                     e.preventDefault();
-                    setFullscreenImageIndex(prev => 
+                    setFullscreenImageIndex(prev =>
                         prev > 0 ? prev - 1 : venue.images.length - 1
                     );
                     break;
                 case 'ArrowRight':
                     e.preventDefault();
-                    setFullscreenImageIndex(prev => 
+                    setFullscreenImageIndex(prev =>
                         prev < venue.images.length - 1 ? prev + 1 : 0
                     );
                     break;
@@ -113,11 +114,7 @@ const ViewVenue = () => {
     }, [fullscreenImageIndex, venue?.images?.length]);
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-amber-50/50">
-                <div className="w-12 h-12 border-4 border-amber-100 border-t-amber-500 rounded-full animate-spin" />
-            </div>
-        );
+        return <VenueDetailSkeleton />;
     }
 
     if (error || !venue) {
@@ -198,7 +195,7 @@ const ViewVenue = () => {
                 description={`Book ${safeVenue.businessName} in ${safeVenue.location} for your next event.`}
             />
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
-                
+
                 {/* Hero Section */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -208,75 +205,74 @@ const ViewVenue = () => {
 
 
 
-{/* Photo Gallery Section */}
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ delay: 0.1 }}
-  className="bg-white rounded-xl shadow-md overflow-hidden mb-4"
->
-  {/* Main Large Photo */}
-  <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden">
-    <img
-      src={selectedImage.url}
-   
-      className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
-      onClick={() => setFullscreenImageIndex(selectedImageIndex)}
-    />
-    
-    {/* Image Counter Overlay */}
-    <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-      {selectedImageIndex + 1} / {safeVenue.images.length}
-    </div>
-    
-    {/* Navigation Arrows for Main Image */}
-    {safeVenue.images.length > 1 && (
-      <>
-        <button
-          onClick={() => setSelectedImageIndex(prev => 
-            prev > 0 ? prev - 1 : safeVenue.images.length - 1
-          )}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-2 rounded-full shadow-lg transition-all hover:scale-110"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <button
-          onClick={() => setSelectedImageIndex(prev => 
-            prev < safeVenue.images.length - 1 ? prev + 1 : 0
-          )}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-2 rounded-full shadow-lg transition-all hover:scale-110"
-        >
-          <ChevronRight size={20} />
-        </button>
-      </>
-    )}
-  </div>
-  
-  {/* Thumbnails */}
-  {safeVenue.images.length > 1 && (
-    <div className="p-3">
-      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
-        {safeVenue.images.map((image, index) => (
-          <div
-            key={index}
-            className={`aspect-square rounded-md overflow-hidden cursor-pointer ring-2 ring-offset-1 transition-all ${
-              selectedImageIndex === index
-                ? "ring-amber-500"
-                : "ring-transparent hover:ring-amber-300"
-            }`}
-            onClick={() => setSelectedImageIndex(index)}
-          >
-            <img
-              src={image.url}
-          
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  )}
-</motion.div>
+                    {/* Photo Gallery Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-white rounded-xl shadow-md overflow-hidden mb-4"
+                    >
+                        {/* Main Large Photo */}
+                        <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden">
+                            <img
+                                src={selectedImage.url}
+
+                                className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+                                onClick={() => setFullscreenImageIndex(selectedImageIndex)}
+                            />
+
+                            {/* Image Counter Overlay */}
+                            <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                                {selectedImageIndex + 1} / {safeVenue.images.length}
+                            </div>
+
+                            {/* Navigation Arrows for Main Image */}
+                            {safeVenue.images.length > 1 && (
+                                <>
+                                    <button
+                                        onClick={() => setSelectedImageIndex(prev =>
+                                            prev > 0 ? prev - 1 : safeVenue.images.length - 1
+                                        )}
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-2 rounded-full shadow-lg transition-all hover:scale-110"
+                                    >
+                                        <ChevronLeft size={20} />
+                                    </button>
+                                    <button
+                                        onClick={() => setSelectedImageIndex(prev =>
+                                            prev < safeVenue.images.length - 1 ? prev + 1 : 0
+                                        )}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-2 rounded-full shadow-lg transition-all hover:scale-110"
+                                    >
+                                        <ChevronRight size={20} />
+                                    </button>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Thumbnails */}
+                        {safeVenue.images.length > 1 && (
+                            <div className="p-3">
+                                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                                    {safeVenue.images.map((image, index) => (
+                                        <div
+                                            key={index}
+                                            className={`aspect-square rounded-md overflow-hidden cursor-pointer ring-2 ring-offset-1 transition-all ${selectedImageIndex === index
+                                                    ? "ring-amber-500"
+                                                    : "ring-transparent hover:ring-amber-300"
+                                                }`}
+                                            onClick={() => setSelectedImageIndex(index)}
+                                        >
+                                            <img
+                                                src={image.url}
+
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </motion.div>
 
 
                     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
@@ -313,7 +309,7 @@ const ViewVenue = () => {
 
                 {/* Main Layout Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-12 items-start">
-                    
+
                     {/* Main Content Column (Left) */}
                     <motion.main
                         initial={{ opacity: 0, x: -20 }}
@@ -329,7 +325,7 @@ const ViewVenue = () => {
                                 </div>
                                 <h2 className="text-2xl lg:text-3xl font-bold text-slate-900">About This Venue</h2>
                             </div>
-                            
+
                             {/* Premium Badge */}
                             <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-800 rounded-full border border-amber-300">
                                 <Star className="w-4 h-4 fill-amber-600 text-amber-600" />
@@ -340,10 +336,10 @@ const ViewVenue = () => {
                                 {(() => {
                                     const descriptionParagraphs = safeVenue.description.split('\n').filter(line => line.trim());
                                     const shouldShowReadMore = descriptionParagraphs.length > 1;
-                                    const displayParagraphs = isDescriptionExpanded || !shouldShowReadMore 
-                                        ? descriptionParagraphs 
+                                    const displayParagraphs = isDescriptionExpanded || !shouldShowReadMore
+                                        ? descriptionParagraphs
                                         : [descriptionParagraphs[0]];
-                                    
+
                                     return (
                                         <>
                                             {displayParagraphs.map((line, index) => (
@@ -451,7 +447,7 @@ const ViewVenue = () => {
                                 </div>
                             )}
 
-                             {/* Premium Rooms & Capacity Card */}
+                            {/* Premium Rooms & Capacity Card */}
                             <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-purple-200/50">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg shadow-lg">
@@ -475,325 +471,322 @@ const ViewVenue = () => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {safeVenue.foodType && safeVenue.foodType.length > 0 && (
-                                 <div className="bg-gradient-to-br from-white to-green-50/30 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-green-200/50">
-                                     <div className="flex items-center gap-3 mb-4">
-                                         <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg shadow-lg">
-                                             <ChefHat className="w-6 h-6 text-white" />
-                                         </div>
-                                         <h3 className="text-2xl font-bold text-slate-900">Culinary Options</h3>
-                                     </div>
-                                     <p className="text-slate-600 mb-4 text-sm">Delicious cuisine to delight your guests</p>
-                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                         {safeVenue.foodType.map((food, index) => (
-                                             <motion.div 
-                                                 key={index} 
-                                                 className="flex items-center gap-3 p-4 bg-white rounded-xl border-2 border-green-100 shadow-md hover:shadow-lg transition-all"
-                                                 whileHover={{ scale: 1.02, y: -2 }}
-                                                 initial={{ opacity: 0, y: 10 }}
-                                                 animate={{ opacity: 1, y: 0 }}
-                                                 transition={{ delay: index * 0.05 }}
-                                             >
-                                                 <div className="p-2 bg-green-100 rounded-lg text-green-600 flex-shrink-0">
-                                                     {getFoodTypeIcon(food)}
-                                                 </div>
-                                                 <span className="text-base font-bold text-slate-900">{food}</span>
-                                             </motion.div>
-                                         ))}
-                                     </div>
-                                 </div>
-                             )}
+                                <div className="bg-gradient-to-br from-white to-green-50/30 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-green-200/50">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg shadow-lg">
+                                            <ChefHat className="w-6 h-6 text-white" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-slate-900">Culinary Options</h3>
+                                    </div>
+                                    <p className="text-slate-600 mb-4 text-sm">Delicious cuisine to delight your guests</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {safeVenue.foodType.map((food, index) => (
+                                            <motion.div
+                                                key={index}
+                                                className="flex items-center gap-3 p-4 bg-white rounded-xl border-2 border-green-100 shadow-md hover:shadow-lg transition-all"
+                                                whileHover={{ scale: 1.02, y: -2 }}
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                            >
+                                                <div className="p-2 bg-green-100 rounded-lg text-green-600 flex-shrink-0">
+                                                    {getFoodTypeIcon(food)}
+                                                </div>
+                                                <span className="text-base font-bold text-slate-900">{food}</span>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {safeVenue.additionalFeatures && safeVenue.additionalFeatures.length > 0 && (
-                                 <div className="bg-gradient-to-br from-white to-teal-50/30 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-teal-200/50">
-                                     <div className="flex items-center gap-3 mb-4">
-                                         <div className="p-2  rounded-lg shadow-lg">
-                                             <Settings className="w-6 h-6"   />
-                                         </div>
-                                         <h3 className="text-2xl font-bold text-slate-900">Premium Features</h3>
-                                     </div>
-                                     <p className="text-slate-600 mb-4 text-sm">Exclusive amenities that set us apart</p>
-                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                         {safeVenue.additionalFeatures.map((feature, index) => (
-                                             <motion.div 
-                                                 key={index} 
-                                                 className="flex items-center gap-3 p-4 bg-white rounded-xl border-2 border-teal-100 shadow-md hover:shadow-lg transition-all"
-                                                 whileHover={{ scale: 1.02, y: -2 }}
-                                                 initial={{ opacity: 0, y: 10 }}
-                                                 animate={{ opacity: 1, y: 0 }}
-                                                 transition={{ delay: index * 0.05 }}
-                                             >
-                                                 <div className="p-2 bg-purple-100 rounded-lg text-purple-600 flex-shrink-0">
-                                                     {getFeatureIcon(feature)}
-                                                 </div>
-                                                 <span className="text-base font-bold text-slate-900">{feature}</span>
-                                             </motion.div>
-                                         ))}
-                                     </div>
-                                 </div>
-                             )}
+                                <div className="bg-gradient-to-br from-white to-teal-50/30 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-teal-200/50">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-2  rounded-lg shadow-lg">
+                                            <Settings className="w-6 h-6" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-slate-900">Premium Features</h3>
+                                    </div>
+                                    <p className="text-slate-600 mb-4 text-sm">Exclusive amenities that set us apart</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {safeVenue.additionalFeatures.map((feature, index) => (
+                                            <motion.div
+                                                key={index}
+                                                className="flex items-center gap-3 p-4 bg-white rounded-xl border-2 border-teal-100 shadow-md hover:shadow-lg transition-all"
+                                                whileHover={{ scale: 1.02, y: -2 }}
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                            >
+                                                <div className="p-2 bg-purple-100 rounded-lg text-purple-600 flex-shrink-0">
+                                                    {getFeatureIcon(feature)}
+                                                </div>
+                                                <span className="text-base font-bold text-slate-900">{feature}</span>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {safeVenue.bookingPolicy && (
-                                 <div className="bg-gradient-to-br from-white to-amber-50/40 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-amber-200/60">
-                                     <div className="flex items-center gap-3 mb-4">
-                                         <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg">
-                                             <FileText className="w-6 h-6 text-white" />
-                                         </div>
-                                         <h3 className="text-2xl font-bold text-slate-900">Booking Policy</h3>
-                                     </div>
-                                     <p className="text-slate-600 mb-4 text-sm">Please review our terms and conditions before booking</p>
-                                     <div className="bg-white rounded-xl p-5 lg:p-6 border-2 border-amber-100 shadow-md">
-                                         <div className="space-y-3">
-                                             {safeVenue.bookingPolicy.split('\n').filter(line => line.trim()).map((line, index) => (
-                                                 <motion.div 
-                                                     key={index} 
-                                                     className="flex items-start gap-3 p-3 bg-amber-50/50 rounded-lg border-l-4 border-amber-500"
-                                                     initial={{ opacity: 0, x: -10 }}
-                                                     animate={{ opacity: 1, x: 0 }}
-                                                     transition={{ delay: index * 0.05 }}
-                                                 >
-                                                     <div className="p-1 bg-amber-500 rounded-full flex-shrink-0 mt-1">
-                                                         <Shield className="w-3 h-3 text-white" />
-                                                     </div>
-                                                     <p className="text-slate-700 leading-relaxed font-medium">{line}</p>
-                                                 </motion.div>
-                                             ))}
-                                         </div>
-                                     </div>
-                                 </div>
-                             )}
+                                <div className="bg-gradient-to-br from-white to-amber-50/40 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-amber-200/60">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg">
+                                            <FileText className="w-6 h-6 text-white" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-slate-900">Booking Policy</h3>
+                                    </div>
+                                    <p className="text-slate-600 mb-4 text-sm">Please review our terms and conditions before booking</p>
+                                    <div className="bg-white rounded-xl p-5 lg:p-6 border-2 border-amber-100 shadow-md">
+                                        <div className="space-y-3">
+                                            {safeVenue.bookingPolicy.split('\n').filter(line => line.trim()).map((line, index) => (
+                                                <motion.div
+                                                    key={index}
+                                                    className="flex items-start gap-3 p-3 bg-amber-50/50 rounded-lg border-l-4 border-amber-500"
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: index * 0.05 }}
+                                                >
+                                                    <div className="p-1 bg-amber-500 rounded-full flex-shrink-0 mt-1">
+                                                        <Shield className="w-3 h-3 text-white" />
+                                                    </div>
+                                                    <p className="text-slate-700 leading-relaxed font-medium">{line}</p>
+                                                </motion.div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* What's Included */}
                             {safeVenue.included && safeVenue.included.length > 0 && (
-                                 <div className="bg-white rounded-2xl shadow-xl p-5 lg:p-6">
-                                     <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                         <CheckCircle className="w-6 h-6 text-green-500" /> What's Included
-                                     </h3>
-                                     <div className="space-y-2">
-                                         {safeVenue.included.filter(item => item && item.trim()).map((item, index) => (
-                                             <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
-                                                 <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                                                 <span className="text-sm font-medium text-slate-700 leading-relaxed">{item}</span>
-                                             </div>
-                                         ))}
-                                     </div>
-                                 </div>
-                             )}
+                                <div className="bg-white rounded-2xl shadow-xl p-5 lg:p-6">
+                                    <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                        <CheckCircle className="w-6 h-6 text-green-500" /> What's Included
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {safeVenue.included.filter(item => item && item.trim()).map((item, index) => (
+                                            <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
+                                                <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                                                <span className="text-sm font-medium text-slate-700 leading-relaxed">{item}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* What's Not Included */}
                             {safeVenue.excluded && safeVenue.excluded.length > 0 && (
-                                 <div className="bg-white rounded-2xl shadow-xl p-5 lg:p-6">
-                                     <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                         <X className="w-6 h-6 text-red-500" /> What's Not Included
-                                     </h3>
-                                     <div className="space-y-2">
-                                         {safeVenue.excluded.filter(item => item && item.trim()).map((item, index) => (
-                                             <div key={index} className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-                                                 <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                                                 <span className="text-sm font-medium text-slate-700 leading-relaxed">{item}</span>
-                                             </div>
-                                         ))}
-                                     </div>
-                                 </div>
-                             )}
+                                <div className="bg-white rounded-2xl shadow-xl p-5 lg:p-6">
+                                    <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                        <X className="w-6 h-6 text-red-500" /> What's Not Included
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {safeVenue.excluded.filter(item => item && item.trim()).map((item, index) => (
+                                            <div key={index} className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+                                                <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                                                <span className="text-sm font-medium text-slate-700 leading-relaxed">{item}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Premium FAQ Section - Accordion Style */}
                             {safeVenue.faq && safeVenue.faq.length > 0 && (
-                                 <div className="bg-gradient-to-br from-white to-indigo-50/40 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-indigo-200/60">
-                                     <div className="flex items-center gap-3 mb-4">
-                                         <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg">
-                                             <FileText className="w-6 h-6 text-white" />
-                                         </div>
-                                         <h3 className="text-2xl font-bold text-slate-900">Frequently Asked Questions</h3>
-                                     </div>
-                                     <p className="text-slate-600 mb-5 text-sm">Find answers to common questions about our venue</p>
-                                     <div className="space-y-4">
-                                         {safeVenue.faq.map((faqItem, index) => (
-                                             <motion.div 
-                                                 key={index} 
-                                                 className="bg-white border-2 border-indigo-100 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all"
-                                                 initial={{ opacity: 0, y: 10 }}
-                                                 animate={{ opacity: 1, y: 0 }}
-                                                 transition={{ delay: index * 0.05 }}
-                                                 whileHover={{ scale: 1.01 }}
-                                             >
-                                                 <button
-                                                     onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
-                                                     className={`w-full flex items-center justify-between p-4 lg:p-5 transition-all text-left ${
-                                                         openFaqIndex === index 
-                                                             ? 'bg-gradient-to-r from-indigo-50 to-purple-50' 
-                                                             : 'bg-white hover:bg-indigo-50/50'
-                                                     }`}
-                                                 >
-                                                     <div className="flex items-start gap-3 flex-1">
-                                                         <div className={`px-3 py-1 rounded-lg flex-shrink-0 font-bold text-sm ${
-                                                             openFaqIndex === index
-                                                                 ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white'
-                                                                 : 'bg-indigo-100 text-indigo-700'
-                                                         }`}>
-                                                             Q{index + 1}
-                                                         </div>
-                                                         <span className="font-bold text-slate-900 text-base lg:text-lg">{faqItem.question}</span>
-                                                     </div>
-                                                     <motion.div
-                                                         animate={{ rotate: openFaqIndex === index ? 180 : 0 }}
-                                                         transition={{ duration: 0.3 }}
-                                                         className="flex-shrink-0 ml-3"
-                                                     >
-                                                         <div className={`p-1.5 rounded-full ${
-                                                             openFaqIndex === index
-                                                                 ? 'bg-indigo-500 text-white'
-                                                                 : 'bg-indigo-100 text-indigo-600'
-                                                         }`}>
-                                                             <ChevronDown className="w-5 h-5" />
-                                                         </div>
-                                                     </motion.div>
-                                                 </button>
-                                                 <AnimatePresence>
-                                                     {openFaqIndex === index && (
-                                                         <motion.div
-                                                             initial={{ height: 0, opacity: 0 }}
-                                                             animate={{ height: "auto", opacity: 1 }}
-                                                             exit={{ height: 0, opacity: 0 }}
-                                                             transition={{ duration: 0.3 }}
-                                                             className="overflow-hidden"
-                                                         >
-                                                             <div className="p-4 lg:p-5 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 border-t-2 border-indigo-100">
-                                                                 <div className="flex items-start gap-3">
-                                                                     <div className="p-1.5 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex-shrink-0 mt-0.5">
-                                                                         <CheckCircle className="w-4 h-4 text-white" />
-                                                                     </div>
-                                                                     <p className="text-slate-700 leading-relaxed text-base font-medium">{faqItem.answer}</p>
-                                                                 </div>
-                                                             </div>
-                                                         </motion.div>
-                                                     )}
-                                                 </AnimatePresence>
-                                             </motion.div>
-                                         ))}
-                                     </div>
-                                 </div>
-                             )}
-
-
-                                {/* Sticky Sidebar (Right) */}
-                    <motion.aside
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
-                        className="block md:hidden lg:col-span-2 lg:sticky lg:top-8 space-y-4 lg:space-y-6"
-                    >
-                        {/* Premium Pricing Card - Mobile */}
-                        <div className="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 rounded-2xl shadow-2xl p-5 lg:p-6 text-white border-2 border-amber-300/50">
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                                    <IndianRupee className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="text-2xl font-bold">Pricing</h3>
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4 border border-white/20">
-                                <p className="text-sm text-amber-100 mb-1">Starting from</p>
-                                <p className="text-3xl lg:text-4xl font-bold">
-                                    {safeVenue.startingPrice ? `₹${safeVenue.startingPrice.toLocaleString('en-IN')}` : 'Custom Quote'}
-                                </p>
-                                <p className="text-xs text-amber-100 mt-1">Per event (terms apply)</p>
-                            </div>
-                            {safeVenue.websiteLink && (
-                                <motion.a
-                                    href={safeVenue.websiteLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    whileHover={{ scale: 1.03, y: -2 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-amber-600 bg-white hover:bg-amber-50 shadow-xl hover:shadow-2xl transition-all"
-                                >
-                                    Book This Venue <ExternalLink size={20} />
-                                </motion.a>
-                            )}
-                            <div className="mt-4 pt-4 border-t border-white/20">
-                                <p className="text-xs text-amber-100 text-center">💎 Premium venue with exclusive amenities</p>
-                            </div>
-                        </div>
-
-                        {/* Premium Amenities Card - Mobile */}
-                        {safeVenue.amenity && safeVenue.amenity.length > 0 && (
-                            <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-blue-200/50">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg shadow-lg">
-                                        <CheckCircle className="w-6 h-6 " />
+                                <div className="bg-gradient-to-br from-white to-indigo-50/40 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-indigo-200/60">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg">
+                                            <FileText className="w-6 h-6 text-white" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-slate-900">Frequently Asked Questions</h3>
                                     </div>
-                                    <h3 className="text-xl font-bold text-slate-900">Premium Amenities</h3>
+                                    <p className="text-slate-600 mb-5 text-sm">Find answers to common questions about our venue</p>
+                                    <div className="space-y-4">
+                                        {safeVenue.faq.map((faqItem, index) => (
+                                            <motion.div
+                                                key={index}
+                                                className="bg-white border-2 border-indigo-100 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all"
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                                whileHover={{ scale: 1.01 }}
+                                            >
+                                                <button
+                                                    onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                                                    className={`w-full flex items-center justify-between p-4 lg:p-5 transition-all text-left ${openFaqIndex === index
+                                                            ? 'bg-gradient-to-r from-indigo-50 to-purple-50'
+                                                            : 'bg-white hover:bg-indigo-50/50'
+                                                        }`}
+                                                >
+                                                    <div className="flex items-start gap-3 flex-1">
+                                                        <div className={`px-3 py-1 rounded-lg flex-shrink-0 font-bold text-sm ${openFaqIndex === index
+                                                                ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white'
+                                                                : 'bg-indigo-100 text-indigo-700'
+                                                            }`}>
+                                                            Q{index + 1}
+                                                        </div>
+                                                        <span className="font-bold text-slate-900 text-base lg:text-lg">{faqItem.question}</span>
+                                                    </div>
+                                                    <motion.div
+                                                        animate={{ rotate: openFaqIndex === index ? 180 : 0 }}
+                                                        transition={{ duration: 0.3 }}
+                                                        className="flex-shrink-0 ml-3"
+                                                    >
+                                                        <div className={`p-1.5 rounded-full ${openFaqIndex === index
+                                                                ? 'bg-indigo-500 text-white'
+                                                                : 'bg-indigo-100 text-indigo-600'
+                                                            }`}>
+                                                            <ChevronDown className="w-5 h-5" />
+                                                        </div>
+                                                    </motion.div>
+                                                </button>
+                                                <AnimatePresence>
+                                                    {openFaqIndex === index && (
+                                                        <motion.div
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: "auto", opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            transition={{ duration: 0.3 }}
+                                                            className="overflow-hidden"
+                                                        >
+                                                            <div className="p-4 lg:p-5 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 border-t-2 border-indigo-100">
+                                                                <div className="flex items-start gap-3">
+                                                                    <div className="p-1.5 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex-shrink-0 mt-0.5">
+                                                                        <CheckCircle className="w-4 h-4 text-white" />
+                                                                    </div>
+                                                                    <p className="text-slate-700 leading-relaxed text-base font-medium">{faqItem.answer}</p>
+                                                                </div>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </motion.div>
+                                        ))}
+                                    </div>
                                 </div>
-                                <p className="text-sm text-slate-600 mb-4">Everything you need for a perfect event</p>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {safeVenue.amenity.map((amenity, index) => (
-                                        <motion.div 
-                                            key={index} 
-                                            className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-blue-100 shadow-sm hover:shadow-md transition-all"
-                                            whileHover={{ x: 5 }}
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: index * 0.05 }}
+                            )}
+
+
+                            {/* Sticky Sidebar (Right) */}
+                            <motion.aside
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.6, delay: 0.4 }}
+                                className="block md:hidden lg:col-span-2 lg:sticky lg:top-8 space-y-4 lg:space-y-6"
+                            >
+                                {/* Premium Pricing Card - Mobile */}
+                                <div className="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 rounded-2xl shadow-2xl p-5 lg:p-6 text-white border-2 border-amber-300/50">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                                            <IndianRupee className="w-6 h-6 text-white" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold">Pricing</h3>
+                                    </div>
+                                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4 border border-white/20">
+                                        <p className="text-sm text-amber-100 mb-1">Starting from</p>
+                                        <p className="text-3xl lg:text-4xl font-bold">
+                                            {safeVenue.startingPrice ? `₹${safeVenue.startingPrice.toLocaleString('en-IN')}` : 'Custom Quote'}
+                                        </p>
+                                        <p className="text-xs text-amber-100 mt-1">Per event (terms apply)</p>
+                                    </div>
+                                    {safeVenue.websiteLink && (
+                                        <motion.a
+                                            href={safeVenue.websiteLink}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            whileHover={{ scale: 1.03, y: -2 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-amber-600 bg-white hover:bg-amber-50 shadow-xl hover:shadow-2xl transition-all"
                                         >
-                                            <div className="p-1.5 bg-amber-100 rounded-md text-amber-600 flex-shrink-0">
-                                                {getAmenityIcon(amenity)}
-                                            </div>
-                                            <span className="text-sm font-semibold text-slate-700">{amenity}</span>
-                                        </motion.div>
-                                    ))}
+                                            Book This Venue <ExternalLink size={20} />
+                                        </motion.a>
+                                    )}
+                                    <div className="mt-4 pt-4 border-t border-white/20">
+                                        <p className="text-xs text-amber-100 text-center">💎 Premium venue with exclusive amenities</p>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
 
-   {/* Contact Information */}
-   {(safeVenue.phone || safeVenue.email) && (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.1 }}
-    className="hidden md:block bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white"
-  >
-    <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-      <Phone className="w-5 h-5" />
-      Get in Touch
-    </h2>
+                                {/* Premium Amenities Card - Mobile */}
+                                {safeVenue.amenity && safeVenue.amenity.length > 0 && (
+                                    <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-2xl shadow-2xl p-5 lg:p-6 border-2 border-blue-200/50">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg shadow-lg">
+                                                <CheckCircle className="w-6 h-6 " />
+                                            </div>
+                                            <h3 className="text-xl font-bold text-slate-900">Premium Amenities</h3>
+                                        </div>
+                                        <p className="text-sm text-slate-600 mb-4">Everything you need for a perfect event</p>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {safeVenue.amenity.map((amenity, index) => (
+                                                <motion.div
+                                                    key={index}
+                                                    className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-blue-100 shadow-sm hover:shadow-md transition-all"
+                                                    whileHover={{ x: 5 }}
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: index * 0.05 }}
+                                                >
+                                                    <div className="p-1.5 bg-amber-100 rounded-md text-amber-600 flex-shrink-0">
+                                                        {getAmenityIcon(amenity)}
+                                                    </div>
+                                                    <span className="text-sm font-semibold text-slate-700">{amenity}</span>
+                                                </motion.div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
-    {/* Buttons */}
-    <div className="grid grid-cols-2 gap-3">
-      {/* WhatsApp */}
-      {safeVenue.phone && (
-        <motion.a
-          href={`https://wa.me/${safeVenue.phone}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center justify-center gap-2 px-3 py-2.5 bg-green-600 hover:bg-green-700 rounded-lg font-semibold text-white shadow-md text-sm"
-        >
-          {/* Cleaner WhatsApp SVG Icon */}
-          <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
-            <path d="M16.75 13.96c.25.13.43.2.5.33.07.13.07.66-.03 1.39-.1.73-.55 1.34-1.12 1.52-.57.18-1.07.16-1.55.03-1.16-.3-2.12-.89-2.9-1.55a10.34 10.34 0 0 1-3.53-3.53c-.66-.78-1.25-1.74-1.55-2.9-.13-.48-.15-.98.03-1.55.18-.57.79-1.02 1.52-1.12.73-.1 1.26-.1 1.39-.03.13.07.2.25.33.5.13.25.43.98.5 1.13.07.15.07.33 0 .5-.13.17-.2.27-.38.45-.18.18-.38.4-.53.57-.15.17-.3.35-.15.68.2.43.95 1.63 2.1 2.78 1.15 1.15 2.35 1.9 2.78 2.1.33.15.5-.02.68-.15.17-.15.35-.3.57-.53.18-.18.28-.25.45-.38.17-.07.35-.07.5 0 .15.07.88.38 1.13.5zM12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
-          </svg>
-          WhatsApp
-        </motion.a>
-      )}
+                                {/* Contact Information */}
+                                {(safeVenue.phone || safeVenue.email) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.1 }}
+                                        className="hidden md:block bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white"
+                                    >
+                                        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                            <Phone className="w-5 h-5" />
+                                            Get in Touch
+                                        </h2>
 
-      {/* Contact Button */}
-      <motion.a
-        href={safeVenue.phone ? `tel:${safeVenue.phone}` : `mailto:${safeVenue.email}`}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="hidden md:flex items-center justify-center gap-2 px-3 py-2.5 bg-white text-emerald-600 hover:bg-gray-100 rounded-lg font-semibold shadow-md text-sm"
-      >
-        <Phone className="w-5 h-5" />
-        Call Us
-      </motion.a>
-    </div>
-  </motion.div>
-)}
-                        
-                    </motion.aside>
+                                        {/* Buttons */}
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {/* WhatsApp */}
+                                            {safeVenue.phone && (
+                                                <motion.a
+                                                    href={`https://wa.me/${safeVenue.phone}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    className="flex items-center justify-center gap-2 px-3 py-2.5 bg-green-600 hover:bg-green-700 rounded-lg font-semibold text-white shadow-md text-sm"
+                                                >
+                                                    {/* Cleaner WhatsApp SVG Icon */}
+                                                    <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
+                                                        <path d="M16.75 13.96c.25.13.43.2.5.33.07.13.07.66-.03 1.39-.1.73-.55 1.34-1.12 1.52-.57.18-1.07.16-1.55.03-1.16-.3-2.12-.89-2.9-1.55a10.34 10.34 0 0 1-3.53-3.53c-.66-.78-1.25-1.74-1.55-2.9-.13-.48-.15-.98.03-1.55.18-.57.79-1.02 1.52-1.12.73-.1 1.26-.1 1.39-.03.13.07.2.25.33.5.13.25.43.98.5 1.13.07.15.07.33 0 .5-.13.17-.2.27-.38.45-.18.18-.38.4-.53.57-.15.17-.3.35-.15.68.2.43.95 1.63 2.1 2.78 1.15 1.15 2.35 1.9 2.78 2.1.33.15.5-.02.68-.15.17-.15.35-.3.57-.53.18-.18.28-.25.45-.38.17-.07.35-.07.5 0 .15.07.88.38 1.13.5zM12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" />
+                                                    </svg>
+                                                    WhatsApp
+                                                </motion.a>
+                                            )}
+
+                                            {/* Contact Button */}
+                                            <motion.a
+                                                href={safeVenue.phone ? `tel:${safeVenue.phone}` : `mailto:${safeVenue.email}`}
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                className="hidden md:flex items-center justify-center gap-2 px-3 py-2.5 bg-white text-emerald-600 hover:bg-gray-100 rounded-lg font-semibold shadow-md text-sm"
+                                            >
+                                                <Phone className="w-5 h-5" />
+                                                Call Us
+                                            </motion.a>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                            </motion.aside>
                         </div>
                     </motion.main>
 
@@ -848,8 +841,8 @@ const ViewVenue = () => {
                                 <p className="text-sm text-slate-600 mb-4">Everything you need for a perfect event</p>
                                 <div className="grid grid-cols-1 gap-2">
                                     {safeVenue.amenity.map((amenity, index) => (
-                                        <motion.div 
-                                            key={index} 
+                                        <motion.div
+                                            key={index}
                                             className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-blue-100 shadow-sm hover:shadow-md transition-all"
                                             whileHover={{ x: 5 }}
                                             initial={{ opacity: 0, x: -10 }}
@@ -866,53 +859,53 @@ const ViewVenue = () => {
                             </div>
                         )}
 
-   {/* Contact Information */}
-   {(safeVenue.phone || safeVenue.email) && (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.1 }}
-    className="hidden md:block bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white"
-  >
-    <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-      <Phone className="w-5 h-5" />
-      Get in Touch
-    </h2>
+                        {/* Contact Information */}
+                        {(safeVenue.phone || safeVenue.email) && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className="hidden md:block bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl shadow-xl p-5 sm:p-6 text-white"
+                            >
+                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                    <Phone className="w-5 h-5" />
+                                    Get in Touch
+                                </h2>
 
-    {/* Buttons */}
-    <div className="grid grid-cols-2 gap-3">
-      {/* WhatsApp */}
-      {safeVenue.phone && (
-        <motion.a
-          href={`https://wa.me/${safeVenue.phone}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center justify-center gap-2 px-3 py-2.5 bg-green-600 hover:bg-green-700 rounded-lg font-semibold text-white shadow-md text-sm"
-        >
-          {/* Cleaner WhatsApp SVG Icon */}
-          <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
-            <path d="M16.75 13.96c.25.13.43.2.5.33.07.13.07.66-.03 1.39-.1.73-.55 1.34-1.12 1.52-.57.18-1.07.16-1.55.03-1.16-.3-2.12-.89-2.9-1.55a10.34 10.34 0 0 1-3.53-3.53c-.66-.78-1.25-1.74-1.55-2.9-.13-.48-.15-.98.03-1.55.18-.57.79-1.02 1.52-1.12.73-.1 1.26-.1 1.39-.03.13.07.2.25.33.5.13.25.43.98.5 1.13.07.15.07.33 0 .5-.13.17-.2.27-.38.45-.18.18-.38.4-.53.57-.15.17-.3.35-.15.68.2.43.95 1.63 2.1 2.78 1.15 1.15 2.35 1.9 2.78 2.1.33.15.5-.02.68-.15.17-.15.35-.3.57-.53.18-.18.28-.25.45-.38.17-.07.35-.07.5 0 .15.07.88.38 1.13.5zM12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
-          </svg>
-          WhatsApp
-        </motion.a>
-      )}
+                                {/* Buttons */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    {/* WhatsApp */}
+                                    {safeVenue.phone && (
+                                        <motion.a
+                                            href={`https://wa.me/${safeVenue.phone}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-green-600 hover:bg-green-700 rounded-lg font-semibold text-white shadow-md text-sm"
+                                        >
+                                            {/* Cleaner WhatsApp SVG Icon */}
+                                            <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
+                                                <path d="M16.75 13.96c.25.13.43.2.5.33.07.13.07.66-.03 1.39-.1.73-.55 1.34-1.12 1.52-.57.18-1.07.16-1.55.03-1.16-.3-2.12-.89-2.9-1.55a10.34 10.34 0 0 1-3.53-3.53c-.66-.78-1.25-1.74-1.55-2.9-.13-.48-.15-.98.03-1.55.18-.57.79-1.02 1.52-1.12.73-.1 1.26-.1 1.39-.03.13.07.2.25.33.5.13.25.43.98.5 1.13.07.15.07.33 0 .5-.13.17-.2.27-.38.45-.18.18-.38.4-.53.57-.15.17-.3.35-.15.68.2.43.95 1.63 2.1 2.78 1.15 1.15 2.35 1.9 2.78 2.1.33.15.5-.02.68-.15.17-.15.35-.3.57-.53.18-.18.28-.25.45-.38.17-.07.35-.07.5 0 .15.07.88.38 1.13.5zM12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" />
+                                            </svg>
+                                            WhatsApp
+                                        </motion.a>
+                                    )}
 
-      {/* Contact Button */}
-      <motion.a
-        href={safeVenue.phone ? `tel:${safeVenue.phone}` : `mailto:${safeVenue.email}`}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="hidden md:flex items-center justify-center gap-2 px-3 py-2.5 bg-white text-emerald-600 hover:bg-gray-100 rounded-lg font-semibold shadow-md text-sm"
-      >
-        <Phone className="w-5 h-5" />
-        Call Us
-      </motion.a>
-    </div>
-  </motion.div>
-)}
-                        
+                                    {/* Contact Button */}
+                                    <motion.a
+                                        href={safeVenue.phone ? `tel:${safeVenue.phone}` : `mailto:${safeVenue.email}`}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="hidden md:flex items-center justify-center gap-2 px-3 py-2.5 bg-white text-emerald-600 hover:bg-gray-100 rounded-lg font-semibold shadow-md text-sm"
+                                    >
+                                        <Phone className="w-5 h-5" />
+                                        Call Us
+                                    </motion.a>
+                                </div>
+                            </motion.div>
+                        )}
+
                     </motion.aside>
                 </div>
             </div>
@@ -951,7 +944,7 @@ const ViewVenue = () => {
                             {/* Main Image */}
                             <img
                                 src={venue.images[fullscreenImageIndex]?.url}
-                              
+
                                 className="w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
                             />
 
@@ -962,7 +955,7 @@ const ViewVenue = () => {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            setFullscreenImageIndex(prev => 
+                                            setFullscreenImageIndex(prev =>
                                                 prev > 0 ? prev - 1 : venue.images.length - 1
                                             );
                                         }}
@@ -975,7 +968,7 @@ const ViewVenue = () => {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            setFullscreenImageIndex(prev => 
+                                            setFullscreenImageIndex(prev =>
                                                 prev < venue.images.length - 1 ? prev + 1 : 0
                                             );
                                         }}
@@ -997,11 +990,10 @@ const ViewVenue = () => {
                                                     e.stopPropagation();
                                                     setFullscreenImageIndex(index);
                                                 }}
-                                                className={`w-12 h-12 rounded-md overflow-hidden transition-all ${
-                                                    fullscreenImageIndex === index
+                                                className={`w-12 h-12 rounded-md overflow-hidden transition-all ${fullscreenImageIndex === index
                                                         ? 'ring-2 ring-white scale-110'
                                                         : 'opacity-70 hover:opacity-100 hover:scale-105'
-                                                }`}
+                                                    }`}
                                             >
                                                 <img
                                                     src={image.url}
@@ -1027,7 +1019,7 @@ const ViewVenue = () => {
                     className="md:hidden fixed bottom-0 left-0 right-0 z-50   shadow-2xl backdrop-blur-xl"
                 >
                     <div className="container mx-auto px-4 py-6">
-                     
+
                         {/* Action Buttons - Two Column Layout */}
                         <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
                             {/* WhatsApp Button */}
@@ -1043,7 +1035,7 @@ const ViewVenue = () => {
                                     <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                                     <div className="relative flex items-center justify-center gap-3">
                                         <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
-                                            <path d="M16.75 13.96c.25.13.43.2.5.33.07.13.07.66-.03 1.39-.1.73-.55 1.34-1.12 1.52-.57.18-1.07.16-1.55.03-1.16-.3-2.12-.89-2.9-1.55a10.34 10.34 0 0 1-3.53-3.53c-.66-.78-1.25-1.74-1.55-2.9-.13-.48-.15-.98.03-1.55.18-.57.79-1.02 1.52-1.12.73-.1 1.26-.1 1.39-.03.13.07.2.25.33.5.13.25.43.98.5 1.13.07.15.07.33 0 .5-.13.17-.2.27-.38.45-.18.18-.38.4-.53.57-.15.17-.3.35-.15.68.2.43.95 1.63 2.1 2.78 1.15 1.15 2.35 1.9 2.78 2.1.33.15.5-.02.68-.15.17-.15.35-.3.57-.53.18-.18.28-.25.45-.38.17-.07.35-.07.5 0 .15.07.88.38 1.13.5zM12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+                                            <path d="M16.75 13.96c.25.13.43.2.5.33.07.13.07.66-.03 1.39-.1.73-.55 1.34-1.12 1.52-.57.18-1.07.16-1.55.03-1.16-.3-2.12-.89-2.9-1.55a10.34 10.34 0 0 1-3.53-3.53c-.66-.78-1.25-1.74-1.55-2.9-.13-.48-.15-.98.03-1.55.18-.57.79-1.02 1.52-1.12.73-.1 1.26-.1 1.39-.03.13.07.2.25.33.5.13.25.43.98.5 1.13.07.15.07.33 0 .5-.13.17-.2.27-.38.45-.18.18-.38.4-.53.57-.15.17-.3.35-.15.68.2.43.95 1.63 2.1 2.78 1.15 1.15 2.35 1.9 2.78 2.1.33.15.5-.02.68-.15.17-.15.35-.3.57-.53.18-.18.28-.25.45-.38.17-.07.35-.07.5 0 .15.07.88.38 1.13.5zM12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" />
                                         </svg>
                                         <span className="text-sm font-bold">WhatsApp</span>
                                     </div>
@@ -1067,11 +1059,11 @@ const ViewVenue = () => {
                             </motion.a>
                         </div>
 
-                   
+
                     </div>
                 </motion.div>
             )}
-            <VenuePage/>
+            <VenuePage />
         </div>
     );
 };

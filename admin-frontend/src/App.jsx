@@ -44,13 +44,13 @@ const ProtectedRoute = ({ children }) => {
       console.log('ProtectedRoute: Starting token validation');
       const token = localStorage.getItem("token");
       const adminLoggedIn = localStorage.getItem("admin_logged_in");
-      
+
       console.log('ProtectedRoute: Checking localStorage', {
         hasToken: !!token,
         tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
         adminLoggedIn: adminLoggedIn
       });
-      
+
       // First check: Do we have token and admin flag?
       if (!isAuthenticated()) {
         console.log('ProtectedRoute: Not authenticated (no token or admin flag)');
@@ -66,7 +66,7 @@ const ProtectedRoute = ({ children }) => {
       try {
         const response = await apiService.verifyToken();
         console.log('ProtectedRoute: Token verification successful', response);
-        
+
         if (isMounted) {
           setIsValid(true);
         }
@@ -74,7 +74,7 @@ const ProtectedRoute = ({ children }) => {
         console.error('ProtectedRoute: Token validation failed:', error);
         console.error('ProtectedRoute: Error response:', error.response?.data);
         console.error('ProtectedRoute: Error status:', error.response?.status);
-        
+
         if (isMounted) {
           // Check if it's an actual auth error or just a network/server error
           if (error.response?.status === 401 || error.response?.status === 403) {
@@ -130,7 +130,7 @@ const App = () => {
         <Routes>
           {/* Public routes */}
           <Route path="/admin/login" element={<Login />} />
-          
+
           {/* Protected routes */}
           <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/admin/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -157,7 +157,7 @@ const App = () => {
           <Route path="/admin/addons/create" element={<ProtectedRoute><CreateAddon /></ProtectedRoute>} />
           <Route path="/admin/addons/edit/:id" element={<ProtectedRoute><EditAddon /></ProtectedRoute>} />
           <Route path="/admin/videos" element={<ProtectedRoute><Videos /></ProtectedRoute>} />
-          
+
           {/* Catch all route - redirect to admin dashboard */}
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>

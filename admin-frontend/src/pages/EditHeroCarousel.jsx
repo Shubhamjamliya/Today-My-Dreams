@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Upload, X, ImagePlus, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { Upload, X, ImagePlus, AlertCircle, CheckCircle } from 'lucide-react';
 import apiService from "../services/api";
+import Loader from "../components/Loader";
 
 // Image compression utility
 const compressImage = (file, maxWidth = 1920, maxHeight = 1080, quality = 0.8) => {
@@ -9,11 +10,11 @@ const compressImage = (file, maxWidth = 1920, maxHeight = 1080, quality = 0.8) =
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
-    
+
     img.onload = () => {
       // Calculate new dimensions
       let { width, height } = img;
-      
+
       if (width > height) {
         if (width > maxWidth) {
           height = (height * maxWidth) / width;
@@ -25,31 +26,31 @@ const compressImage = (file, maxWidth = 1920, maxHeight = 1080, quality = 0.8) =
           height = maxHeight;
         }
       }
-      
+
       canvas.width = width;
       canvas.height = height;
-      
+
       // Draw and compress
       ctx.drawImage(img, 0, 0, width, height);
-      
+
       canvas.toBlob(
-            (blob) => {
-                      try {
-                        // Convert blob to File so FormData receives a filename and correct type
-                        const fileName = file.name ? file.name.replace(/\.[^/.]+$/, '') + '.jpg' : 'image.jpg';
-                        const newFile = new File([blob], fileName, { type: 'image/jpeg' });
-                        resolve(newFile);
-                      } catch (err) {
-                                    // Fallback to blob if File constructor not supported
-                                    console.error('Error creating File from blob:', err);
-                                    resolve(blob);
-                                  }
-            },
-            'image/jpeg',
-            quality
-          );
+        (blob) => {
+          try {
+            // Convert blob to File so FormData receives a filename and correct type
+            const fileName = file.name ? file.name.replace(/\.[^/.]+$/, '') + '.jpg' : 'image.jpg';
+            const newFile = new File([blob], fileName, { type: 'image/jpeg' });
+            resolve(newFile);
+          } catch (err) {
+            // Fallback to blob if File constructor not supported
+            console.error('Error creating File from blob:', err);
+            resolve(blob);
+          }
+        },
+        'image/jpeg',
+        quality
+      );
     };
-    
+
     img.src = URL.createObjectURL(file);
   });
 };
@@ -61,7 +62,7 @@ const EditHeroCarousel = () => {
 
   const [item, setItem] = useState({
     title: "",
- isMobile: false,
+    isMobile: false,
     buttonText: "Shop Now",
     buttonLink: "/shop",
     isActive: true,
@@ -74,7 +75,7 @@ const EditHeroCarousel = () => {
   const [isCompressing, setIsCompressing] = useState(false);
   const [originalFileSize, setOriginalFileSize] = useState(0);
   const [compressedFileSize, setCompressedFileSize] = useState(0);
- 
+
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(!isNew);
   const [toast, setToast] = useState({ show: false, message: "", type: "" });
@@ -84,13 +85,13 @@ const EditHeroCarousel = () => {
       setInitialLoading(true);
       const response = await apiService.getCarouselItem(id);
       const carouselItem = response.data;
-      
+
       if (!carouselItem) {
         showToast("Carousel item not found", "error");
         navigate('/admin/hero-carousel');
         return;
       }
-      
+
       setItem({
         ...carouselItem,
         id: carouselItem._id
@@ -122,11 +123,11 @@ const EditHeroCarousel = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
       setUploadProgress(0);
-      
+
       // Validate required fields
       if (!item.title) {
         showToast("Title is required", "error");
@@ -139,10 +140,10 @@ const EditHeroCarousel = () => {
         setLoading(false);
         return;
       }
-      
+
       // Create FormData
       const formData = new FormData();
-      
+
       // Add all item fields to FormData
       Object.keys(item).forEach(key => {
         if (item[key] !== undefined && item[key] !== null && key !== '_id' && key !== 'id') {
@@ -154,7 +155,7 @@ const EditHeroCarousel = () => {
       if (file) {
         setIsCompressing(true);
         setUploadProgress(10);
-        
+
         try {
           // Compress image if it's larger than 2MB
           let processedFile = file;
@@ -163,21 +164,21 @@ const EditHeroCarousel = () => {
             setCompressedFileSize(processedFile.size);
             showToast(`Image compressed from ${(file.size / 1024 / 1024).toFixed(1)}MB to ${(processedFile.size / 1024 / 1024).toFixed(1)}MB`, "success");
           }
-          
+
           setUploadProgress(30);
           formData.append('image', processedFile);
           setUploadProgress(50);
         } catch (_compressionError) {
-              console.error('Image compression failed:', _compressionError);
-              showToast("Image compression failed, uploading original file", "error");
-              formData.append('image', file);
-            } finally {
+          console.error('Image compression failed:', _compressionError);
+          showToast("Image compression failed, uploading original file", "error");
+          formData.append('image', file);
+        } finally {
           setIsCompressing(false);
         }
       }
 
       setUploadProgress(70);
-      
+
       if (isNew) {
         await apiService.createCarouselItem(formData);
         setUploadProgress(100);
@@ -198,7 +199,7 @@ const EditHeroCarousel = () => {
       setTimeout(() => {
         navigate('/admin/hero-carousel');
       }, 500);
-      
+
     } catch (error) {
       console.error('Error saving carousel item:', error);
       showToast(error.response?.data?.message || error.message || 'Failed to save carousel item', "error");
@@ -222,35 +223,35 @@ const EditHeroCarousel = () => {
   const validateFile = (file) => {
     const maxSize = 10 * 1024 * 1024; // 10MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'];
-    
+
     if (!file) return { valid: false, error: 'No file selected' };
-    
+
     if (file.size > maxSize) {
       return { valid: false, error: 'File size must be less than 10MB' };
     }
-    
+
     if (!allowedTypes.includes(file.type)) {
       return { valid: false, error: 'File type not supported. Please use JPG, PNG, GIF, WebP, or MP4' };
     }
-    
+
     return { valid: true };
   };
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
-    
+
     const validation = validateFile(selectedFile);
     if (!validation.valid) {
       showToast(validation.error, "error");
       e.target.value = ''; // Clear the input
       return;
     }
-    
+
     setFile(selectedFile);
     setOriginalFileSize(selectedFile.size);
     setPreviewUrl(URL.createObjectURL(selectedFile));
-    
+
     // Show file size info
     const sizeInMB = (selectedFile.size / 1024 / 1024).toFixed(1);
     showToast(`File selected: ${sizeInMB}MB`, "success");
@@ -258,9 +259,7 @@ const EditHeroCarousel = () => {
 
   if (initialLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-amber-600" />
-      </div>
+      <Loader fullScreen text="Loading carousel item..." />
     );
   }
 
@@ -273,9 +272,8 @@ const EditHeroCarousel = () => {
 
         {/* Toast notification */}
         {toast.show && (
-          <div className={`mb-4 p-4 rounded-lg flex items-center ${
-            toast.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
-          }`}>
+          <div className={`mb-4 p-4 rounded-lg flex items-center ${toast.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+            }`}>
             {toast.type === 'error' ? (
               <AlertCircle className="w-5 h-5 mr-2" />
             ) : (
@@ -296,13 +294,13 @@ const EditHeroCarousel = () => {
                   <button type="button" onClick={() => { setFile(null); setPreviewUrl(""); setOriginalFileSize(0); setCompressedFileSize(0); }} className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600">
                     <X className="w-4 h-4" />
                   </button>
-                  
+
                   {/* File size info */}
                   {originalFileSize > 0 && (
                     <div className="absolute bottom-2 left-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
                       {compressedFileSize > 0 ? (
                         <>
-                          Original: {(originalFileSize / 1024 / 1024).toFixed(1)}MB → 
+                          Original: {(originalFileSize / 1024 / 1024).toFixed(1)}MB →
                           Compressed: {(compressedFileSize / 1024 / 1024).toFixed(1)}MB
                         </>
                       ) : (
@@ -317,19 +315,19 @@ const EditHeroCarousel = () => {
                   <div className="mt-2">
                     <label htmlFor="file-upload" className="cursor-pointer">
                       <span className="text-amber-600 hover:text-amber-500">Upload image</span>
-                      <input 
-                        id="file-upload" 
-                        type="file" 
-                        className="hidden" 
-                        accept="image/*,video/mp4" 
-                        onChange={handleFileChange} 
+                      <input
+                        id="file-upload"
+                        type="file"
+                        className="hidden"
+                        accept="image/*,video/mp4"
+                        onChange={handleFileChange}
                       />
                     </label>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF, WebP, MP4 up to 10MB</p>
                 </div>
               )}
-              
+
               {/* Upload Progress */}
               {(loading || isCompressing) && (
                 <div className="mt-4">
@@ -340,7 +338,7 @@ const EditHeroCarousel = () => {
                     <span>{uploadProgress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-amber-600 h-2 rounded-full transition-all duration-300 ease-out"
                       style={{ width: `${uploadProgress}%` }}
                     ></div>
@@ -351,20 +349,20 @@ const EditHeroCarousel = () => {
           </div>
 
           {/* Mobile Banner Checkbox */}
-         
-<div className="flex items-center mt-2">
-  <input
-    type="checkbox"
-    id="isMobile"
-    name="isMobile"
-    checked={item.isMobile} 
-    onChange={handleInputChange} 
-    className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
-  />
-  <label htmlFor="isMobile" className="ml-2 block text-sm text-gray-700">
-    our work section
-  </label>
-</div>
+
+          <div className="flex items-center mt-2">
+            <input
+              type="checkbox"
+              id="isMobile"
+              name="isMobile"
+              checked={item.isMobile}
+              onChange={handleInputChange}
+              className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+            />
+            <label htmlFor="isMobile" className="ml-2 block text-sm text-gray-700">
+              our work section
+            </label>
+          </div>
 
           {/* Title */}
           <div>
@@ -382,7 +380,7 @@ const EditHeroCarousel = () => {
             />
           </div>
 
-     
+
 
           {/* Button Text */}
           <div>
@@ -441,19 +439,18 @@ const EditHeroCarousel = () => {
             <button
               type="submit"
               disabled={loading || isCompressing}
-              className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 ${
-                (loading || isCompressing) ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 ${(loading || isCompressing) ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             >
               {isCompressing ? (
                 <div className="flex items-center">
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  Compressing...
+                  <Loader size="tiny" inline text="" />
+                  <span className="ml-2">Compressing...</span>
                 </div>
               ) : loading ? (
                 <div className="flex items-center">
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  {uploadProgress > 0 ? `Uploading... ${uploadProgress}%` : 'Saving...'}
+                  <Loader size="tiny" inline text="" />
+                  <span className="ml-2">{uploadProgress > 0 ? `Uploading... ${uploadProgress}%` : 'Saving...'}</span>
                 </div>
               ) : (
                 'Save'

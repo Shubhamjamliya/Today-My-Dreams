@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
   AlertCircle,
   Home,
   RefreshCw,
@@ -22,8 +22,7 @@ import {
   Copy,
   Download,
   CheckCircle2,
-  X,
-  Loader2
+  X
 } from 'lucide-react';
 import paymentService from '../services/paymentService';
 import orderService from '../services/orderService';
@@ -147,7 +146,7 @@ const PaymentStatus = () => {
     // Check if order has already been placed for this payment
     const orderKey = `order_placed_${orderId || transactionId}`;
     const orderAlreadyPlaced = localStorage.getItem(orderKey);
-    
+
     if (orderAlreadyPlaced === 'true') {
       setOrderPlaced(true);
       return;
@@ -162,7 +161,7 @@ const PaymentStatus = () => {
 
     try {
       placingOrderRef.current = true;
-      
+
       // Prepare order data
       const orderData = {
         ...prepareOrderData(),
@@ -179,7 +178,7 @@ const PaymentStatus = () => {
         localStorage.setItem(orderKey, 'true');
         setOrderPlaced(true);
         toast.success('Order placed successfully!');
-        
+
         // Update orderDetails with the created order
         if (response.order) {
           setOrderDetails(prev => ({
@@ -189,7 +188,7 @@ const PaymentStatus = () => {
             orderId: response.order._id
           }));
         }
-        
+
         // Clear persisted checkout data after successful order
         localStorage.removeItem('checkoutFormData');
         localStorage.removeItem('checkoutCartItems');
@@ -224,7 +223,7 @@ const PaymentStatus = () => {
     // eslint-disable-next-line
   }, [status, orderPlaced, loading]);
 
- 
+
 
   const checkPaymentStatus = async () => {
     try {
@@ -329,9 +328,9 @@ const PaymentStatus = () => {
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-GB', { 
-        day: '2-digit', 
-        month: 'short', 
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
@@ -488,13 +487,9 @@ const PaymentStatus = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full text-center"
         >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 bg-gradient-to-br from-[#FCD24C] to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
-            <Loader2 size={32} className="text-white" />
-          </motion.div>
+          <div className="w-16 h-16 bg-gradient-to-br from-[#FCD24C] to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Loader size="medium" text="" inline />
+          </div>
           <h2 className="text-xl font-bold text-gray-900 mb-1">Checking Payment Status</h2>
           <p className="text-sm text-gray-600">Please wait while we verify your payment...</p>
         </motion.div>
@@ -866,13 +861,9 @@ const PaymentStatus = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-4"
           >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-3 shadow-md"
-            >
-              <Loader2 size={32} className="text-white" />
-            </motion.div>
+            <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-3 shadow-md">
+              <Loader size="medium" text="" inline />
+            </div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Payment Pending</h1>
             <p className="text-sm text-gray-600 mb-3">Your payment is being processed. Please wait...</p>
             <div className="inline-flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 rounded-full px-3 py-1.5 mb-4">

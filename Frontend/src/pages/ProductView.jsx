@@ -14,6 +14,7 @@ import { useCity } from '../context/CityContext';
 import config from '../config/config.js';
 import { toast } from 'react-hot-toast';
 import Loader from '../components/Loader';
+import { ProductDetailSkeleton } from '../components/Loader/Skeleton.jsx';
 import ReviewForm from '../components/ReviewForm';
 import ReviewList from '../components/ReviewList';
 import ReviewService from '../services/reviewService';
@@ -239,12 +240,12 @@ const ProductView = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [product, productImages]);
 
-    if (loading) return <Loader fullScreen={true} withHeaderFooter={true} size="large" text="Loading product details..." />;
+    if (loading) return <ProductDetailSkeleton />;
     if (error) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
             <h2 className="text-2xl font-bold text-red-600 mb-2">Product Not Found</h2>
             <p className="text-gray-700 mb-4">{error}</p>
-            <button onClick={() => window.location.href = '/shop'} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Back to Shop</button>
+            <button onClick={() => navigate('/shop')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Back to Shop</button>
         </div>
     );
     if (!product) return null;
@@ -480,8 +481,8 @@ const ProductView = () => {
                                             }
                                         }}
                                         className={`flex-shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg ${isActive
-                                                ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white scale-105'
-                                                : 'bg-white text-blue-700 hover:bg-blue-50 border border-blue-200 hover:border-blue-300'
+                                            ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white scale-105'
+                                            : 'bg-white text-blue-700 hover:bg-blue-50 border border-blue-200 hover:border-blue-300'
                                             }`}
                                     >
                                         {subCat.image && (
@@ -800,8 +801,8 @@ const ProductView = () => {
                                 onClick={handleBookNow}
                                 disabled={isOutOfStock}
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-8 py-3 rounded-full font-semibold transition-all text-base ${isOutOfStock
-                                        ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                                        : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40'
+                                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                                    : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40'
                                     }`}
                             >
                                 <span>{isOutOfStock ? 'Out of Stock' : 'BOOK NOW'}</span>
@@ -860,8 +861,8 @@ const ProductView = () => {
                                             key={tab.id}
                                             onClick={() => setActiveTab(tab.id)}
                                             className={`flex items-center gap-1 sm:gap-2 py-3 px-2 border-b-2 font-semibold text-sm whitespace-nowrap transition-colors ${activeTab === tab.id
-                                                    ? 'border-amber-500 text-amber-600'
-                                                    : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                                                ? 'border-amber-500 text-amber-600'
+                                                : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
                                                 }`}
                                         >
                                             <tab.icon className="h-5 w-5" />
@@ -1466,8 +1467,8 @@ const ProductView = () => {
                             onClick={handleBookNow}
                             disabled={isOutOfStock}
                             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-full font-semibold transition-all text-sm ${isOutOfStock
-                                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                                    : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/30'
+                                ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                                : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/30'
                                 }`}
                         >
                             <span>{isOutOfStock ? 'Out of Stock' : 'BOOK NOW'}</span>
@@ -1564,8 +1565,8 @@ const ProductView = () => {
                                                     key={addon._id}
                                                     whileHover={{ scale: 1.02 }}
                                                     className={`border-2 rounded-2xl p-4 cursor-pointer transition-all ${isSelected
-                                                            ? 'border-amber-500 bg-amber-50'
-                                                            : 'border-gray-200 hover:border-amber-300 bg-white'
+                                                        ? 'border-amber-500 bg-amber-50'
+                                                        : 'border-gray-200 hover:border-amber-300 bg-white'
                                                         }`}
                                                     onClick={() => handleAddonToggle(addon)}
                                                 >

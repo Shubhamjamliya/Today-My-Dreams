@@ -50,24 +50,24 @@ const Dashboard = () => {
 
       // Extract data from responses, handling both array and object formats
       // /api/shop returns array directly
-      const products = Array.isArray(productsRes.data) ? productsRes.data : 
-                      (productsRes.data.products || []);
-      
+      const products = Array.isArray(productsRes.data) ? productsRes.data :
+        (productsRes.data.products || []);
+
       // /api/orders returns { orders: [...] }
       const orders = Array.isArray(ordersRes.data) ? ordersRes.data :
-                    (ordersRes.data.orders || []);
-      
+        (ordersRes.data.orders || []);
+
       // /api/categories returns { categories: [...] }
-      const categories = Array.isArray(categoriesRes.data) ? categoriesRes.data : 
-                        (categoriesRes.data.categories || []);
-      
+      const categories = Array.isArray(categoriesRes.data) ? categoriesRes.data :
+        (categoriesRes.data.categories || []);
+
       // /api/featured-products returns { products: [...] }
       const featured = Array.isArray(featuredRes.data) ? featuredRes.data :
-                      (featuredRes.data.products || []);
-      
+        (featuredRes.data.products || []);
+
       // /api/sellers returns { sellers: [...] }
       const sellers = Array.isArray(sellersRes.data) ? sellersRes.data :
-                     (sellersRes.data.sellers || []);
+        (sellersRes.data.sellers || []);
 
       // Calculate totals
       const totalRevenue = orders.reduce((sum, order) => sum + (Number(order.totalAmount) || 0), 0);
@@ -112,12 +112,12 @@ const Dashboard = () => {
         apiService.getProducts()
       ]);
 
-      const categories = Array.isArray(categoriesRes.data) 
-        ? categoriesRes.data 
+      const categories = Array.isArray(categoriesRes.data)
+        ? categoriesRes.data
         : (categoriesRes.data.categories || []);
-      
-      const products = Array.isArray(productsRes.data) 
-        ? productsRes.data 
+
+      const products = Array.isArray(productsRes.data)
+        ? productsRes.data
         : (productsRes.data.products || []);
 
       // Organize products by category and subcategory
@@ -135,7 +135,7 @@ const Dashboard = () => {
 
           // Group products by subcategory
           subCategories.forEach(subCat => {
-            const subCatProducts = products.filter(p => 
+            const subCatProducts = products.filter(p =>
               p.subCategory && p.subCategory._id === subCat._id
             );
             subCategoryMap.set(subCat._id, {
@@ -146,8 +146,8 @@ const Dashboard = () => {
           });
 
           // Products without subcategory but in this category
-          const categoryProducts = products.filter(p => 
-            p.category && 
+          const categoryProducts = products.filter(p =>
+            p.category &&
             (p.category._id === category._id || p.category === category._id) &&
             !p.subCategory
           );
@@ -156,17 +156,17 @@ const Dashboard = () => {
             ...category,
             subCategories: Array.from(subCategoryMap.values()),
             directProducts: categoryProducts,
-            totalProducts: products.filter(p => 
+            totalProducts: products.filter(p =>
               p.category && (p.category._id === category._id || p.category === category._id)
             ).length
           });
         } catch (error) {
           console.error(`Error fetching subcategories for ${category.name}:`, error);
           // If subcategories fail, still add the category with products
-          const categoryProducts = products.filter(p => 
+          const categoryProducts = products.filter(p =>
             p.category && (p.category._id === category._id || p.category === category._id)
           );
-          
+
           categoryMap.set(category._id, {
             ...category,
             subCategories: [],
@@ -211,49 +211,49 @@ const Dashboard = () => {
       title: 'Total Products',
       value: stats.products,
       icon: <Package className="w-6 h-6" />,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-600'
+      color: 'from-[#FCD24C] to-[#F59E0B]',
+      bgColor: 'bg-yellow-50',
+      textColor: 'text-gray-900'
     },
     {
       title: 'Total Orders',
       value: stats.orders,
       icon: <ShoppingCart className="w-6 h-6" />,
-      color: 'from-green-500 to-green-600',
-      bgColor: 'bg-green-50',
-      textColor: 'text-green-600'
+      color: 'from-slate-700 to-slate-900',
+      bgColor: 'bg-slate-50',
+      textColor: 'text-slate-900'
     },
     {
       title: 'Categories',
       value: stats.categories,
       icon: <Tag className="w-6 h-6" />,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-600'
+      color: 'from-[#FCD24C] to-[#F59E0B]',
+      bgColor: 'bg-yellow-50',
+      textColor: 'text-gray-900'
     },
     {
       title: 'Featured Products',
       value: stats.featured,
       icon: <Star className="w-6 h-6" />,
-      color: 'from-yellow-500 to-yellow-600',
-      bgColor: 'bg-yellow-50',
-      textColor: 'text-yellow-600'
+      color: 'from-slate-700 to-slate-900',
+      bgColor: 'bg-slate-50',
+      textColor: 'text-slate-900'
     },
     {
       title: 'Total Revenue',
       value: `₹${stats.revenue.toFixed(2)}`,
       icon: <DollarSign className="w-6 h-6" />,
-      color: 'from-emerald-500 to-emerald-600',
-      bgColor: 'bg-emerald-50',
-      textColor: 'text-emerald-600'
+      color: 'from-[#FCD24C] to-[#F59E0B]',
+      bgColor: 'bg-yellow-50',
+      textColor: 'text-gray-900'
     },
     {
       title: 'Total Venue',
       value: stats.sellers,
       icon: <Users className="w-6 h-6" />,
-      color: 'from-indigo-500 to-indigo-600',
-      bgColor: 'bg-indigo-50',
-      textColor: 'text-indigo-600'
+      color: 'from-slate-700 to-slate-900',
+      bgColor: 'bg-slate-50',
+      textColor: 'text-slate-900'
     }
   ];
 
@@ -276,11 +276,10 @@ const Dashboard = () => {
         <nav className="flex space-x-8">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'overview'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+            className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'overview'
+              ? 'border-[#FCD24C] text-[#F59E0B]'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
           >
             <div className="flex items-center space-x-2">
               <TrendingUp className="w-4 h-4" />
@@ -289,11 +288,10 @@ const Dashboard = () => {
           </button>
           <button
             onClick={() => setActiveTab('categories')}
-            className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'categories'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+            className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'categories'
+              ? 'border-[#FCD24C] text-[#F59E0B]'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
           >
             <div className="flex items-center space-x-2">
               <LayoutGrid className="w-4 h-4" />
@@ -333,7 +331,7 @@ const Dashboard = () => {
           {loadingCategories ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
-                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <div className="w-12 h-12 border-4 border-[#FCD24C] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                 <p className="text-gray-600 font-medium">Loading categories...</p>
               </div>
             </div>
@@ -360,8 +358,8 @@ const Dashboard = () => {
                         )}
                       </div>
                       {category.image && (
-                        <img 
-                          src={category.image} 
+                        <img
+                          src={category.image}
                           alt={category.name}
                           className="w-16 h-16 object-cover rounded-lg"
                         />
@@ -374,7 +372,7 @@ const Dashboard = () => {
                     <div className="flex items-center space-x-6">
                       <div className="text-right">
                         <p className="text-sm text-gray-500">Total Products</p>
-                        <p className="text-2xl font-bold text-blue-600">{category.totalProducts}</p>
+                        <p className="text-2xl font-bold text-[#F59E0B]">{category.totalProducts}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-500">Subcategories</p>
@@ -395,13 +393,13 @@ const Dashboard = () => {
                           Direct Products ({category.directProducts.length})
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                          {(expandedProducts[`direct-${category._id}`] 
-                            ? category.directProducts 
+                          {(expandedProducts[`direct-${category._id}`]
+                            ? category.directProducts
                             : category.directProducts.slice(0, 10)
                           ).map((product) => (
                             <div key={product._id} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                              <img 
-                                src={product.image} 
+                              <img
+                                src={product.image}
                                 alt={product.name}
                                 className="w-full h-32 object-cover rounded-lg mb-3"
                               />
@@ -430,8 +428,8 @@ const Dashboard = () => {
                               onClick={() => toggleProductsView(`direct-${category._id}`)}
                               className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
                             >
-                              {expandedProducts[`direct-${category._id}`] 
-                                ? `Show Less` 
+                              {expandedProducts[`direct-${category._id}`]
+                                ? `Show Less`
                                 : `View More (${category.directProducts.length - 10} more)`
                               }
                             </button>
@@ -452,8 +450,8 @@ const Dashboard = () => {
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center space-x-3">
                                 {subCategory.image && (
-                                  <img 
-                                    src={subCategory.image} 
+                                  <img
+                                    src={subCategory.image}
                                     alt={subCategory.name}
                                     className="w-12 h-12 object-cover rounded-lg"
                                   />
@@ -467,7 +465,7 @@ const Dashboard = () => {
                                 {subCategory.productCount} products
                               </span>
                             </div>
-                            
+
                             {subCategory.products.length > 0 && (
                               <>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-3">
@@ -476,8 +474,8 @@ const Dashboard = () => {
                                     : subCategory.products.slice(0, 10)
                                   ).map((product) => (
                                     <div key={product._id} className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:shadow-md transition-shadow">
-                                      <img 
-                                        src={product.image} 
+                                      <img
+                                        src={product.image}
                                         alt={product.name}
                                         className="w-full h-28 object-cover rounded-lg mb-2"
                                       />

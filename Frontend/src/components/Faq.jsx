@@ -11,7 +11,7 @@ const faqData = [
   },
   {
     question: "How do we book a service with you?",
-    answer: "Booking is simple! Go to decoryy.com, select your city by entering your PIN code, choose the service you would like, and then proceed to payment to confirm your booking."
+    answer: "Booking is simple! Go to todaymydream.com, select your city by entering your PIN code, choose the service you would like, and then proceed to payment to confirm your booking."
   },
   {
     question: "How much does simple birthday decoration cost?",

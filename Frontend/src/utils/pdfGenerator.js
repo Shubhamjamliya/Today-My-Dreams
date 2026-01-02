@@ -13,13 +13,13 @@ export const generateInvoicePDF = async (order) => {
     invoiceDiv.style.backgroundColor = 'white';
     invoiceDiv.style.padding = '10px';
     invoiceDiv.style.fontFamily = 'Arial, sans-serif';
-    
+
     // Generate HTML content
     invoiceDiv.innerHTML = generateInvoiceHTML(order);
-    
+
     // Append to body temporarily
     document.body.appendChild(invoiceDiv);
-    
+
     // Convert to canvas
     const canvas = await html2canvas(invoiceDiv, {
       scale: 2,
@@ -27,18 +27,18 @@ export const generateInvoicePDF = async (order) => {
       allowTaint: true,
       backgroundColor: '#ffffff'
     });
-    
+
     // Remove temporary div
     document.body.removeChild(invoiceDiv);
-    
+
     // Create PDF
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
-    
+
     const imgWidth = 210; // A4 width in mm
     const pageHeight = 295; // A4 height in mm
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
+
     // Check if content fits on one page
     if (imgHeight <= pageHeight) {
       // Content fits on one page
@@ -49,10 +49,10 @@ export const generateInvoicePDF = async (order) => {
       const scaledWidth = imgWidth * scale;
       const scaledHeight = imgHeight * scale;
       const xOffset = (imgWidth - scaledWidth) / 2;
-      
+
       pdf.addImage(imgData, 'PNG', xOffset, 0, scaledWidth, scaledHeight);
     }
-    
+
     return pdf;
   } catch (error) {
     console.error('Error generating PDF:', error);
@@ -115,7 +115,7 @@ const generateInvoiceHTML = (order) => {
         
         <div style="background: linear-gradient(135deg, #FCD24C 0%, #FCD24C 100%); color:#1D1B4A; padding: 1.5rem; text-align: center;">
           <div style="margin-bottom: 0.3rem;">
-            <h1 style="font-size: 2.2rem; font-weight: 900; margin: 0; letter-spacing: 1px; text-transform: uppercase; font-family: 'Arial Black', sans-serif;">DECORYY</h1>
+            <h1 style="font-size: 2.2rem; font-weight: 900; margin: 0; letter-spacing: 1px; text-transform: uppercase; font-family: 'Arial Black', sans-serif;">TODAY MY DREAM</h1>
           </div>
           <div style="height: 2px; width: 100px; background: white; margin: 0.5rem auto 0.5rem auto; opacity: 0.8;"></div>
           <p style="font-size: 0.9rem; opacity: 0.95; margin: 0; font-weight: 500; letter-spacing: 0.5px;">Celebration Decor & More</p>
@@ -257,8 +257,8 @@ const generateInvoiceHTML = (order) => {
         </div>
         
         <div style="background: #1f2937; color: white; padding: 1rem; text-align: center;">
-          <p style="margin-bottom: 0.3rem; font-weight: bold; font-size: 0.9rem;">Thank you for choosing DECORYY!</p>
-          <p style="margin-bottom: 0.3rem; font-size: 0.8rem;">For any queries, please contact us at support@decoryy.com</p>
+          <p style="margin-bottom: 0.3rem; font-weight: bold; font-size: 0.9rem;">Thank you for choosing TODAY MY DREAM!</p>
+          <p style="margin-bottom: 0.3rem; font-size: 0.8rem;">For any queries, please contact us at support@todaymydream.com</p>
           <p style="margin: 0; font-size: 0.75rem;">This is a computer-generated invoice.</p>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import config from '../config/config.js';
 import Loader from '../components/Loader';
+import { OrderSkeleton } from '../components/Loader/Skeleton';
 
 function toIST(dateString) {
   const date = new Date(dateString);
@@ -42,7 +43,7 @@ export default function Orders() {
       const userOrders = response.data.filter(order => order.email === user.email);
       setOrders(userOrders);
     } catch (error) {
-   
+
       const errorMessage = error.response?.data?.message || 'Failed to fetch orders. Please try again later.';
       setError(errorMessage);
       toast.error(errorMessage);
@@ -83,11 +84,17 @@ export default function Orders() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-center items-center">
-            <Loader size="large" text="Loading orders..." />
+      <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="flex justify-between items-center mb-8">
+            <div className="space-y-2">
+              <div className="h-8 w-48 bg-slate-200 rounded animate-pulse"></div>
+              <div className="h-4 w-32 bg-slate-200 rounded animate-pulse"></div>
+            </div>
           </div>
+          {[...Array(3)].map((_, i) => (
+            <OrderSkeleton key={i} />
+          ))}
         </div>
       </div>
     );
@@ -112,7 +119,7 @@ export default function Orders() {
           <span className="relative z-10">Your Orders</span>
           <span className="absolute inset-0 bg-neon-pink/20 blur-lg group-hover:bg-neon-pink/30 transition-colors duration-300"></span>
         </h1>
-        
+
         {orders.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-400">No orders found</p>

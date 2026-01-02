@@ -12,6 +12,7 @@ import {
 import ProductCard from '../components/ProductCard/ProductCard.jsx';
 import config from '../config/config.js';
 import Loader from '../components/Loader';
+import { ProductSkeleton } from '../components/Loader/Skeleton.jsx';
 import SEO from '../components/SEO/SEO';
 import { categoryAPI } from '../services/api';
 import { useCity } from '../context/CityContext';
@@ -459,9 +460,10 @@ const Shop = () => {
 
                         {/* Loading / Error / Results */}
                         {loading ? (
-                            <div className="h-96 flex flex-col items-center justify-center gap-4 w-full">
-                                <Loader />
-                                <p className="text-slate-400 animate-pulse font-medium">Curating your collection...</p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full">
+                                {[...Array(6)].map((_, i) => (
+                                    <ProductSkeleton key={i} />
+                                ))}
                             </div>
                         ) : error ? (
                             <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-red-200 w-full">

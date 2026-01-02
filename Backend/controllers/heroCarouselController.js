@@ -164,8 +164,8 @@ const createCarouselItemWithFiles = async (req, res) => {
     }
 
     // Process uploaded file: construct local URL
-    const baseUrl = process.env.BACKEND_URL || 'https://api.decoryy.com';
-    const imageUrl = (file && `${baseUrl}/decoryy/data/hero-carousel/${file.filename}`) || '';
+    const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
+    const imageUrl = (file && `${baseUrl}/todaymydream/data/hero-carousel/${file.filename}`) || '';
 
     // Get current max order
     const maxOrderItem = await HeroCarousel.findOne().sort('-order');
@@ -235,8 +235,8 @@ const updateCarouselItemWithFiles = async (req, res) => {
     // Update logic
     let imageUrl = existingItem.image;
     if (file) {
-      const baseUrl = process.env.BACKEND_URL || 'https://api.decoryy.com';
-      imageUrl = `${baseUrl}/decoryy/data/hero-carousel/${file.filename}`;
+      const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
+      imageUrl = `${baseUrl}/todaymydream/data/hero-carousel/${file.filename}`;
     }
     const updatedItem = {
       title: (itemData.title || existingItem.title).trim(),

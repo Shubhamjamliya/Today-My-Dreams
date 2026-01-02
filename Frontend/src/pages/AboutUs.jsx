@@ -38,8 +38,8 @@ const AboutUs = () => {
     return (
         <div className="w-full bg-amber-50/50 font-sans" style={{ backgroundImage: `url("data:image/svg+xml,...")` }}>
             <SEO
-                title="About TodayMyDream - Our Story & Mission"
-                description="Learn about TodayMyDream's journey in transforming celebrations with premium decoration services."
+                title="About Today My Dream - Our Story & Mission"
+                description="Learn about Today My Dream's journey in transforming celebrations with premium decoration services."
                 keywords="about us, our story, wedding decorations, event planning, birthday party decor, anniversary celebrations"
                 url="https://todaymydream.com/about"
                 image="/beautiful-wedding-decor.jpg"
@@ -167,7 +167,7 @@ const AboutUs = () => {
                     {/* Changed: grid-cols-2 on mobile, with the last item wrapping */}
                     <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <ContactCard icon={MapPin} title="Our Office" lines={["Arrah, Bihar, India"]} />
-                        <ContactCard icon={Mail} title="Email Us" lines={["support@decoryy.com"]} isLink href="mailto:support@decoryy.com" />
+                        <ContactCard icon={Mail} title="Email Us" lines={["support@todaymydream.com"]} isLink href="mailto:support@todaymydream.com" />
                     </div>
                 </div>
             </section>

@@ -34,22 +34,30 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('API Error:', error.response?.status, error.response?.data);
-    
-    // Handle token expiration
-    if (error.response?.status === 401) {
-      console.log('Token expired or invalid, clearing localStorage');
-      localStorage.removeItem('token');
-      localStorage.removeItem('admin_logged_in');
+    if (error.response) {
+      console.error('API Error:', error.response.status, error.response.data);
       
-      // Redirect to login if not already there
-      if (window.location.pathname !== '/admin/login') {
-        window.location.href = '/admin/login';
+      // Handle token expiration
+      if (error.response.status === 401) {
+        console.log('Token expired or invalid, clearing localStorage');
+        localStorage.removeItem('token');
+        localStorage.removeItem('admin_logged_in');
+        
+        // Redirect to login if not already there
+        if (window.location.pathname !== '/admin/login') {
+          window.location.href = '/admin/login';
+        }
       }
-    }
-    
-    if (error.response?.data?.error) {
-      console.error('Server Error:', error.response.data.error);
+      
+      if (error.response.data?.error) {
+        console.error('Server Error:', error.response.data.error);
+      }
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error('Network Error: No response received from server. Is the backend running at', config.API_BASE_URL + '?');
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.error('Request Error:', error.message);
     }
     return Promise.reject(error);
   }

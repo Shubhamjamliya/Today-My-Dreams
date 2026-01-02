@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import apiService from '../services/api';
 import toast from 'react-hot-toast';
+import Loader from "../components/Loader";
+import { CardGridSkeleton } from "../components/Skeleton";
 
 const BlogCard = React.memo(({ blog, onEdit, onDelete, onToggleStatus }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -91,7 +93,7 @@ const BlogCard = React.memo(({ blog, onEdit, onDelete, onToggleStatus }) => {
         <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
           {blog.title}
         </h3>
-        
+
         <p className="text-gray-600 mb-4 line-clamp-2">
           {blog.excerpt}
         </p>
@@ -131,14 +133,13 @@ const BlogCard = React.memo(({ blog, onEdit, onDelete, onToggleStatus }) => {
               <Edit size={14} />
               Edit
             </Link>
-            
+
             <button
               onClick={handleToggleStatus}
-              className={`flex items-center gap-1 px-3 py-1 rounded transition-colors text-sm ${
-                blog.isPublished
-                  ? 'bg-yellow-600 text-white hover:bg-yellow-700'
-                  : 'bg-green-600 text-white hover:bg-green-700'
-              }`}
+              className={`flex items-center gap-1 px-3 py-1 rounded transition-colors text-sm ${blog.isPublished
+                ? 'bg-yellow-600 text-white hover:bg-yellow-700'
+                : 'bg-green-600 text-white hover:bg-green-700'
+                }`}
             >
               {blog.isPublished ? (
                 <>
@@ -233,9 +234,9 @@ const BlogManagement = () => {
   }, []);
 
   const handleToggleStatus = useCallback((blogId, newStatus) => {
-    setBlogs(prevBlogs => 
-      prevBlogs.map(blog => 
-        blog._id === blogId 
+    setBlogs(prevBlogs =>
+      prevBlogs.map(blog =>
+        blog._id === blogId
           ? { ...blog, isPublished: newStatus, publishedAt: newStatus ? new Date() : blog.publishedAt }
           : blog
       )
@@ -281,7 +282,7 @@ const BlogManagement = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
@@ -394,9 +395,7 @@ const BlogManagement = () => {
           </button>
         </div>
       ) : loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
+        <CardGridSkeleton count={6} />
       ) : blogs.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -404,7 +403,7 @@ const BlogManagement = () => {
               <BlogCard
                 key={blog._id}
                 blog={blog}
-                onEdit={() => {}}
+                onEdit={() => { }}
                 onDelete={handleDelete}
                 onToggleStatus={handleToggleStatus}
               />
@@ -421,17 +420,16 @@ const BlogManagement = () => {
               >
                 Previous
               </button>
-              
+
               <div className="flex items-center gap-1">
                 {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(page => (
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 rounded-lg ${
-                      page === pagination.currentPage
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-gray-300 hover:bg-gray-50'
-                    }`}
+                    className={`px-3 py-2 rounded-lg ${page === pagination.currentPage
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white border border-gray-300 hover:bg-gray-50'
+                      }`}
                   >
                     {page}
                   </button>
@@ -453,8 +451,8 @@ const BlogManagement = () => {
           <div className="text-6xl mb-4">📝</div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No blog posts found</h3>
           <p className="text-gray-600 mb-6">
-            {hasActiveFilters 
-              ? "Try adjusting your filters to see more results." 
+            {hasActiveFilters
+              ? "Try adjusting your filters to see more results."
               : "Get started by creating your first blog post!"}
           </p>
           {!hasActiveFilters && (

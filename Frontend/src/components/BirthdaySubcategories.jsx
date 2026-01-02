@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { subCategoryAPI, categoryAPI } from '../services/api';
 import config from '../config/config';
+import { CircleSkeleton } from './Loader/Skeleton';
 import { useCity } from '../context/CityContext';
 import axios from 'axios';
 
@@ -62,9 +63,9 @@ const BirthdaySubcategories = () => {
       }
       const categoriesResponse = await axios.get(`${config.API_URLS.CATEGORIES}?${urlParams.toString()}`);
       const categories = categoriesResponse.data.categories || [];
-      
+
       // Find Kids Birthday category specifically (case-insensitive search)
-      let kidsBirthdayCategory = categories.find(cat => 
+      let kidsBirthdayCategory = categories.find(cat =>
         cat.name.toLowerCase().includes('kids birthday') ||
         cat.name.toLowerCase() === 'kids birthday decor' ||
         cat.name.toLowerCase() === 'kids birthday decorations'
@@ -72,8 +73,8 @@ const BirthdaySubcategories = () => {
 
       // If Kids Birthday not found, try finding general Birthday category
       if (!kidsBirthdayCategory) {
-        kidsBirthdayCategory = categories.find(cat => 
-          cat.name.toLowerCase().includes('birthday') || 
+        kidsBirthdayCategory = categories.find(cat =>
+          cat.name.toLowerCase().includes('birthday') ||
           cat.name.toLowerCase().includes('birth') ||
           cat.name.toLowerCase() === 'birthday decor' ||
           cat.name.toLowerCase() === 'birthday decorations'
@@ -97,7 +98,7 @@ const BirthdaySubcategories = () => {
       // Filter and transform the data to match our component's expected format
       // Filter for kids-specific themes if we're in a general birthday category
       let filteredSubCategories = subCategories;
-      
+
       if (!kidsBirthdayCategory.name.toLowerCase().includes('kids')) {
         // If we're in a general birthday category, try to filter for kids themes
         // This is optional - you can remove this filtering if you want all themes
@@ -143,8 +144,8 @@ const BirthdaySubcategories = () => {
       // Count products per subcategory
       const counts = {};
       birthdayThemes.forEach(theme => {
-        counts[theme.name] = products.filter(p => 
-          p.category?.name === birthdayCategoryName && 
+        counts[theme.name] = products.filter(p =>
+          p.category?.name === birthdayCategoryName &&
           p.subCategory?.name === theme.name
         ).length;
       });
@@ -171,14 +172,10 @@ const BirthdaySubcategories = () => {
               Fun-Filled Themes for Every Celebration!
             </p>
           </div>
-          
+
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6 justify-items-center">
             {[...Array(6)].map((_, index) => (
-              <div key={index} className="flex flex-col items-center text-center">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 
-                               bg-amber-200 rounded-full animate-pulse"></div>
-                <div className="mt-2 h-4 bg-amber-200 rounded animate-pulse w-16"></div>
-              </div>
+              <CircleSkeleton key={index} />
             ))}
           </div>
         </div>
@@ -189,8 +186,8 @@ const BirthdaySubcategories = () => {
   // Error state - show "not found try again" message
   if (error) {
     return (
-   <>
-   </>
+      <>
+      </>
     );
   }
 
@@ -202,7 +199,7 @@ const BirthdaySubcategories = () => {
   return (
     <section className="py-2 sm:py-2 md:py-2 font-sans">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 flex flex-col items-center">
-        
+
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -220,7 +217,7 @@ const BirthdaySubcategories = () => {
           <p className="text-sm md:text-base text-gray-600 mt-2">
             Fun-Filled Themes for Every Celebration!
           </p>
-          
+
         </motion.div>
 
         {/* Birthday Themes Grid */}
@@ -228,7 +225,7 @@ const BirthdaySubcategories = () => {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}    
+          viewport={{ once: true, amount: 0.2 }}
           className="grid grid-cols-3 gap-4 sm:gap-6 w-full max-w-6xl mx-auto md:flex md:flex-wrap md:justify-center"
         >
           {birthdayThemes.map((theme, index) => (
@@ -244,16 +241,16 @@ const BirthdaySubcategories = () => {
             >
               <Link
                 to="/shop"
-                state={{ 
-                  selectedCategory: { 
+                state={{
+                  selectedCategory: {
                     main: birthdayCategoryName,
-                    sub: theme.name 
-                  } 
+                    sub: theme.name
+                  }
                 }}
                 className="flex flex-col items-center text-center group w-full "
               >
                 {/* Circular Theme Icon */}
-                <div 
+                <div
                   className={`relative w-26 h-26 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-32 lg:h-32 
                               rounded-full overflow-hidden 
                              shadow-lg group-hover:shadow-xl transition-all duration-300 
@@ -262,7 +259,7 @@ const BirthdaySubcategories = () => {
                   {/* Golden Shine Ring */}
                   <div className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-yellow-400 to-transparent animate-spin-slow"></div>
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-yellow-300 to-transparent animate-spin-slow" style={{animationDelay: '0.5s'}}></div>
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-yellow-300 to-transparent animate-spin-slow" style={{ animationDelay: '0.5s' }}></div>
                   </div>
                   {theme.isVideo ? (
                     <video
@@ -291,7 +288,7 @@ const BirthdaySubcategories = () => {
                       }}
                     />
                   )}
-                  
+
                   {/* Overlay for hover effect */}
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 
                                   transition-opacity duration-300 rounded-full flex items-center justify-center">
@@ -309,7 +306,7 @@ const BirthdaySubcategories = () => {
                                  leading-tight text-center">
                     {theme.name}
                   </h3>
-                 
+
                 </div>
               </Link>
             </motion.div>
@@ -325,11 +322,11 @@ const BirthdaySubcategories = () => {
         >
           <Link
             to="/shop"
-            state={{ 
-              selectedCategory: { 
+            state={{
+              selectedCategory: {
                 main: birthdayCategoryName,
-                categoryId: birthdayCategoryId 
-              } 
+                categoryId: birthdayCategoryId
+              }
             }}
             className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#FCD24C] to-[#FDD14E] 
                        text-white font-semibold rounded-full hover:from-[#FCD24C]/90 hover:to-[#FDD14E]/90 

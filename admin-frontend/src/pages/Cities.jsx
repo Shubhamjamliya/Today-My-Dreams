@@ -443,7 +443,7 @@ const Cities = () => {
     // Generate city link
     const getCityLink = (cityName) => {
         // Using the frontend URL (replace with your actual frontend URL)
-        const frontendUrl = 'https://decoryy.com'; // Update this if needed
+        const frontendUrl = 'https://todaymydream.com'; // Update this if needed
         return `${frontendUrl}/?city=${encodeURIComponent(cityName)}`;
     };
 
@@ -702,7 +702,7 @@ const Cities = () => {
                     </div>
                 </form>
 
-                {loading && <Loader />}
+                {loading && <Loader text="Loading cities..." />}
                 {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
 
                 {/* Cities Table */}
@@ -785,8 +785,8 @@ const Cities = () => {
                                             <button
                                                 onClick={() => handleCopyLink(city)}
                                                 className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${copiedCityId === city._id
-                                                        ? 'bg-green-500 text-white'
-                                                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                                                    ? 'bg-green-500 text-white'
+                                                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
                                                     }`}
                                                 title={copiedCityId === city._id ? 'Copied!' : 'Copy link'}
                                             >
@@ -890,8 +890,8 @@ const Cities = () => {
                                 <button
                                     onClick={() => { setActiveTab('products'); setSelectedItems([]); setSearchQuery(''); }}
                                     className={`py-3 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'products'
-                                            ? 'border-blue-500 text-blue-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                                        ? 'border-blue-500 text-blue-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     <Package size={16} className="inline mr-2" />
@@ -900,8 +900,8 @@ const Cities = () => {
                                 <button
                                     onClick={() => { setActiveTab('categories'); setSelectedItems([]); setSearchQuery(''); }}
                                     className={`py-3 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'categories'
-                                            ? 'border-blue-500 text-blue-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                                        ? 'border-blue-500 text-blue-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     <Grid size={16} className="inline mr-2" />
@@ -912,8 +912,8 @@ const Cities = () => {
                                 <button
                                     onClick={() => { setActiveTab('carousel'); setSelectedItems([]); setSearchQuery(''); }}
                                     className={`py-3 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'carousel'
-                                            ? 'border-blue-500 text-blue-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                                        ? 'border-blue-500 text-blue-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     <ImageIcon size={16} className="inline mr-2" />
@@ -1141,8 +1141,8 @@ const Cities = () => {
                                             <div
                                                 key={item._id}
                                                 className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedItems.includes(item._id)
-                                                        ? 'border-blue-500 bg-blue-50'
-                                                        : 'border-gray-200 hover:border-blue-300'
+                                                    ? 'border-blue-500 bg-blue-50'
+                                                    : 'border-gray-200 hover:border-blue-300'
                                                     }`}
                                                 onClick={() => toggleItemSelection(item._id)}
                                             >

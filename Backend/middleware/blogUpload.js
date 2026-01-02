@@ -56,8 +56,8 @@ const handleBlogImageUpload = (req, res, next) => {
 
     // Transform path to URL if file exists
     if (req.file) {
-      const baseUrl = process.env.BACKEND_URL || 'https://api.decoryy.com/api';
-      req.file.path = `${baseUrl}/decoryy/data/blog-images/${req.file.filename}`;
+      const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com/api';
+      req.file.path = `${baseUrl}/todaymydream/data/blog-images/${req.file.filename}`;
     }
 
     next();

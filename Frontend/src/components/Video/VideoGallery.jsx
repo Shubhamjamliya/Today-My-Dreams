@@ -4,6 +4,7 @@ import { Play, ChevronLeft, ChevronRight, X, Star, Award, MessageCircle, Lightbu
 import VideoCard from './VideoCard';
 import config from '../../config/config';
 import Loader from '../Loader';
+import { VideoSkeleton } from '../Loader/Skeleton';
 
 const VideoGallery = ({ 
   title = "Our Videos", 
@@ -78,8 +79,10 @@ const VideoGallery = ({
     return (
       <section className={`pt-2 sm:pt-4 lg:pt-6 ${className}`}>
         <div className="container mx-auto px-3 sm:px-4 lg:px-6">
-          <div className="text-center">
-            <Loader size="medium" text="Loading videos..." />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <VideoSkeleton key={i} />
+            ))}
           </div>
         </div>
       </section>

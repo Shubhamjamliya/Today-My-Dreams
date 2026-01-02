@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { 
-  UserCircleIcon, 
-  PencilSquareIcon, 
-  ArrowLeftOnRectangleIcon, 
-  CheckCircleIcon, 
-  XCircleIcon, 
-  ShoppingCartIcon, 
-  ClockIcon, 
-  TrashIcon, 
-  PlusIcon, 
+import {
+  UserCircleIcon,
+  PencilSquareIcon,
+  ArrowLeftOnRectangleIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  ShoppingCartIcon,
+  ClockIcon,
+  TrashIcon,
+  PlusIcon,
   MinusIcon,
   CogIcon,
   ShieldCheckIcon,
@@ -32,6 +32,7 @@ import { toast } from 'react-hot-toast';
 import orderService from '../services/orderService';
 import config from '../config/config.js';
 import OrderDetailsModal from '../components/OrderDetailsModal/OrderDetailsModal';
+import { OrderSkeleton } from '../components/Loader/Skeleton';
 
 // Helper to get tab from URL
 const useQuery = () => {
@@ -79,7 +80,7 @@ const Account = () => {
       navigate('/login');
     } else {
       setLoading(false);
-   
+
     }
   }, [isAuthenticated, navigate, user]);
 
@@ -267,11 +268,11 @@ const Account = () => {
   };
 
   const tabs = [
-   
+
     { id: 'profile', label: 'Profile', icon: PencilSquareIcon },
-  
+
     { id: 'orders', label: 'Orders', icon: GiftIcon },
-    
+
   ];
 
   // JSX for the orders tab
@@ -297,8 +298,10 @@ const Account = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#FCD24C]"></div>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <OrderSkeleton key={i} />
+            ))}
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-12">
@@ -322,21 +325,21 @@ const Account = () => {
                 className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow"
               >
                 {/* Order Header */}
-<div className="flex flex-wrap justify-between items-start gap-4 mb-4">
-  <div>
-    <p className="text-sm text-gray-500">Order ID</p>
-    <p className="font-mono text-sm font-bold text-[#FCD24C]">{order.customOrderId || order._id}</p>
-    {order.customOrderId && (
-      <p className="font-mono text-xs text-gray-400 mt-1">ID: {order._id}</p>
-    )}
-  </div>
-  <div className="text-right">
-    <p className="text-sm text-gray-500">Order Date</p>
-    <p className="font-medium">
-      {format(new Date(order.createdAt), 'dd/MM/yyyy')}
-    </p>
-  </div>
-</div>
+                <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Order ID</p>
+                    <p className="font-mono text-sm font-bold text-[#FCD24C]">{order.customOrderId || order._id}</p>
+                    {order.customOrderId && (
+                      <p className="font-mono text-xs text-gray-400 mt-1">ID: {order._id}</p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Order Date</p>
+                    <p className="font-medium">
+                      {format(new Date(order.createdAt), 'dd/MM/yyyy')}
+                    </p>
+                  </div>
+                </div>
 
                 {/* Order Items Preview */}
                 <div className="mt-4 space-y-3">
@@ -374,13 +377,12 @@ const Account = () => {
                         {getStatusIcon(order.orderStatus)}
                         <span>{order.orderStatus?.charAt(0).toUpperCase() + order.orderStatus?.slice(1)}</span>
                       </div>
-                      <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${
-                        order.paymentStatus === 'completed' 
+                      <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${order.paymentStatus === 'completed'
                           ? 'bg-green-50 text-green-700 border-green-200'
                           : order.paymentStatus === 'failed'
-                          ? 'bg-red-50 text-red-700 border-red-200'
-                          : 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                      }`}>
+                            ? 'bg-red-50 text-red-700 border-red-200'
+                            : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                        }`}>
                         <CreditCardIcon className="h-4 w-4" />
                         <span>Payment: {order.paymentStatus?.charAt(0).toUpperCase() + order.paymentStatus?.slice(1)}</span>
                       </div>
@@ -424,31 +426,31 @@ const Account = () => {
             className="mb-2"
           >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white rounded-2xl shadow-md p-6">
-  {/* Left Section */}
-  <div>
-    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-      My Account
-    </h1>
-    <p className="text-gray-500 mt-2 text-base">
-      Welcome to your account <span className="font-semibold text-gray-800">{user?.name}</span> 👋  
-      Manage your profile and orders below.
-    </p>
-  </div>
+              {/* Left Section */}
+              <div>
+                <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                  My Account
+                </h1>
+                <p className="text-gray-500 mt-2 text-base">
+                  Welcome to your account <span className="font-semibold text-gray-800">{user?.name}</span> 👋
+                  Manage your profile and orders below.
+                </p>
+              </div>
 
-  {/* Right Section - Logout Button */}
-  <motion.button
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    onClick={handleLogout}
-    disabled={isLoggingOut}
-    className="w-fit flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 
+              {/* Right Section - Logout Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="w-fit flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 
                text-white font-medium rounded-xl shadow-lg hover:from-red-600 hover:to-red-700 
                transition-all duration-200"
-  >
-    <ArrowLeftOnRectangleIcon className="h-5 w-5" />
-    <span>{isLoggingOut ? 'Signing out...' : 'Sign out'}</span>
-  </motion.button>
-</div>
+              >
+                <ArrowLeftOnRectangleIcon className="h-5 w-5" />
+                <span>{isLoggingOut ? 'Signing out...' : 'Sign out'}</span>
+              </motion.button>
+            </div>
 
           </motion.div>
 
@@ -467,11 +469,10 @@ const Account = () => {
                       whileHover={{ x: 4 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleTabChange(tab.id)}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
-                        activeTab === tab.id
+                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${activeTab === tab.id
                           ? 'bg-[#FCD24C]-50 text-primary-dark border border-primary shadow-sm'
                           : 'text-black-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
+                        }`}
                     >
                       <tab.icon className="h-5 w-5" />
                       <span className="font-medium">{tab.label}</span>
@@ -484,7 +485,7 @@ const Account = () => {
             {/* Main Content */}
             <div className="lg:col-span-3">
               <AnimatePresence mode="wait">
-           
+
 
                 {activeTab === 'profile' && (
                   <motion.div
@@ -496,7 +497,7 @@ const Account = () => {
                   >
                     <div className="flex justify-between items-center mb-6">
                       <h3 className="text-xl font-semibold text-gray-900">Profile Information</h3>
-                     
+
                     </div>
 
                     {isEditing ? (
@@ -629,141 +630,141 @@ const Account = () => {
                           <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
                           <p className="text-lg font-medium text-gray-900">{user?.phone || 'Not provided'}</p>
                         </div>
-                     
+
                       </div>
                     )}
                   </motion.div>
                 )}
 
-           {activeTab === 'cart' && (
-  <motion.div
-    key="cart"
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -20 }}
-    className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8"
-  >
-    {/* Header */}
-    <div className="flex items-center justify-between mb-6">
-      <h3 className="text-2xl font-bold text-gray-900">🛒 Shopping Cart</h3>
-      {cartItems.length > 0 && (
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleClearCart}
-          className="text-sm text-red-600 hover:text-red-800 font-medium"
-        >
-          Clear All
-        </motion.button>
-      )}
-    </div>
+                {activeTab === 'cart' && (
+                  <motion.div
+                    key="cart"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8"
+                  >
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-2xl font-bold text-gray-900">🛒 Shopping Cart</h3>
+                      {cartItems.length > 0 && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={handleClearCart}
+                          className="text-sm text-red-600 hover:text-red-800 font-medium"
+                        >
+                          Clear All
+                        </motion.button>
+                      )}
+                    </div>
 
-    {/* Empty State */}
-    {cartItems.length === 0 ? (
-      <div className="flex flex-col items-center justify-center text-center py-16">
-        <ShoppingCartIcon className="h-20 w-20 text-gray-300 mb-4" />
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Your cart is empty</h3>
-        <p className="text-gray-500 mb-6">Looks like you haven’t added anything yet.</p>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate('/shop')}
-          className="px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-md"
-        >
-          Browse Products
-        </motion.button>
-      </div>
-    ) : (
-      <div className="space-y-6">
-        {/* Cart Items */}
-        {cartItems.map((item) => (
-          <motion.div
-            key={item.productId || item.product?._id || item.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:shadow-md transition"
-          >
-            {/* Product Info */}
-            <div className="flex items-center gap-4">
-              <img
-                src={config.fixImageUrl(getItemImage(item))}
-                alt={item.product?.name || item.name}
-                className="h-16 w-16 object-cover rounded-lg border"
-              />
-              <div>
-                <h4 className="font-semibold text-gray-900">{item.product?.name || item.name}</h4>
-                <p className="text-sm text-gray-500">₹{(item.product?.price || item.price).toFixed(2)}</p>
-              </div>
-            </div>
+                    {/* Empty State */}
+                    {cartItems.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center text-center py-16">
+                        <ShoppingCartIcon className="h-20 w-20 text-gray-300 mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">Your cart is empty</h3>
+                        <p className="text-gray-500 mb-6">Looks like you haven’t added anything yet.</p>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => navigate('/shop')}
+                          className="px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-md"
+                        >
+                          Browse Products
+                        </motion.button>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {/* Cart Items */}
+                        {cartItems.map((item) => (
+                          <motion.div
+                            key={item.productId || item.product?._id || item.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:shadow-md transition"
+                          >
+                            {/* Product Info */}
+                            <div className="flex items-center gap-4">
+                              <img
+                                src={config.fixImageUrl(getItemImage(item))}
+                                alt={item.product?.name || item.name}
+                                className="h-16 w-16 object-cover rounded-lg border"
+                              />
+                              <div>
+                                <h4 className="font-semibold text-gray-900">{item.product?.name || item.name}</h4>
+                                <p className="text-sm text-gray-500">₹{(item.product?.price || item.price).toFixed(2)}</p>
+                              </div>
+                            </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-4">
-              {/* Quantity Controls */}
-              <div className="flex items-center gap-2 bg-white border rounded-lg px-2 py-1">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity - 1)}
-                  className="p-1 rounded-full hover:bg-gray-100"
-                  disabled={item.quantity <= 1}
-                >
-                  <MinusIcon className="h-4 w-4" />
-                </motion.button>
-                <span className="font-medium px-2">{item.quantity}</span>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity + 1)}
-                  className="p-1 rounded-full hover:bg-gray-100"
-                >
-                  <PlusIcon className="h-4 w-4" />
-                </motion.button>
-              </div>
+                            {/* Actions */}
+                            <div className="flex items-center gap-4">
+                              {/* Quantity Controls */}
+                              <div className="flex items-center gap-2 bg-white border rounded-lg px-2 py-1">
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity - 1)}
+                                  className="p-1 rounded-full hover:bg-gray-100"
+                                  disabled={item.quantity <= 1}
+                                >
+                                  <MinusIcon className="h-4 w-4" />
+                                </motion.button>
+                                <span className="font-medium px-2">{item.quantity}</span>
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity + 1)}
+                                  className="p-1 rounded-full hover:bg-gray-100"
+                                >
+                                  <PlusIcon className="h-4 w-4" />
+                                </motion.button>
+                              </div>
 
-              {/* Remove Button */}
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => handleRemoveFromCart(item.productId || item.product?._id || item.id)}
-                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <TrashIcon className="h-5 w-5" />
-              </motion.button>
-            </div>
-          </motion.div>
-        ))}
+                              {/* Remove Button */}
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => handleRemoveFromCart(item.productId || item.product?._id || item.id)}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              >
+                                <TrashIcon className="h-5 w-5" />
+                              </motion.button>
+                            </div>
+                          </motion.div>
+                        ))}
 
-        {/* Cart Summary */}
-        <div className="border-t pt-6 space-y-4">
-          <div className="flex justify-between items-center text-lg font-semibold text-gray-800">
-            <span>Total</span>
-            <span>₹{getTotalPrice().toFixed(2)}</span>
-          </div>
+                        {/* Cart Summary */}
+                        <div className="border-t pt-6 space-y-4">
+                          <div className="flex justify-between items-center text-lg font-semibold text-gray-800">
+                            <span>Total</span>
+                            <span>₹{getTotalPrice().toFixed(2)}</span>
+                          </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/shop')}
-              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
-            >
-              Continue Shopping
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/checkout')}
-              className="flex-1 px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-md"
-            >
-              Proceed to Checkout
-            </motion.button>
-          </div>
-        </div>
-      </div>
-    )}
-  </motion.div>
-)}
+                          {/* Action Buttons */}
+                          <div className="flex flex-col sm:flex-row gap-4">
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => navigate('/shop')}
+                              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+                            >
+                              Continue Shopping
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => navigate('/checkout')}
+                              className="flex-1 px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-md"
+                            >
+                              Proceed to Checkout
+                            </motion.button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
 
                 {activeTab === 'orders' && (
                   <motion.div
@@ -774,13 +775,13 @@ const Account = () => {
                     className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
                   >
                     <h3 className="text-xl font-semibold text-gray-900 mb-6">Order History</h3>
-                    
+
                     <OrdersTab />
                   </motion.div>
                 )}
 
-            
-          
+
+
               </AnimatePresence>
             </div>
           </div>

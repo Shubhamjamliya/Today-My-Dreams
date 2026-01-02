@@ -3,7 +3,7 @@
 
 const config = {
   // API Configuration
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5175' : 'https://api.decoryy.com'),
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://api.todaymydream.com'),
 
   // Simple API URL getter for backward compatibility
   get API_URL() {
@@ -69,7 +69,7 @@ const config = {
     // If it's a path to a backend data file
     if (cleanPath.includes('Rikocraft.com') || !cleanPath.includes('/')) {
 
-      const basePath = cleanPath.startsWith('decoryy/data/') ? '' : 'decoryy/data/';
+      const basePath = cleanPath.startsWith('todaymydream/data/') ? '' : 'todaymydream/data/';
       return `${config.API_BASE_URL}/${basePath}${cleanPath}`;
     }
 

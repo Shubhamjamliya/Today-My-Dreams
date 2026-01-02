@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import apiService from '../services/api';
 import { format } from 'date-fns';
 import { Trash2, Edit, Plus, X, Check } from 'lucide-react';
+import Loader from "../components/Loader";
 
 const CouponManagement = () => {
   const [coupons, setCoupons] = useState([]);
@@ -96,7 +97,7 @@ const CouponManagement = () => {
     }
   };
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  if (loading) return <Loader fullScreen text="Loading coupons..." />;
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
   return (
@@ -217,9 +218,8 @@ const CouponManagement = () => {
                 <td className="px-4 py-2">₹{coupon.minPurchase}</td>
                 <td className="px-4 py-2">{format(new Date(coupon.endDate), 'dd/MM/yyyy')}</td>
                 <td className="px-4 py-2">
-                  <span className={`px-2 py-1 rounded text-sm ${
-                    coupon.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
+                  <span className={`px-2 py-1 rounded text-sm ${coupon.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
                     {coupon.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </td>

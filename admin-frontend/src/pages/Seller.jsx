@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Grid, List, Store, Loader2, AlertCircle } from "lucide-react";
+import { Plus, Search, Grid, List, Store, AlertCircle } from "lucide-react";
 import apiService from "../services/api";
+import Loader from "../components/Loader";
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return '';
@@ -163,9 +164,7 @@ const Seller = () => {
 
         {/* Loading State */}
         {loading && (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-          </div>
+          <Loader text="Loading best sellers..." />
         )}
 
         {/* Error State */}

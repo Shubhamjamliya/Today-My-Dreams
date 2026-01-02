@@ -8,7 +8,7 @@ const config = {
   ...env,
 
   // Backend API URL - Change this to switch between environments
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://api.decoryy.com'),
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://api.todaymydream.com'),
 
   // Simple API URL getter for backward compatibility
   get API_URL() {
@@ -60,9 +60,9 @@ const config = {
     const cleanPath = imagePath.replace(/^\/+/, '').replace(/\/+/g, '/');
 
     // If it's a path to a backend data file
-    if (cleanPath.includes('decoryy.com') || !cleanPath.includes('/')) {
+    if (cleanPath.includes('todaymydream.com') || !cleanPath.includes('/')) {
       // Always use /pawnbackend/data/ prefix for backend files
-      const basePath = cleanPath.startsWith('pawnbackend/data/') ? '' : 'pawnbackend/data/';
+      const basePath = cleanPath.startsWith('todaymydream/data/') ? '' : 'todaymydream/data/';
       return `${config.API_BASE_URL}/${basePath}${cleanPath}`;
     }
 
@@ -97,7 +97,7 @@ const config = {
   // Production configuration
   get PROD_CONFIG() {
     return {
-      API_BASE_URL: 'https://api.decoryy.com/api/',
+      API_BASE_URL: 'https://api.todaymydream.com/api/',
       ENABLE_LOGGING: false,
       ENABLE_ANALYTICS: true,
     };

@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Star, TrendingUp, Heart, Award, ShoppingBag } fr
 import { categoryAPI, subCategoryAPI } from '../services/api';
 import config from '../config/config';
 import Loader from '../components/Loader';
+import { ProductSkeleton } from '../components/Loader/Skeleton';
 import SEO from '../components/SEO/SEO';
 import { useCity } from '../context/CityContext';
 import ProductCard from '../components/ProductCard/ProductCard';
@@ -89,7 +90,7 @@ const CategoryProductSection = ({ category, selectedCity }) => {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-lg aspect-square animate-pulse border border-gray-200"></div>
+            <ProductSkeleton key={i} />
           ))
         ) : (
           products.map(product => (

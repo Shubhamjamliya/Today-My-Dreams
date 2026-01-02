@@ -79,14 +79,14 @@ const handleUpload = (req, res, next) => {
 // Middleware to transform local paths to URLs
 const transformPathsToUrls = (req, res, next) => {
   if (req.files) {
-    const baseUrl = process.env.BACKEND_URL || 'https://api.decoryy.com';
+    const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
 
     Object.keys(req.files).forEach(key => {
       req.files[key].forEach(file => {
         // Convert absolute path to URL
         // The file is saved in data/products, which is served at /pawnbackend/data/products
         const filename = file.filename;
-        file.path = `${baseUrl}/decoryy/data/products/${filename}`;
+        file.path = `${baseUrl}/todaymydream/data/products/${filename}`;
       });
     });
   }

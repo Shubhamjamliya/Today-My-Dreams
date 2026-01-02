@@ -60,16 +60,17 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 p-4">
       <div className="w-full max-w-md">
         {/* Login Card */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#FCD24C] to-[#FCD24C] px-8 py-4 text-center">
-            <div className="inline-flex items-center justify-center   mb-4">
-              <img src="/logo.png" alt="decoryy Logo"  />
+          <div className="bg-gradient-to-r from-[#FCD24C] to-[#F59E0B] px-8 py-6 text-center">
+            <div className="inline-flex items-center justify-center mb-4">
+              <img src="/TodayMyDream.png" alt="Today My Dream Logo" className="w-24 h-24 object-contain" />
             </div>
-            
+            <h2 className="text-2xl font-bold text-gray-900">Admin Login</h2>
+            <p className="text-gray-800 text-sm mt-1">Manage your dream store</p>
           </div>
 
           {/* Form */}
@@ -93,7 +94,7 @@ const Login = () => {
                     id="email"
                     type="email"
                     placeholder="Enter your email"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FCD24C] focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -112,7 +113,7 @@ const Login = () => {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FCD24C] focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -120,23 +121,27 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
               </div>
 
-              {/* Login Button */}
-              <button 
-                type="submit" 
-                className="w-full bg-gradient-to-r from-[#FCD24C] to-[#FCD24C] hover:from-[#FCD24C] hover:to-[#FCD24C] text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              {/* Submit Button */}
+              <button
+                type="submit"
                 disabled={loading}
+                className={`w-full py-4 rounded-xl text-gray-900 font-bold text-lg shadow-lg transform transition-all duration-200 active:scale-95 ${
+                  loading 
+                    ? "bg-gray-300 cursor-not-allowed" 
+                    : "bg-gradient-to-r from-[#FCD24C] to-[#F59E0B] hover:shadow-xl hover:-translate-y-0.5"
+                }`}
               >
                 {loading ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Signing in...</span>
+                  <div className="flex items-center justify-center">
+                    <div className="w-6 h-6 border-3 border-gray-900 border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Logging in...
                   </div>
                 ) : (
                   "Sign In"

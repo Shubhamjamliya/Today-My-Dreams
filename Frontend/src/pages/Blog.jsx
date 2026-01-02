@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { blogAPI } from '../services/api';
 import Loader from '../components/Loader';
+import { BlogSkeleton } from '../components/Loader/Skeleton';
 import SEO from '../components/SEO/SEO';
 import InternalLinking from '../components/SEO/InternalLinking';
 
@@ -237,8 +238,10 @@ const Blog = () => {
                 </button>
               </div>
             ) : loading ? (
-              <div className="flex justify-center py-12">
-                <Loader size="lg" text="Loading blog posts..." />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {[...Array(8)].map((_, i) => (
+                  <BlogSkeleton key={i} />
+                ))}
               </div>
             ) : blogs.length > 0 ? (
               <>

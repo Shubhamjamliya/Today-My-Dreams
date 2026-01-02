@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Grid, List, FolderOpen, Loader2, AlertCircle, GripVertical, ArrowUp, ArrowDown, Check, X } from 'lucide-react';
+import { Plus, Search, Grid, List, FolderOpen, AlertCircle, GripVertical, ArrowUp, ArrowDown, Check, X } from 'lucide-react';
 import apiService from "../services/api";
+import Loader from "../components/Loader";
+import { CardGridSkeleton } from "../components/Skeleton";
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return '';
   if (imgPath.startsWith('http')) return imgPath;
-  return `https://decoryy-xmqa.onrender.com/decoryy/data/${imgPath}`;
+  return `https://todaymydream.com/todaymydream/data/${imgPath}`;
 };
 
 const Categories = () => {
@@ -183,8 +185,8 @@ const Categories = () => {
               handleToggleActive(category._id, category.isActive);
             }}
             className={`p-2 rounded-full transition-all duration-200 ${category.isActive
-                ? 'bg-green-500 hover:bg-green-600 text-white'
-                : 'bg-red-500 hover:bg-red-600 text-white'
+              ? 'bg-green-500 hover:bg-green-600 text-white'
+              : 'bg-red-500 hover:bg-red-600 text-white'
               }`}
             title={category.isActive ? 'Category is active - click to disable' : 'Category is disabled - click to enable'}
           >
@@ -318,9 +320,7 @@ const Categories = () => {
 
         {/* Loading State */}
         {loading && (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-          </div>
+          <CardGridSkeleton count={8} />
         )}
 
         {/* Error State */}

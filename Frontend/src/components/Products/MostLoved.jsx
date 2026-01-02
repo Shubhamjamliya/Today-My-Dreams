@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import config from '../../config/config.js';
-import Loader from '../Loader';
+import { ProductSkeleton } from '../Loader/Skeleton';
 import ProductCard from '../ProductCard/ProductCard.jsx';
 import { useCity } from '../../context/CityContext';
 
@@ -54,12 +54,12 @@ export default function MostLoved() {
       try {
         // Invalidate cache when city changes
         const cacheKey = `mostloved_${selectedCity || 'all'}`;
-        
+
         // Check cache first (city-specific cache)
-        if (lovedProductsCache && 
-            lovedProductsCache.city === selectedCity &&
-            lovedCacheTimestamp && 
-            (Date.now() - lovedCacheTimestamp) < CACHE_DURATION) {
+        if (lovedProductsCache &&
+          lovedProductsCache.city === selectedCity &&
+          lovedCacheTimestamp &&
+          (Date.now() - lovedCacheTimestamp) < CACHE_DURATION) {
           setProducts(lovedProductsCache.data);
           setLoading(false);
           return;
@@ -67,36 +67,36 @@ export default function MostLoved() {
 
         setLoading(true);
         setError(null);
-        
+
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
+
         const urlParams = new URLSearchParams();
         if (selectedCity) {
           urlParams.append('city', selectedCity);
         }
-        
+
         const res = await fetch(`${config.API_URLS.SHOP}/section/mostloved?${urlParams.toString()}`, {
           signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
-        
+
         if (!res.ok) throw new Error('Failed to fetch most loved products');
         const data = await res.json();
-        
+
         const productsData = Array.isArray(data) ? data : data.products || [];
-        
+
         // Cache the data with city information
         lovedProductsCache = {
           city: selectedCity,
           data: productsData
         };
         lovedCacheTimestamp = Date.now();
-        
+
         setProducts(productsData);
       } catch (err) {
-       
+
         setError(err.message || 'Error fetching most loved products');
         // Set empty array to prevent crashes
         setProducts([]);
@@ -126,8 +126,12 @@ export default function MostLoved() {
               Most <span className="font-serif italic">Brought Decorative</span>
             </h2>
           </div>
-          <div className="flex items-center justify-center py-8 md:py-16">
-            <Loader size="large" text="Loading most loved products..." />
+          <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory">
+            {[...Array(isMobile ? 4 : 8)].map((_, i) => (
+              <div key={i} className="flex-shrink-0 w-48 md:w-56 lg:w-64 snap-start">
+                <ProductSkeleton />
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -154,7 +158,7 @@ export default function MostLoved() {
               Most <span className="font-serif italic">Brought Decorative</span>
             </h2>
             <p className="text-gray-600 text-sm md:text-base lg:text-lg leading-relaxed mb-4 md:mb-6 max-w-2xl mx-auto">
-             favorite Decorative that have Made the day even more memorable
+              favorite Decorative that have Made the day even more memorable
             </p>
           </div>
         </motion.div>
@@ -169,8 +173,8 @@ export default function MostLoved() {
         >
           <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory">
             {displayedProducts.map((product) => (
-              <motion.div 
-                key={product.id} 
+              <motion.div
+                key={product.id}
                 variants={itemVariants}
                 className="flex-shrink-0 w-48 md:w-56 lg:w-64 snap-start"
               >
@@ -179,7 +183,7 @@ export default function MostLoved() {
             ))}
           </div>
         </motion.div>
-        
+
         {/* Show "View More" button on mobile if there are more products */}
         {isMobile && products.length > 4 && (
           <motion.div

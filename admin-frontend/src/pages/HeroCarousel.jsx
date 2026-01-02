@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Grid, List, Image as ImageIcon, Loader2, AlertCircle, MoveUp, MoveDown, Eye, EyeOff } from "lucide-react";
+import { Plus, Search, Grid, List, Image as ImageIcon, AlertCircle, MoveUp, MoveDown, Eye, EyeOff } from "lucide-react";
 import apiService from "../services/api";
 import config from "../config/config";
+import Loader from "../components/Loader";
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return '';
@@ -104,11 +105,11 @@ const HeroCarousel = () => {
   const handleMove = async (currentIndex, direction) => {
     const newItems = [...items];
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    
+
     if (newIndex < 0 || newIndex >= items.length) return;
-    
+
     [newItems[currentIndex], newItems[newIndex]] = [newItems[newIndex], newItems[currentIndex]];
-    
+
     try {
       await apiService.updateCarouselOrder(newItems);
       await fetchItems();
@@ -127,9 +128,7 @@ const HeroCarousel = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-amber-600" />
-      </div>
+      <Loader fullScreen text="Loading carousel items..." />
     );
   }
 
@@ -199,11 +198,9 @@ const HeroCarousel = () => {
                   <button
                     onClick={() => handleToggleActive(item._id)}
                     disabled={toggleLoading === item._id}
-                    className={`p-1 rounded-full ${
-                      item.isActive ? 'bg-green-500' : 'bg-gray-500'
-                    } text-white transition-colors ${
-                      toggleLoading === item._id ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-80'
-                    }`}
+                    className={`p-1 rounded-full ${item.isActive ? 'bg-green-500' : 'bg-gray-500'
+                      } text-white transition-colors ${toggleLoading === item._id ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-80'
+                      }`}
                     title={item.isActive ? 'Active' : 'Inactive'}
                   >
                     {toggleLoading === item._id ? (
@@ -301,13 +298,12 @@ const HeroCarousel = () => {
                     <button
                       onClick={() => handleToggleActive(item._id)}
                       disabled={toggleLoading === item._id}
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        toggleLoading === item._id
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${toggleLoading === item._id
                           ? 'bg-gray-100 text-gray-500'
                           : item.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
                     >
                       {toggleLoading === item._id ? (
                         <>

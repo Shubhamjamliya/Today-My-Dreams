@@ -4,7 +4,7 @@ const { isAdmin, authenticateToken } = require('../middleware/auth');
 
 // Import the corrected middleware and controller functions
 const {
-  uploadMiddleware, // Changed from 'upload'
+  uploadMiddleware,
   getAllCarouselItems,
   getCarouselItem,
   getActiveCarouselItems,
@@ -32,10 +32,42 @@ router.use(isAdmin);
 router.get('/:id', getCarouselItem);
 
 // Create a new carousel item (with image upload)
-router.post('/', uploadMiddleware, createCarouselItemWithFiles);
+router.post('/', (req, res, next) => {
+  uploadMiddleware(req, res, (err) => {
+    if (err) return next(err);
+    
+    const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
+    
+    if (req.files) {
+      Object.keys(req.files).forEach(key => {
+        req.files[key].forEach(file => {
+          const filename = file.filename;
+          file.path = `${baseUrl}/todaymydream/data/hero-carousel/${filename}`;
+        });
+      });
+    }
+    next();
+  });
+}, createCarouselItemWithFiles);
 
 // Update an existing carousel item by ID (with optional new image upload)
-router.put('/:id', uploadMiddleware, updateCarouselItemWithFiles);
+router.put('/:id', (req, res, next) => {
+  uploadMiddleware(req, res, (err) => {
+    if (err) return next(err);
+    
+    const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
+    
+    if (req.files) {
+      Object.keys(req.files).forEach(key => {
+        req.files[key].forEach(file => {
+          const filename = file.filename;
+          file.path = `${baseUrl}/todaymydream/data/hero-carousel/${filename}`;
+        });
+      });
+    }
+    next();
+  });
+}, updateCarouselItemWithFiles);
 
 // Delete a carousel item by ID
 router.delete('/:id', deleteCarouselItem);

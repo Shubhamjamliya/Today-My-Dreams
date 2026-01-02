@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import apiService from '../services/api';
+import Loader from "../components/Loader";
+import { DashboardSkeleton } from "../components/Skeleton";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -46,7 +48,7 @@ const Dashboard = () => {
   };
 
   const StatCard = ({ title, value, linkTo }) => (
-    <Link 
+    <Link
       to={linkTo}
       className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
     >
@@ -56,11 +58,7 @@ const Dashboard = () => {
   );
 
   if (loading) {
-    return (
-      <div className="p-6 flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="text-xl text-gray-600">Loading dashboard...</div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (error) {
@@ -74,31 +72,31 @@ const Dashboard = () => {
   return (
     <div className="p-6 space-y-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-      
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <StatCard 
-          title="Total Products" 
+        <StatCard
+          title="Total Products"
           value={stats.totalProducts}
           linkTo="/admin/products"
         />
-        <StatCard 
-          title="Featured Products" 
+        <StatCard
+          title="Featured Products"
           value={stats.featuredProducts}
           linkTo="/admin/products?section=featured"
         />
-        <StatCard 
-          title="Best Sellers" 
+        <StatCard
+          title="Best Sellers"
           value={stats.bestSellers}
           linkTo="/admin/products?section=bestsellers"
         />
-        <StatCard 
-          title="Most Loved" 
+        <StatCard
+          title="Most Loved"
           value={stats.mostLoved}
           linkTo="/admin/products?section=mostloved"
         />
-        <StatCard 
-          title="Total Orders" 
+        <StatCard
+          title="Total Orders"
           value={stats.totalOrders}
           linkTo="/admin/orders"
         />

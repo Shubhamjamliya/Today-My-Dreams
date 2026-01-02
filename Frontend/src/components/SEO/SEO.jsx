@@ -130,7 +130,7 @@ const SEO = ({
       canonical.rel = 'canonical';
       document.head.appendChild(canonical);
     }
-    canonical.href = url || `https://decoryy.com${location.pathname}`;
+    canonical.href = url || `https://todaymydream.com${location.pathname}`;
 
     // Add structured data if provided
     if (structuredData) {

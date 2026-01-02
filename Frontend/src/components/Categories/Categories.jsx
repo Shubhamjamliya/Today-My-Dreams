@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config/config.js';
-import { categories as staticCategories } from '../../data/categories.js'; // Assuming this path is correct
+import { CategorySkeleton } from '../Loader/Skeleton';
+import { categories as staticCategories } from '../../data/categories.js';
 import { Sparkles } from 'lucide-react'; // Added for a premium header icon
 import BirthdaySubcategories from '../BirthdaySubcategories';
 import { useCity } from '../../context/CityContext';
@@ -46,23 +47,15 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showBirthdaySubcategories, setShowBirthdaySubcategories] = useState(false);
-  const [categoryProductCounts, setCategoryProductCounts] = useState({});
   const { selectedCity } = useCity();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategories();
   }, [selectedCity]);
 
-  // Fetch product counts when city changes
-  useEffect(() => {
-    if (categories.length > 0) {
-      fetchCategoryProductCounts();
-    }
-  }, [categories, selectedCity]);
-
   const handleCategoryClick = (categoryName) => {
-    window.location.href = `/shop?category=${encodeURIComponent(categoryName)}`;
-   
+    navigate(`/shop?category=${encodeURIComponent(categoryName)}`);
   };
 
   const handleBackToCategories = () => {
@@ -70,88 +63,64 @@ const Categories = () => {
   };
 
   const fetchCategories = async () => {
-  try {
-    const urlParams = new URLSearchParams();
-    if (selectedCity) {
-      urlParams.append('city', selectedCity);
-    }
-    const response = await axios.get(`${config.API_URLS.CATEGORIES}?${urlParams.toString()}`);
-    const apiCategories = response.data.categories || [];
-
-    const processedCategories = apiCategories.map(category => ({
-      id: category._id || category.id,
-      name: category.name,
-      description: category.description,
-      // Prioritize category.image, then category.video, then local static map, then a default
-      image: config.fixImageUrl(
-        category.image || 
-        category.video || 
-        categoryImages[category.name] || 
-        '/images/categories/default.jpg'
-      ),
-      isVideo: !!category.video,
-      sortOrder: category.sortOrder || 0
-    }));
-
-    // Sort and then take only first 6
-    const limitedCategories = processedCategories
-      .sort((a, b) => a.sortOrder - b.sortOrder)
-      .slice(0, 6);
-
-    setCategories(limitedCategories);
-    setLoading(false);
-  } catch (error) {
-    // Error fetching categories
-    setError('Failed to load categories. Displaying default.'); 
-
-    const fallbackCategories = staticCategories
-      .map(category => ({
-        id: category.name.toLowerCase().replace(/\s+/g, '-'),
-        name: category.name,
-        image: categoryImages[category.name] || '/images/categories/default.jpg',
-        isVideo: false
-      }))
-      .slice(0, 6); // also limit fallback to 6
-
-    setCategories(fallbackCategories);
-    setLoading(false);
-  }
-};
-
-  // Fetch product counts for each category based on selected city
-  const fetchCategoryProductCounts = async () => {
     try {
       const urlParams = new URLSearchParams();
       if (selectedCity) {
         urlParams.append('city', selectedCity);
       }
-      urlParams.append('limit', '1000');
+      const response = await axios.get(`${config.API_URLS.CATEGORIES}?${urlParams.toString()}`);
+      const apiCategories = response.data.categories || [];
 
-      const response = await axios.get(`${config.API_URLS.SHOP}?${urlParams.toString()}`);
-      
-      // Handle different response formats - API might return array or object with products
-      const products = Array.isArray(response.data) 
-        ? response.data 
-        : (response.data?.products || []);
+      const processedCategories = apiCategories.map(category => ({
+        id: category._id || category.id,
+        name: category.name,
+        description: category.description,
+        // Prioritize category.image, then category.video, then local static map, then a default
+        image: config.fixImageUrl(
+          category.image ||
+          category.video ||
+          categoryImages[category.name] ||
+          '/images/categories/default.jpg'
+        ),
+        isVideo: !!category.video,
+        sortOrder: category.sortOrder || 0
+      }));
 
-      // Count products per category
-      const counts = {};
-      categories.forEach(category => {
-        counts[category.name] = products.filter(p => p.category?.name === category.name).length;
-      });
+      // Sort and then take only first 6
+      const limitedCategories = processedCategories
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .slice(0, 6);
 
-      setCategoryProductCounts(counts);
+      setCategories(limitedCategories);
+      setLoading(false);
     } catch (error) {
-      // Error fetching category product counts
+      // Error fetching categories
+      setError('Failed to load categories. Displaying default.');
+
+      const fallbackCategories = staticCategories
+        .map(category => ({
+          id: category.name.toLowerCase().replace(/\s+/g, '-'),
+          name: category.name,
+          image: categoryImages[category.name] || '/images/categories/default.jpg',
+          isVideo: false
+        }))
+        .slice(0, 6); // also limit fallback to 6
+
+      setCategories(fallbackCategories);
+      setLoading(false);
     }
   };
+
+
 
   if (loading) {
     return (
       <section className="py-6 sm:py-12 md:py-16 font-sans">
         <div className="container mx-auto px-3 sm:px-4 lg:px-6">
-          <div className="flex items-center justify-center min-h-[200px]">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-3 border-amber-500"></div>
+          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-4">
+            {[...Array(6)].map((_, i) => (
+              <CategorySkeleton key={i} />
+            ))}
           </div>
         </div>
       </section>
@@ -204,7 +173,7 @@ const Categories = () => {
     // CHANGE: Amber theme background
     <section className="py-6 sm:py-12 md:py-16 font-sans">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
-        
+
         {/* Header Section - Premium styling with icon */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -213,11 +182,11 @@ const Categories = () => {
           className="text-center mb-6 md:mb-10"
         >
           <div className="max-w-xl mx-auto">
-           
+
             <h2 className="flex items-center justify-center text-lg md:text-2xl font-serif font-bold text-slate-900 mb-2">
-             <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white mb-2 md:mb-3 items-center" />  Our Curated Categories
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white mb-2 md:mb-3 items-center" />  Our Curated Categories
             </h2>
-           
+
           </div>
         </motion.div>
 
@@ -245,7 +214,7 @@ const Categories = () => {
                 className="flex flex-col items-center text-center" // Center content
               >
                 {/* Image/Video Container - Card maintains aspect-square */}
-                <div 
+                <div
                   className="relative w-full aspect-square bg-white rounded-lg overflow-hidden shadow-sm
                              border border-amber-200/60 transition-all duration-300 group-hover:shadow-md group-hover:border-amber-200/50"
                 >
@@ -291,7 +260,7 @@ const Categories = () => {
                   <h3 className="text-sm text-bold sm:text-lg font-bold text-slate-700 group-hover:text-amber-600 transition-colors line-clamp-2">
                     {category.name}
                   </h3>
-                 
+
                 </div>
               </motion.div>
             </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AlertCircle, CheckCircle, Loader2, Building2, MapPin, Phone, Mail, Star, Users, Calendar, Clock, Utensils, Bed, Shield } from 'lucide-react';
+import { AlertCircle, CheckCircle, Building2, MapPin, Phone, Mail, Star, Users, Calendar, Clock, Utensils, Bed, Shield } from 'lucide-react';
 import apiService from "../services/api";
+import Loader from "../components/Loader";
 import MultiMediaUpload from "../components/MultiMediaUpload";
 
 const EditSeller = () => {
@@ -806,11 +807,14 @@ const EditSeller = () => {
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Saving...
+                      <Loader size="tiny" inline text="" />
+                      <span className="ml-2">Saving...</span>
                     </>
                   ) : (
-                    isNew ? 'Create Seller' : 'Update Seller'
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      {isNew ? 'Create Seller' : 'Update Seller'}
+                    </>
                   )}
                 </button>
               </div>

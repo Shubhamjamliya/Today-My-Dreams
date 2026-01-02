@@ -60,8 +60,8 @@ const handleSubCategoryImage = (req, res, next) => {
 
     // Transform path to URL
     if (req.file) {
-      const baseUrl = process.env.BACKEND_URL || 'https://api.decoryy.com';
-      req.file.path = `${baseUrl}/decoryy/data/subcategories/${req.file.filename}`;
+      const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
+      req.file.path = `${baseUrl}/todaymydream/data/subcategories/${req.file.filename}`;
     }
 
     next();
