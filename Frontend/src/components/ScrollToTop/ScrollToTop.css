@@ -1,0 +1,84 @@
+/* ScrollToTop Component Styles */
+.scroll-to-top {
+  position: fixed;
+  z-index: 50;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+  /* Ensure it stays within viewport */
+  max-width: calc(100vw - 20px);
+  max-height: calc(100vh - 20px);
+}
+
+.scroll-to-top:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: scale(1.1);
+}
+
+.scroll-to-top:active {
+  transform: scale(0.95);
+}
+
+/* Desktop positioning */
+@media (min-width: 768px) {
+  .scroll-to-top {
+    bottom: 30px;
+  }
+}
+
+/* Mobile positioning - above bottom navigation */
+@media (max-width: 767px) {
+  .scroll-to-top {
+    bottom: 80px; /* Positioned above mobile bottom navigation */
+    right: 15px; /* Closer to edge on mobile */
+    width: 45px;
+    height: 45px;
+  }
+  
+  .scroll-to-top svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .scroll-to-top {
+    right: 10px; /* Even closer to edge on very small screens */
+    bottom: 75px;
+    width: 42px;
+    height: 42px;
+  }
+  
+  .scroll-to-top svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Very small screens - ensure button stays in viewport */
+@media (max-width: 360px) {
+  .scroll-to-top {
+    right: 8px;
+    bottom: 70px;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .scroll-to-top svg {
+    width: 16px;
+    height: 16px;
+  }
+}

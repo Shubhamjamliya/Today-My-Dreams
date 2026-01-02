@@ -1,0 +1,328 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import config from '../../config/config.js';
+import { categories as staticCategories } from '../../data/categories.js'; // Assuming this path is correct
+import { Sparkles } from 'lucide-react'; // Added for a premium header icon
+import BirthdaySubcategories from '../BirthdaySubcategories';
+import { useCity } from '../../context/CityContext';
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08, // Slightly faster stagger for a snappier feel
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.98 }, // Smaller initial movement
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: 'spring', // Spring animation for a natural feel
+      stiffness: 120,
+      damping: 18,
+    },
+  },
+};
+
+// Static category images mapping - Ensure these paths are correct or updated to hosted URLs
+const categoryImages = {
+  "Ballon decor": "/images/categories/ballon-decor.jpg", // Example path
+  "Anniversary decor": "/images/categories/anniversary-decor.jpg", // Corrected typo: "Aniversary" -> "Anniversary"
+  "Wedding decor": "/images/categories/wedding-decor.jpg", // Corrected typo: "Dwedding" -> "Wedding"
+  "Organise party": "/images/categories/organise-party.jpg", // Corrected typo: "organise" -> "Organise"
+  "Birthday decor": "/images/categories/birthday-decor.jpg", // Added an example
+  "Baby shower decor": "/images/categories/baby-shower-decor.jpg", // Added an example
+};
+
+const Categories = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showBirthdaySubcategories, setShowBirthdaySubcategories] = useState(false);
+  const [categoryProductCounts, setCategoryProductCounts] = useState({});
+  const { selectedCity } = useCity();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [selectedCity]);
+
+  // Fetch product counts when city changes
+  useEffect(() => {
+    if (categories.length > 0) {
+      fetchCategoryProductCounts();
+    }
+  }, [categories, selectedCity]);
+
+  const handleCategoryClick = (categoryName) => {
+    window.location.href = `/shop?category=${encodeURIComponent(categoryName)}`;
+   
+  };
+
+  const handleBackToCategories = () => {
+    setShowBirthdaySubcategories(false);
+  };
+
+  const fetchCategories = async () => {
+  try {
+    const urlParams = new URLSearchParams();
+    if (selectedCity) {
+      urlParams.append('city', selectedCity);
+    }
+    const response = await axios.get(`${config.API_URLS.CATEGORIES}?${urlParams.toString()}`);
+    const apiCategories = response.data.categories || [];
+
+    const processedCategories = apiCategories.map(category => ({
+      id: category._id || category.id,
+      name: category.name,
+      description: category.description,
+      // Prioritize category.image, then category.video, then local static map, then a default
+      image: config.fixImageUrl(
+        category.image || 
+        category.video || 
+        categoryImages[category.name] || 
+        '/images/categories/default.jpg'
+      ),
+      isVideo: !!category.video,
+      sortOrder: category.sortOrder || 0
+    }));
+
+    // Sort and then take only first 6
+    const limitedCategories = processedCategories
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .slice(0, 6);
+
+    setCategories(limitedCategories);
+    setLoading(false);
+  } catch (error) {
+    // Error fetching categories
+    setError('Failed to load categories. Displaying default.'); 
+
+    const fallbackCategories = staticCategories
+      .map(category => ({
+        id: category.name.toLowerCase().replace(/\s+/g, '-'),
+        name: category.name,
+        image: categoryImages[category.name] || '/images/categories/default.jpg',
+        isVideo: false
+      }))
+      .slice(0, 6); // also limit fallback to 6
+
+    setCategories(fallbackCategories);
+    setLoading(false);
+  }
+};
+
+  // Fetch product counts for each category based on selected city
+  const fetchCategoryProductCounts = async () => {
+    try {
+      const urlParams = new URLSearchParams();
+      if (selectedCity) {
+        urlParams.append('city', selectedCity);
+      }
+      urlParams.append('limit', '1000');
+
+      const response = await axios.get(`${config.API_URLS.SHOP}?${urlParams.toString()}`);
+      
+      // Handle different response formats - API might return array or object with products
+      const products = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.products || []);
+
+      // Count products per category
+      const counts = {};
+      categories.forEach(category => {
+        counts[category.name] = products.filter(p => p.category?.name === category.name).length;
+      });
+
+      setCategoryProductCounts(counts);
+    } catch (error) {
+      // Error fetching category product counts
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="py-6 sm:py-12 md:py-16 font-sans">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-center min-h-[200px]">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-3 border-amber-500"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error && categories.length === 0) { // Only show error if no categories could be loaded at all
+    return (
+      <section className="py-6 sm:py-12 md:py-16 font-sans">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-center min-h-[200px]">
+            <div className="text-center text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
+              <p className="font-semibold text-lg">{error}</p>
+              <p className="text-sm mt-1">Please try refreshing the page.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // If showing birthday subcategories, render that component
+  if (showBirthdaySubcategories) {
+    return (
+      <section className="py-6 sm:py-12 md:py-16 font-sans">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+          {/* Back button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <button
+              onClick={handleBackToCategories}
+              className="flex items-center text-amber-600 hover:text-amber-700 font-medium transition-colors"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Categories
+            </button>
+          </motion.div>
+          <BirthdaySubcategories />
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    // CHANGE: Amber theme background
+    <section className="py-6 sm:py-12 md:py-16 font-sans">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+        
+        {/* Header Section - Premium styling with icon */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          className="text-center mb-6 md:mb-10"
+        >
+          <div className="max-w-xl mx-auto">
+           
+            <h2 className="flex items-center justify-center text-lg md:text-2xl font-serif font-bold text-slate-900 mb-2">
+             <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white mb-2 md:mb-3 items-center" />  Our Curated Categories
+            </h2>
+           
+          </div>
+        </motion.div>
+
+        {/* Categories Grid - Tighter, app-like grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          // Grid changed to 3 columns on mobile, maintaining aspect ratio for uniform cards
+          className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-4"
+        >
+          {categories.map((category, index) => (
+            <div
+              key={category.id || index}
+              onClick={() => handleCategoryClick(category.name)}
+              className="group block cursor-pointer" // Use 'block' to make the div wrap the entire card+text
+            >
+              <motion.div
+                variants={itemVariants}
+                whileHover={{
+                  y: -5, // Subtle lift
+                  transition: { type: 'spring', stiffness: 300, damping: 20 }
+                }}
+                className="flex flex-col items-center text-center" // Center content
+              >
+                {/* Image/Video Container - Card maintains aspect-square */}
+                <div 
+                  className="relative w-full aspect-square bg-white rounded-lg overflow-hidden shadow-sm
+                             border border-amber-200/60 transition-all duration-300 group-hover:shadow-md group-hover:border-amber-200/50"
+                >
+                  {category.isVideo ? (
+                    <video
+                      src={config.fixImageUrl(category.image)}
+                      alt={category.name}
+                      className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      onError={e => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/400x400/fffbeb/475569?text=' + encodeURIComponent(category.name.replace(/\s/g, '+'));
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={config.fixImageUrl(category.image)}
+                      alt={category.name}
+                      className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+                      onError={e => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/400x400/fffbeb/475569?text=' + encodeURIComponent(category.name.replace(/\s/g, '+'));
+                      }}
+                    />
+                  )}
+                  {/* Overlay for "Explore" text on hover */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="text-white text-xs sm:text-sm font-semibold tracking-wide">Explore</span>
+                    <svg
+                      className="ml-1 w-3 h-3 sm:w-4 sm:h-4 text-white group-hover:translate-x-0.5 transition-transform duration-200"
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Category Name - Below the card, smaller font */}
+                <div className="mt-1.5 flex flex-col items-center">
+                  <h3 className="text-sm text-bold sm:text-lg font-bold text-slate-700 group-hover:text-amber-600 transition-colors line-clamp-2">
+                    {category.name}
+                  </h3>
+                 
+                </div>
+              </motion.div>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Bottom CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          className="text-center mt-8 md:mt-14"
+        >
+          <Link
+            to="/subcategory"
+            className="inline-flex items-center px-6 py-2.5 bg-[#FCD24C] text-white font-semibold rounded-lg 
+                       hover:bg-[#FCD24C] transition-all duration-300 group shadow-md hover:shadow-lg 
+                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white text-sm"
+          >
+            View All Categories
+            <svg
+              className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default Categories;

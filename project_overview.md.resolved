@@ -1,0 +1,80 @@
+# Project Overview: Rikocraft (Today-My-Dreams)
+
+This document provides a complete technical and functional overview of the Rikocraft e-commerce platform.
+
+## 1. Project Architecture
+The project is a **MERN Stack** application (MongoDB, Express, React, Node.js).
+
+*   **Frontend:** React (Vite) with Tailwind CSS.
+*   **Backend:** Node.js + Express.
+*   **Database:** MongoDB (Primary) + JSON File Backups (Secondary).
+*   **Authentication:** JWT (JSON Web Tokens) + Google OAuth.
+
+---
+
+## 2. User Roles & Flows
+
+### A. Customer (User)
+*   **Goal:** Browse and purchase products.
+*   **Flow:**
+    1.  **Browse:** Home -> Categories -> Subcategories -> Product Page.
+    2.  **Cart:** Add items -> View Cart -> Checkout.
+    3.  **Auth:** Login/Signup via Email (with OTP) or Google.
+    4.  **Order:** Place Order -> Payment (Razorpay/PhonePe likely, based on routes) -> Order Confirmation.
+    5.  **Profile:** Manage Address, View Order History, Wishlist.
+*   **Key Pages:** `/shop`, `/product/:id`, `/cart`, `/checkout`, `/account`.
+
+### B. Seller (Vendor)
+*   **Goal:** Manage shop and list products.
+*   **Flow:**
+    1.  **Onboarding:** Navigate to `/dashboard` -> Register as Seller.
+    2.  **Dashboard:** Access Seller Profile (`/dashboard/profile`).
+    3.  **Management:** Upload products, view commissions (logic implies commission system).
+*   **Auth:** Separate context (`SellerContext`) and routes.
+
+### C. Admin
+*   **Goal:** Platform management.
+*   **Capabilities:**
+    *   Manage Orders (Update Status: Processing -> Delivered).
+    *   Manage Users & Sellers.
+    *   Uploaded Content Management (Banners, Blogs, Videos).
+
+---
+
+## 3. Implementation Details
+
+### Backend Features
+*   **Authentication:**
+    *   **JWT:** Secure stateless authentication.
+    *   **OTP:** Integrated Email (Nodemailer) and SMS (MSG91) for verification.
+    *   **OAuth:** Google Login integration.
+*   **Order System:**
+    *   **Dual Storage:** Orders are saved to MongoDB **AND** a local [orders.json](file:///c:/Users/SHUBHAM/Desktop/Today-My-Dreams/Backend/data/orders.json) file for backup/redundancy.
+    *   **Status Workflow:** `processing` -> `confirmed` -> `manufacturing` -> `shipped` -> `delivered`.
+    *   **Notifications:** Automated emails sent on status changes.
+*   **File Storage:**
+    *   **Local Strategy:** Most dynamic images (products, profiles) are stored locally in `Backend/data/`.
+    *   **Static Assets:** Site logos and UI assets in `Frontend/public/`.
+
+### Frontend Features
+*   **Performance:** Extensive use of `React.lazy()` for code splitting to speed up initial load.
+*   **SEO:** Dynamic SEO configuration for different pages.
+*   **Context API:**
+    *   `AuthContext`: Manages user login state.
+    *   `SellerContext`: Manages vendor state.
+
+---
+
+## 4. Key Modules (Based on Codebase)
+| Module | Description |
+| :--- | :--- |
+| **Auth** | Login, Signup, OTP, Google Auth, Password Reset. |
+| **Shop** | Product listing, Categories, Filtering, Search. |
+| **Order** | Cart management, Checkout process, Order tracking. |
+| **Seller** | Vendor registration, Profile management, Product upload. |
+| **Content** | Blogs, Videos, Hero Banners (Carousel). |
+| **Location** | City and Pincode specific service fees. |
+
+## 5. Current State & Observations
+*   **Server Robustness:** The server is configured to attempt startup even if the Database connection fails (fallback mode).
+*   **Data Integrity:** The "Backup to JSON" strategy for orders is unique and ensures you have a file-based record of sales even if the DB is inaccessible.

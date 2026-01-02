@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Line clamp utilities are defined in @layer components below */
+
+body {
+  font-family: 'Lexend', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 0;
+  /* Prevent scroll restoration on page reload */
+  scroll-restoration: manual;
+}
+
+/* Ensure page always starts at top */
+html, body {
+  scroll-behavior: auto;
+  /* Force initial scroll position to top */
+  scroll-top: 0;
+  scroll-left: 0;
+}
+
+/* Additional scroll position fixes */
+html {
+  overflow-x: hidden;
+  /* Ensure scroll position is reset */
+  scroll-top: 0;
+  scroll-left: 0;
+}
+
+body {
+  /* Reset any potential scroll position */
+  scroll-top: 0;
+  scroll-left: 0;
+  /* Prevent horizontal scroll */
+  overflow-x: hidden;
+}
+
+:root {
+  --primary-color: #FCD24C;
+  --secondary-color: #FCD24C;
+}
+
+@layer base {
+  body {
+    @apply antialiased;
+   
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+}
+
+/* Hide scrollbar for horizontal scroll */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+  }
+  
+  /* Custom scrollbar styling for filter panel */
+  .filter-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #f59e0b #f3f4f6;
+  }
+  
+  .filter-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .filter-scrollbar::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 10px;
+  }
+  
+  .filter-scrollbar::-webkit-scrollbar-thumb {
+    background: #f59e0b;
+    border-radius: 10px;
+  }
+  
+  .filter-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #d97706;
+  }
+  
+  /* Modern themed scrollbar (used for sidebar and product column) */
+  .modern-scrollbar {
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) rgba(0,0,0,0.06);
+  }
+
+  .modern-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .modern-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.04);
+    border-radius: 9999px;
+    margin: 6px 0; /* give slight breathing room */
+  }
+
+  .modern-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(252,210,76,1) 0%, rgba(245,158,11,1) 100%);
+    border-radius: 9999px;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25);
+    border: 2px solid rgba(0,0,0,0.04);
+  }
+
+  .modern-scrollbar::-webkit-scrollbar-thumb:hover {
+    filter: brightness(0.95) saturate(1.05);
+  }
+}
+/* Shiny wave animation for product cards */
+.shiny-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%; /* Width of the shine */
+  height: 100%;
+  z-index: 1; /* Ensure it's above the image */
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%, /* Adjust opacity for subtlety */
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg) translateX(-200%); /* Start off-screen */
+  /* A smooth, professional transition */
+  transition: transform 0.85s cubic-bezier(0.19, 1, 0.22, 1);
+  pointer-events: none; /* Ensure it doesn't interfere with clicks */
+}
+
+/* Hover effect for desktop */
+.shiny-effect:hover::after {
+  transform: skewX(-25deg) translateX(350%); /* Animate across the element */
+}
+
+/* Active/tap effect for mobile */
+.shiny-effect:active::after {
+  transform: skewX(-25deg) translateX(350%); /* Animate across the element */
+}
+
+/* Touch effect for mobile devices */
+@media (hover: none) and (pointer: coarse) {
+  .shiny-effect:active::after {
+    transform: skewX(-25deg) translateX(350%); /* Animate across the element */
+  }
+}
+  /* Add padding to main content on mobile */
+  @media (max-width: 1024px) {
+    main {
+      padding-bottom: 4rem; /* 64px to account for the bottom navigation */
+      margin-bottom: 0;
+    }
+    
+    /* Ensure body has proper spacing */
+    body {
+      padding-bottom: 0;
+    }
+  }
+  
+  /* Specific mobile adjustments */
+  @media (max-width: 768px) {
+    main {
+      padding-bottom: 4.5rem; /* 72px for better spacing on mobile */
+    }
+    
+    /* Ensure bottom navigation is always visible */
+    .fixed.bottom-0 {
+      position: fixed !important;
+      bottom: 0 !important;
+      z-index: 50 !important;
+    }
+    
+    /* Ensure no content gets hidden behind bottom nav */
+    .min-h-screen {
+      min-height: calc(100vh - 4.5rem);
+    }
+    
+    /* Fix any potential overflow issues */
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+  }
+  
+  /* Mobile-first typography improvements */
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+    h2 {
+      font-size: 1.25rem;
+      line-height: 1.3;
+    }
+    h3 {
+      font-size: 1.125rem;
+      line-height: 1.3;
+    }
+    p {
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+    
+    /* Ensure scroll to top button is visible on mobile */
+    .scroll-to-top-button {
+      position: fixed !important;
+      bottom: 1.5rem !important;
+      right: 1.5rem !important;
+      z-index: 9999 !important;
+      width: 3rem !important;
+      height: 3rem !important;
+      background-color: white !important;
+      border-radius: 50% !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      /* Ensure it's not hidden by other elements */
+      pointer-events: auto !important;
+      /* Add a subtle border for better visibility */
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .scroll-to-top-button:hover {
+      background-color: #f3f4f6 !important;
+      transform: scale(1.05) !important;
+    }
+    
+    .scroll-to-top-button:active {
+      transform: scale(0.95) !important;
+    }
+    
+    /* Additional mobile-specific positioning */
+    @media (max-width: 480px) {
+      .scroll-to-top-button {
+        bottom: 1rem !important;
+        right: 1rem !important;
+        width: 2.75rem !important;
+        height: 2.75rem !important;
+      }
+    }
+  }
+
+@layer components {
+  .text-primary {
+    color: var(--primary-color);
+  }
+
+  .bg-primary {
+    background-color: var(--primary-color);
+  }
+
+  .hover\:text-primary:hover {
+    color: var(--primary-color);
+  }
+
+  .hover\:bg-primary:hover {
+    background-color: var(--primary-color);
+  }
+
+  .container {
+    @apply max-w-7xl mx-auto;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+/* Custom Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}

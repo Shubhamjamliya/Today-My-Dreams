@@ -1,0 +1,27 @@
+// Optimized icon imports for Hero component
+export {
+  MapPin,
+  Phone,
+  Mail,
+  Star,
+  IndianRupee,
+  ExternalLink,
+  X,
+  Building2,
+  Wifi,
+  Car,
+  Utensils,
+  Music,
+  Camera,
+  Shield,
+  CheckCircle,
+  Calendar,
+  Clock3,
+  Home,
+  FileText,
+  ChefHat,
+  Bed,
+  Settings,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';

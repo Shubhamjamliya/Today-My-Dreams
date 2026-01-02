@@ -1,0 +1,36 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://decoryy.com/api/sitemap.xml
+Sitemap: https://decoryy.com/api/sitemap-index.xml
+Sitemap: https://decoryy.com/api/blog/sitemap.xml
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /account/
+Disallow: /checkout/
+Disallow: /order-confirmation/
+Disallow: /payment/
+
+# Disallow search parameters
+Disallow: /shop?*
+Disallow: /blog?*
+
+# Allow important pages
+Allow: /blog/
+Allow: /shop/
+Allow: /about/
+Allow: /contact/
+Allow: /policies/
+Allow: /venues/
+Allow: /subcategory/
+Allow: /product/
+
+# Crawl delay (optional)
+Crawl-delay: 1
+
+# Additional directives for better SEO
+Host: https://decoryy.com

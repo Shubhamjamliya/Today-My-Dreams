@@ -1,0 +1,803 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { 
+  UserCircleIcon, 
+  PencilSquareIcon, 
+  ArrowLeftOnRectangleIcon, 
+  CheckCircleIcon, 
+  XCircleIcon, 
+  ShoppingCartIcon, 
+  ClockIcon, 
+  TrashIcon, 
+  PlusIcon, 
+  MinusIcon,
+  CogIcon,
+  ShieldCheckIcon,
+  HeartIcon,
+  StarIcon,
+  MapPinIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  CreditCardIcon,
+  TruckIcon,
+  GiftIcon,
+  ChartBarIcon,
+  EyeIcon
+} from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
+
+import { useAuth } from '../context/AuthContext';
+import { format } from 'date-fns';
+import { toast } from 'react-hot-toast';
+import orderService from '../services/orderService';
+import config from '../config/config.js';
+import OrderDetailsModal from '../components/OrderDetailsModal/OrderDetailsModal';
+
+// Helper to get tab from URL
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
+
+const Account = () => {
+  const query = useQuery();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  });
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [activeTab, setActiveTab] = useState(() => {
+    const initialTab = query.get('tab') || 'profile';
+    return initialTab;
+  });
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const { user, logout, updateProfile, isAuthenticated } = useAuth();
+
+  // Function to handle tab changes and update URL
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    // Update URL without reloading the page
+    const newUrl = `/account?tab=${tabId}`;
+    navigate(newUrl, { replace: true });
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    } else {
+      setLoading(false);
+   
+    }
+  }, [isAuthenticated, navigate, user]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      name: user.name,
+      email: user.email,
+      phone: user.phone || '',
+      address: user.address || '',
+    }));
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (user?.email) {
+      fetchOrders();
+    }
+    // eslint-disable-next-line
+  }, [user?.email]);
+
+  useEffect(() => {
+    if (activeTab === 'orders') {
+      fetchOrders();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const tab = query.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    if (filter === 'all') {
+      setFilteredOrders(orders);
+    } else {
+      setFilteredOrders(orders.filter(order => order.status === filter));
+    }
+  }, [filter, orders]);
+
+  const fetchOrders = async () => {
+    if (!user?.email) return;
+    setLoading(true);
+    try {
+      const data = await orderService.getOrdersByEmail(user.email);
+      if (data.success) {
+        const sortedOrders = data.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setOrders(sortedOrders);
+        setFilteredOrders(sortedOrders);
+      } else {
+        throw new Error(data.message || 'No success field in response');
+      }
+    } catch (error) {
+      let errorMsg = error?.message || 'Failed to fetch orders';
+      if (error?.response?.data?.message) errorMsg = error.response.data.message;
+      toast.error(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateQuantity = async (productId, newQuantity) => {
+    if (newQuantity < 1) return;
+    try {
+      await updateQuantity(productId, newQuantity);
+      toast.success('Cart updated successfully');
+    } catch (error) {
+      toast.error('Failed to update cart');
+    }
+  };
+
+  const handleRemoveFromCart = async (productId) => {
+    try {
+      await removeFromCart(productId);
+      toast.success('Item removed from cart');
+    } catch (error) {
+      toast.error('Failed to remove item from cart');
+    }
+  };
+
+  const handleClearCart = async () => {
+    try {
+      await clearCart();
+      toast.success('Cart cleared successfully');
+    } catch (error) {
+      toast.error('Failed to clear cart');
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'processing':
+        return 'bg-pink-50 text-[#FCD24C] border-[#FCD24C]';
+      case 'confirmed':
+        return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'manufacturing':
+        return 'bg-purple-50 text-purple-700 border-purple-200';
+      case 'shipped':
+        return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+      case 'delivered':
+        return 'bg-green-50 text-green-700 border-green-200';
+      default:
+        return 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'processing':
+        return <ClockIcon className="h-4 w-4" />;
+      case 'confirmed':
+        return <CheckCircleIcon className="h-4 w-4" />;
+      case 'manufacturing':
+        return <CogIcon className="h-4 w-4" />;
+      case 'shipped':
+        return <TruckIcon className="h-4 w-4" />;
+      case 'delivered':
+        return <CheckCircleIcon className="h-4 w-4" />;
+      default:
+        return <ClockIcon className="h-4 w-4" />;
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+    setError('');
+    setMessage('');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setMessage('');
+
+    if (formData.newPassword && formData.newPassword !== formData.confirmNewPassword) {
+      setError('New passwords do not match');
+      return;
+    }
+
+    try {
+      const updateData = {
+        name: formData.name,
+        phone: formData.phone,
+        address: formData.address,
+      };
+
+      if (formData.newPassword) {
+        updateData.currentPassword = formData.currentPassword;
+        updateData.newPassword = formData.newPassword;
+      }
+
+      await updateProfile(updateData);
+      setMessage('Profile updated successfully!');
+      setIsEditing(false);
+      // Clear password fields
+      setFormData(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: '',
+      }));
+    } catch (error) {
+      setError(error.message || 'Failed to update profile');
+    }
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      toast.error('Failed to logout');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  const tabs = [
+   
+    { id: 'profile', label: 'Profile', icon: PencilSquareIcon },
+  
+    { id: 'orders', label: 'Orders', icon: GiftIcon },
+    
+  ];
+
+  // JSX for the orders tab
+  const OrdersTab = () => {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-semibold text-white">Your Orders</h2>
+          <div className="flex gap-2">
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FCD24C]"
+            >
+              <option value="all">All Orders</option>
+              <option value="processing">Processing</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="manufacturing">Manufacturing</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+            </select>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#FCD24C]"></div>
+          </div>
+        ) : filteredOrders.length === 0 ? (
+          <div className="text-center py-12">
+            <ShoppingCartIcon className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No orders found</h3>
+            <p className="mt-1 text-sm text-gray-500">Start shopping to create your first order.</p>
+            <div className="mt-6">
+              <Link
+                to="/shop"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#FCD24C] hover:bg-[#FCD24C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FCD24C]"
+              >
+                Browse Shop
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredOrders.map((order) => (
+              <div
+                key={order._id}
+                className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow"
+              >
+                {/* Order Header */}
+<div className="flex flex-wrap justify-between items-start gap-4 mb-4">
+  <div>
+    <p className="text-sm text-gray-500">Order ID</p>
+    <p className="font-mono text-sm font-bold text-[#FCD24C]">{order.customOrderId || order._id}</p>
+    {order.customOrderId && (
+      <p className="font-mono text-xs text-gray-400 mt-1">ID: {order._id}</p>
+    )}
+  </div>
+  <div className="text-right">
+    <p className="text-sm text-gray-500">Order Date</p>
+    <p className="font-medium">
+      {format(new Date(order.createdAt), 'dd/MM/yyyy')}
+    </p>
+  </div>
+</div>
+
+                {/* Order Items Preview */}
+                <div className="mt-4 space-y-3">
+                  {order.items.map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={config.fixImageUrl(item.image)}
+                          alt={item.name}
+                          className="h-16 w-16 object-cover rounded-lg"
+                          onError={(e) => {
+                            e.target.src = '/placeholder.png';
+                            e.target.onerror = null;
+                          }}
+                        />
+                        <div>
+                          <h4 className="font-medium text-gray-900">{item.name}</h4>
+                          <p className="text-sm text-gray-500">
+                            Quantity: {item.quantity} × ₹{item.price.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="font-medium text-gray-900">
+                        ₹{(item.quantity * item.price).toFixed(2)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Order Summary */}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex flex-wrap gap-3">
+                      <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(order.orderStatus)}`}>
+                        {getStatusIcon(order.orderStatus)}
+                        <span>{order.orderStatus?.charAt(0).toUpperCase() + order.orderStatus?.slice(1)}</span>
+                      </div>
+                      <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${
+                        order.paymentStatus === 'completed' 
+                          ? 'bg-green-50 text-green-700 border-green-200'
+                          : order.paymentStatus === 'failed'
+                          ? 'bg-red-50 text-red-700 border-red-200'
+                          : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                      }`}>
+                        <CreditCardIcon className="h-4 w-4" />
+                        <span>Payment: {order.paymentStatus?.charAt(0).toUpperCase() + order.paymentStatus?.slice(1)}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500">Total Amount</p>
+                        <p className="text-lg font-semibold text-gray-900">₹{order.totalAmount.toFixed(2)}</p>
+                      </div>
+                      <button
+                        onClick={() => setSelectedOrderId(order._id)}
+                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FCD24C]"
+                      >
+                        <EyeIcon className="h-4 w-4" />
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Shipping Address Preview */}
+                  <div className="mt-4 text-sm text-gray-500">
+                    <p>Shipping to: {order.address.street}, {order.address.city}, {order.address.state} {order.address.pincode}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <div className="min-h-screen bg-white">
+        <div className="max-w-7xl mx-auto ">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-2"
+          >
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white rounded-2xl shadow-md p-6">
+  {/* Left Section */}
+  <div>
+    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+      My Account
+    </h1>
+    <p className="text-gray-500 mt-2 text-base">
+      Welcome to your account <span className="font-semibold text-gray-800">{user?.name}</span> 👋  
+      Manage your profile and orders below.
+    </p>
+  </div>
+
+  {/* Right Section - Logout Button */}
+  <motion.button
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    onClick={handleLogout}
+    disabled={isLoggingOut}
+    className="w-fit flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 
+               text-white font-medium rounded-xl shadow-lg hover:from-red-600 hover:to-red-700 
+               transition-all duration-200"
+  >
+    <ArrowLeftOnRectangleIcon className="h-5 w-5" />
+    <span>{isLoggingOut ? 'Signing out...' : 'Sign out'}</span>
+  </motion.button>
+</div>
+
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sidebar */}
+            <div className="lg:col-span-1">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-white rounded-2xl shadow-lg p-6 sticky top-8"
+              >
+                <nav className="space-y-2">
+                  {tabs.map((tab) => (
+                    <motion.button
+                      key={tab.id}
+                      whileHover={{ x: 4 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleTabChange(tab.id)}
+                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
+                        activeTab === tab.id
+                          ? 'bg-[#FCD24C]-50 text-primary-dark border border-primary shadow-sm'
+                          : 'text-black-600 hover:bg-gray-50 hover:text-gray-900'
+                      }`}
+                    >
+                      <tab.icon className="h-5 w-5" />
+                      <span className="font-medium">{tab.label}</span>
+                    </motion.button>
+                  ))}
+                </nav>
+              </motion.div>
+            </div>
+
+            {/* Main Content */}
+            <div className="lg:col-span-3">
+              <AnimatePresence mode="wait">
+           
+
+                {activeTab === 'profile' && (
+                  <motion.div
+                    key="profile"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
+                  >
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-semibold text-gray-900">Profile Information</h3>
+                     
+                    </div>
+
+                    {isEditing ? (
+                      <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input
+                              type="text"
+                              name="name"
+                              value={formData.name}
+                              onChange={handleChange}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              disabled
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                            <input
+                              type="tel"
+                              name="phone"
+                              value={formData.phone}
+                              onChange={handleChange}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                            <textarea
+                              name="address"
+                              value={formData.address}
+                              onChange={handleChange}
+                              rows="3"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="border-t pt-6">
+                          <h4 className="text-lg font-medium text-gray-900 mb-4">Change Password (Optional)</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                              <input
+                                type="password"
+                                name="currentPassword"
+                                value={formData.currentPassword}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                              <input
+                                type="password"
+                                name="newPassword"
+                                value={formData.newPassword}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                              <input
+                                type="password"
+                                name="confirmNewPassword"
+                                value={formData.confirmNewPassword}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {error && (
+                          <div className="flex items-center space-x-2 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <XCircleIcon className="h-5 w-5 text-red-500" />
+                            <span className="text-red-700">{error}</span>
+                          </div>
+                        )}
+
+                        {message && (
+                          <div className="flex items-center space-x-2 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                            <span className="text-green-700">{message}</span>
+                          </div>
+                        )}
+
+                        <div className="flex justify-end space-x-4">
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            type="button"
+                            onClick={() => setIsEditing(false)}
+                            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                          >
+                            Cancel
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            type="submit"
+                            className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                          >
+                            Save Changes
+                          </motion.button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
+                          <p className="text-lg font-medium text-gray-900">{user?.name}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
+                          <p className="text-lg font-medium text-gray-900">{user?.email}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
+                          <p className="text-lg font-medium text-gray-900">{user?.phone || 'Not provided'}</p>
+                        </div>
+                     
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+
+           {activeTab === 'cart' && (
+  <motion.div
+    key="cart"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -20 }}
+    className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8"
+  >
+    {/* Header */}
+    <div className="flex items-center justify-between mb-6">
+      <h3 className="text-2xl font-bold text-gray-900">🛒 Shopping Cart</h3>
+      {cartItems.length > 0 && (
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleClearCart}
+          className="text-sm text-red-600 hover:text-red-800 font-medium"
+        >
+          Clear All
+        </motion.button>
+      )}
+    </div>
+
+    {/* Empty State */}
+    {cartItems.length === 0 ? (
+      <div className="flex flex-col items-center justify-center text-center py-16">
+        <ShoppingCartIcon className="h-20 w-20 text-gray-300 mb-4" />
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Your cart is empty</h3>
+        <p className="text-gray-500 mb-6">Looks like you haven’t added anything yet.</p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate('/shop')}
+          className="px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-md"
+        >
+          Browse Products
+        </motion.button>
+      </div>
+    ) : (
+      <div className="space-y-6">
+        {/* Cart Items */}
+        {cartItems.map((item) => (
+          <motion.div
+            key={item.productId || item.product?._id || item.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:shadow-md transition"
+          >
+            {/* Product Info */}
+            <div className="flex items-center gap-4">
+              <img
+                src={config.fixImageUrl(getItemImage(item))}
+                alt={item.product?.name || item.name}
+                className="h-16 w-16 object-cover rounded-lg border"
+              />
+              <div>
+                <h4 className="font-semibold text-gray-900">{item.product?.name || item.name}</h4>
+                <p className="text-sm text-gray-500">₹{(item.product?.price || item.price).toFixed(2)}</p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-4">
+              {/* Quantity Controls */}
+              <div className="flex items-center gap-2 bg-white border rounded-lg px-2 py-1">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity - 1)}
+                  className="p-1 rounded-full hover:bg-gray-100"
+                  disabled={item.quantity <= 1}
+                >
+                  <MinusIcon className="h-4 w-4" />
+                </motion.button>
+                <span className="font-medium px-2">{item.quantity}</span>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity + 1)}
+                  className="p-1 rounded-full hover:bg-gray-100"
+                >
+                  <PlusIcon className="h-4 w-4" />
+                </motion.button>
+              </div>
+
+              {/* Remove Button */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleRemoveFromCart(item.productId || item.product?._id || item.id)}
+                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <TrashIcon className="h-5 w-5" />
+              </motion.button>
+            </div>
+          </motion.div>
+        ))}
+
+        {/* Cart Summary */}
+        <div className="border-t pt-6 space-y-4">
+          <div className="flex justify-between items-center text-lg font-semibold text-gray-800">
+            <span>Total</span>
+            <span>₹{getTotalPrice().toFixed(2)}</span>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/shop')}
+              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              Continue Shopping
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/checkout')}
+              className="flex-1 px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-md"
+            >
+              Proceed to Checkout
+            </motion.button>
+          </div>
+        </div>
+      </div>
+    )}
+  </motion.div>
+)}
+
+                {activeTab === 'orders' && (
+                  <motion.div
+                    key="orders"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
+                  >
+                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Order History</h3>
+                    
+                    <OrdersTab />
+                  </motion.div>
+                )}
+
+            
+          
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Order Details Modal */}
+      <AnimatePresence>
+        {selectedOrderId && (
+          <OrderDetailsModal
+            orderId={selectedOrderId}
+            onClose={() => setSelectedOrderId(null)}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+export default Account;
