@@ -26,7 +26,7 @@ const BackgroundShapes = () => (
 // --- Premium VenueCard with Price & Details ---
 const VenueCard = ({ venue }) => {
   const hasPrice = venue.price && venue.price > 0;
-  
+
   return (
     <motion.div
       layout
@@ -45,7 +45,7 @@ const VenueCard = ({ venue }) => {
           alt={venue.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        
+
         {/* Location Badge */}
         <div className="absolute top-2 left-2 md:top-3 md:left-3">
           <motion.div
@@ -175,44 +175,44 @@ const VenuePage = () => {
       .filter((location) => location && location.trim() !== "")
       .filter((value, index, self) => self.indexOf(value) === index) // Remove duplicates
       .sort((a, b) => a.localeCompare(b)); // Sort alphabetically
-    
+
     return ["All India", ...locations];
   }, [venues]);
 
-const filteredVenues = useMemo(() => {
-  return venues
-    .filter(
-      (venue) =>
-        selectedState === "All India" ||
-        venue.location?.toLowerCase().includes(selectedState.toLowerCase()) ||
-        venue.state?.toLowerCase() === selectedState.toLowerCase()
-    )
-    .filter(
-      (venue) =>
-        venue.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        venue.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        venue.location?.toLowerCase().includes(searchTerm.toLowerCase()) || // ✅ location
-        venue.address?.toLowerCase().includes(searchTerm.toLowerCase())     // ✅ address
-    );
-}, [venues, selectedState, searchTerm]);
+  const filteredVenues = useMemo(() => {
+    return venues
+      .filter(
+        (venue) =>
+          selectedState === "All India" ||
+          venue.location?.toLowerCase().includes(selectedState.toLowerCase()) ||
+          venue.state?.toLowerCase() === selectedState.toLowerCase()
+      )
+      .filter(
+        (venue) =>
+          venue.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          venue.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          venue.location?.toLowerCase().includes(searchTerm.toLowerCase()) || // ✅ location
+          venue.address?.toLowerCase().includes(searchTerm.toLowerCase())     // ✅ address
+      );
+  }, [venues, selectedState, searchTerm]);
 
 
   return (
     <>
       <SEO
-        title="Venue Decoration Services - Professional Event Styling | Decoryy"
+        title="Venue Decoration Services - Professional Event Styling | TodayMyDream"
         description="Professional venue decoration services for weddings, birthdays, anniversaries, and corporate events across India. Expert event styling, decoration materials, and venue transformation services."
         keywords="venue decoration services, event styling, wedding venue decoration, birthday party venue decoration, anniversary celebration venue, corporate event decoration, venue transformation, event decoration India, professional decoration services, venue styling experts, event planning decoration, celebration venue decoration"
-        url="https://decoryy.com/venues"
+        url="https://todaymydream.com/venues"
         image="/venue-hero.jpg"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
-          "name": "Decoryy Venue Decoration Services",
+          "name": "TodayMyDream Venue Decoration Services",
           "description": "Professional venue decoration services for weddings, birthdays, anniversaries, and corporate events across India.",
-          "url": "https://decoryy.com/venues",
+          "url": "https://todaymydream.com/venues",
           "telephone": "+91-XXXXXXXXXX",
-          "email": "info@decoryy.com",
+          "email": "info@todaymydream.com",
           "address": {
             "@type": "PostalAddress",
             "addressCountry": "IN",
@@ -263,212 +263,212 @@ const filteredVenues = useMemo(() => {
             ]
           },
           "sameAs": [
-            "https://www.facebook.com/decoryy",
-            "https://www.instagram.com/decoryy",
-            "https://twitter.com/decoryy"
+            "https://www.facebook.com/todaymydream",
+            "https://www.instagram.com/todaymydream",
+            "https://twitter.com/todaymydream"
           ]
         }}
       />
       <div className="min-h-screen font-sans relative bg-gradient-to-br from-amber-50/30 via-white to-orange-50/30">
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 md:py-8 relative z-10">
-        {/* Premium Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-6 md:mb-10"
-        >
-          {/* Main Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-slate-900 tracking-tight mb-3 md:mb-4 bg-gradient-to-r from-slate-900 via-amber-900 to-slate-900 bg-clip-text"
-          >
-            Find Your Perfect Venue
-          </motion.h1>
-
-          {/* Stats */}
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 md:py-8 relative z-10">
+          {/* Premium Hero Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-4 md:mt-6"
+            transition={{ duration: 0.6 }}
+            className="text-center mb-6 md:mb-10"
           >
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="p-1.5 md:p-2 bg-amber-100 rounded-lg">
-                <Building2 size={16} className="text-amber-600 md:w-5 md:h-5" />
+            {/* Main Heading */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-slate-900 tracking-tight mb-3 md:mb-4 bg-gradient-to-r from-slate-900 via-amber-900 to-slate-900 bg-clip-text"
+            >
+              Find Your Perfect Venue
+            </motion.h1>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-4 md:mt-6"
+            >
+              <div className="flex items-center gap-1.5 md:gap-2">
+                <div className="p-1.5 md:p-2 bg-amber-100 rounded-lg">
+                  <Building2 size={16} className="text-amber-600 md:w-5 md:h-5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-900">{venues.length}+</p>
+                  <p className="text-[10px] md:text-xs lg:text-sm text-slate-600 font-medium">Premium Venues</p>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-900">{venues.length}+</p>
-                <p className="text-[10px] md:text-xs lg:text-sm text-slate-600 font-medium">Premium Venues</p>
+              <div className="flex items-center gap-1.5 md:gap-2">
+                <div className="p-1.5 md:p-2 bg-green-100 rounded-lg">
+                  <Star size={16} className="text-green-600 fill-green-600 md:w-5 md:h-5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-900">4.8+</p>
+                  <p className="text-[10px] md:text-xs lg:text-sm text-slate-600 font-medium">Average Rating</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="p-1.5 md:p-2 bg-green-100 rounded-lg">
-                <Star size={16} className="text-green-600 fill-green-600 md:w-5 md:h-5" />
+              <div className="flex items-center gap-1.5 md:gap-2">
+                <div className="p-1.5 md:p-2 bg-blue-100 rounded-lg">
+                  <TrendingUp size={16} className="text-blue-600 md:w-5 md:h-5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-900">100%</p>
+                  <p className="text-[10px] md:text-xs lg:text-sm text-slate-600 font-medium">Verified</p>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-900">4.8+</p>
-                <p className="text-[10px] md:text-xs lg:text-sm text-slate-600 font-medium">Average Rating</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="p-1.5 md:p-2 bg-blue-100 rounded-lg">
-                <TrendingUp size={16} className="text-blue-600 md:w-5 md:h-5" />
-              </div>
-              <div className="text-left">
-                <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-900">100%</p>
-                <p className="text-[10px] md:text-xs lg:text-sm text-slate-600 font-medium">Verified</p>
-              </div>
-            </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
 
-        {/* Premium Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mb-6 md:mb-8 sticky top-16 md:top-20 z-20 bg-white/95 backdrop-blur-xl rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-amber-100 p-3 md:p-5"
-        >
-          <div className="flex flex-col md:flex-row gap-3 md:gap-4 max-w-4xl mx-auto">
-            {/* Location Filter */}
-            <div className="relative flex-1">
-              <label className="block text-[10px] md:text-xs font-bold text-slate-700 mb-1.5 md:mb-2 ml-1">
-                Location
-              </label>
-              <div className="relative">
-                <MapPin
-                  className="absolute top-1/2 left-3 md:left-4 -translate-y-1/2 text-amber-500"
-                  size={16}
-                />
-                <select
-                  value={selectedState}
-                  onChange={(e) => setSelectedState(e.target.value)}
-                  className="w-full pl-9 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-3 text-sm md:text-base bg-white border-2 border-amber-200 rounded-lg md:rounded-xl shadow-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 appearance-none transition-all hover:border-amber-300"
-                >
-                  {availableLocations.map((location) => (
-                    <option key={location} value={location}>
-                      {location}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Search Filter */}
-            <div className="relative flex-1">
-              <label className="block text-[10px] md:text-xs font-bold text-slate-700 mb-1.5 md:mb-2 ml-1">
-                Search Venues
-              </label>
-              <div className="relative">
-                <Search
-                  className="absolute top-1/2 left-3 md:left-4 -translate-y-1/2 text-amber-500"
-                  size={16}
-                />
-                <input
-                  type="text"
-                  placeholder="Search venue or city..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-3 text-sm md:text-base bg-white border-2 border-amber-200 rounded-lg md:rounded-xl shadow-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all hover:border-amber-300"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Results Count */}
-          {!loading && (
-            <div className="mt-3 md:mt-4 text-center">
-              <p className="text-xs md:text-sm text-slate-600">
-                Showing <span className="font-bold text-amber-600">{filteredVenues.length}</span> {filteredVenues.length === 1 ? 'venue' : 'venues'}
-                {searchTerm && <span> matching "<span className="font-semibold">{searchTerm}</span>"</span>}
-              </p>
-            </div>
-          )}
-        </motion.div>
-
-        {/* Venues Grid */}
-        <motion.div
-          layout
-          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 lg:gap-6"
-        >
-          <AnimatePresence mode="wait">
-            {loading ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="col-span-full text-center py-12 md:py-16"
-              >
-                <div className="relative inline-flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-4 border-amber-200"></div>
-                  <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-t-4 border-amber-500 absolute"></div>
-                </div>
-                <h3 className="text-base md:text-xl font-bold text-slate-900 mt-4 md:mt-6">
-                  Finding Perfect Venues...
-                </h3>
-                <p className="text-xs md:text-sm text-slate-600 mt-1.5 md:mt-2">
-                  Please wait while we load the best venues for you
-                </p>
-              </motion.div>
-            ) : error ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="col-span-full text-center py-12 md:py-16"
-              >
-                <div className="max-w-md mx-auto bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-red-100">
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                    <Building2 size={24} className="text-red-500 md:w-8 md:h-8" />
-                  </div>
-                  <h3 className="text-lg md:text-2xl font-bold text-slate-900 mb-1.5 md:mb-2">
-                    No Venues Available
-                  </h3>
-                  <p className="text-sm md:text-base text-slate-600">
-                    We're currently updating our venue listings. Please check back later.
-                  </p>
-                </div>
-              </motion.div>
-            ) : filteredVenues.length > 0 ? (
-              filteredVenues.map((venue, index) => (
-                <VenueCard key={venue.id} venue={venue} />
-              ))
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="col-span-full text-center py-12 md:py-16"
-              >
-                <div className="max-w-md mx-auto bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-amber-100">
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                    <Search size={24} className="text-amber-500 md:w-8 md:h-8" />
-                  </div>
-                  <h3 className="text-lg md:text-2xl font-bold text-slate-900 mb-1.5 md:mb-2">
-                    No Venues Found
-                  </h3>
-                  <p className="text-sm md:text-base text-slate-600 mb-4 md:mb-5">
-                    We couldn't find any venues matching your search criteria.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSearchTerm("");
-                      setSelectedState("All India");
-                    }}
-                    className="px-5 py-2.5 md:px-6 md:py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg md:rounded-xl font-semibold text-sm md:text-base hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl"
+          {/* Premium Filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mb-6 md:mb-8 sticky top-16 md:top-20 z-20 bg-white/95 backdrop-blur-xl rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-amber-100 p-3 md:p-5"
+          >
+            <div className="flex flex-col md:flex-row gap-3 md:gap-4 max-w-4xl mx-auto">
+              {/* Location Filter */}
+              <div className="relative flex-1">
+                <label className="block text-[10px] md:text-xs font-bold text-slate-700 mb-1.5 md:mb-2 ml-1">
+                  Location
+                </label>
+                <div className="relative">
+                  <MapPin
+                    className="absolute top-1/2 left-3 md:left-4 -translate-y-1/2 text-amber-500"
+                    size={16}
+                  />
+                  <select
+                    value={selectedState}
+                    onChange={(e) => setSelectedState(e.target.value)}
+                    className="w-full pl-9 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-3 text-sm md:text-base bg-white border-2 border-amber-200 rounded-lg md:rounded-xl shadow-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 appearance-none transition-all hover:border-amber-300"
                   >
-                    Clear Filters
-                  </button>
+                    {availableLocations.map((location) => (
+                      <option key={location} value={location}>
+                        {location}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              </motion.div>
+              </div>
+
+              {/* Search Filter */}
+              <div className="relative flex-1">
+                <label className="block text-[10px] md:text-xs font-bold text-slate-700 mb-1.5 md:mb-2 ml-1">
+                  Search Venues
+                </label>
+                <div className="relative">
+                  <Search
+                    className="absolute top-1/2 left-3 md:left-4 -translate-y-1/2 text-amber-500"
+                    size={16}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search venue or city..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-9 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-3 text-sm md:text-base bg-white border-2 border-amber-200 rounded-lg md:rounded-xl shadow-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all hover:border-amber-300"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Results Count */}
+            {!loading && (
+              <div className="mt-3 md:mt-4 text-center">
+                <p className="text-xs md:text-sm text-slate-600">
+                  Showing <span className="font-bold text-amber-600">{filteredVenues.length}</span> {filteredVenues.length === 1 ? 'venue' : 'venues'}
+                  {searchTerm && <span> matching "<span className="font-semibold">{searchTerm}</span>"</span>}
+                </p>
+              </div>
             )}
-          </AnimatePresence>
-        </motion.div>
+          </motion.div>
+
+          {/* Venues Grid */}
+          <motion.div
+            layout
+            className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 lg:gap-6"
+          >
+            <AnimatePresence mode="wait">
+              {loading ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="col-span-full text-center py-12 md:py-16"
+                >
+                  <div className="relative inline-flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-4 border-amber-200"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-t-4 border-amber-500 absolute"></div>
+                  </div>
+                  <h3 className="text-base md:text-xl font-bold text-slate-900 mt-4 md:mt-6">
+                    Finding Perfect Venues...
+                  </h3>
+                  <p className="text-xs md:text-sm text-slate-600 mt-1.5 md:mt-2">
+                    Please wait while we load the best venues for you
+                  </p>
+                </motion.div>
+              ) : error ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="col-span-full text-center py-12 md:py-16"
+                >
+                  <div className="max-w-md mx-auto bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-red-100">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                      <Building2 size={24} className="text-red-500 md:w-8 md:h-8" />
+                    </div>
+                    <h3 className="text-lg md:text-2xl font-bold text-slate-900 mb-1.5 md:mb-2">
+                      No Venues Available
+                    </h3>
+                    <p className="text-sm md:text-base text-slate-600">
+                      We're currently updating our venue listings. Please check back later.
+                    </p>
+                  </div>
+                </motion.div>
+              ) : filteredVenues.length > 0 ? (
+                filteredVenues.map((venue, index) => (
+                  <VenueCard key={venue.id} venue={venue} />
+                ))
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="col-span-full text-center py-12 md:py-16"
+                >
+                  <div className="max-w-md mx-auto bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-amber-100">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                      <Search size={24} className="text-amber-500 md:w-8 md:h-8" />
+                    </div>
+                    <h3 className="text-lg md:text-2xl font-bold text-slate-900 mb-1.5 md:mb-2">
+                      No Venues Found
+                    </h3>
+                    <p className="text-sm md:text-base text-slate-600 mb-4 md:mb-5">
+                      We couldn't find any venues matching your search criteria.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setSelectedState("All India");
+                      }}
+                      className="px-5 py-2.5 md:px-6 md:py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg md:rounded-xl font-semibold text-sm md:text-base hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
       </div>
-    </div>
     </>
   );
 };

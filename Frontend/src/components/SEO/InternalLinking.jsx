@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const InternalLinking = ({ 
-  type = 'general', 
-  currentPage = '', 
+const InternalLinking = ({
+  type = 'general',
+  currentPage = '',
   category = null,
-  product = null 
+  product = null
 }) => {
   // Define internal linking strategies based on page type
   const getInternalLinks = () => {
@@ -14,7 +14,7 @@ const InternalLinking = ({
         { to: '/blog', text: 'Decoration Ideas & Tips', description: 'Expert decoration guides and inspiration' },
         { to: '/shop', text: 'Shop Decoration Materials', description: 'Browse our complete collection' },
         { to: '/venues', text: 'Venue Decoration Services', description: 'Professional event styling' },
-        { to: '/about', text: 'About Decoryy', description: 'Learn about our mission' }
+        { to: '/about', text: 'About TodayMyDream', description: 'Learn about our mission' }
       ],
       product: [
         { to: '/blog', text: 'Related Decoration Ideas', description: 'Get inspired with our blog posts' },
@@ -103,7 +103,7 @@ export const Breadcrumb = ({ items = [] }) => {
             </svg>
           )}
           {item.href ? (
-            <Link 
+            <Link
               to={item.href}
               className="hover:text-blue-600 transition-colors"
             >
@@ -119,11 +119,11 @@ export const Breadcrumb = ({ items = [] }) => {
 };
 
 // Related content component
-export const RelatedContent = ({ 
-  type, 
-  items = [], 
+export const RelatedContent = ({
+  type,
+  items = [],
   title = "Related Content",
-  maxItems = 3 
+  maxItems = 3
 }) => {
   if (!items || items.length === 0) return null;
 

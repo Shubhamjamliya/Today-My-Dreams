@@ -33,11 +33,11 @@ const CategoryProductSection = ({ category, selectedCity }) => {
         if (selectedCity) {
           urlParams.append('city', selectedCity);
         }
-        
+
         const response = await axios.get(`${config.API_URLS.SHOP}?${urlParams.toString()}`);
         const data = response.data || [];
         const productsArray = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
-        
+
         setProducts(productsArray);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -54,7 +54,7 @@ const CategoryProductSection = ({ category, selectedCity }) => {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
@@ -76,7 +76,7 @@ const CategoryProductSection = ({ category, selectedCity }) => {
             <p className="text-sm text-slate-600">Explore our premium collection</p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => navigate('/shop', { state: { selectedCategory: { main: category.name } } })}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white rounded-full hover:from-amber-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-xl group"
         >
@@ -107,7 +107,7 @@ const SubCategoryPage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { selectedCity } = useCity();
-  
+
   // Subcategory state management
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -176,10 +176,10 @@ const SubCategoryPage = () => {
   const handleSubcategoryClick = (subcategory) => {
     navigate(`/shop`, {
       state: {
-        selectedCategory: { 
-          main: selectedCategory.name, 
-          sub: subcategory.name, 
-          item: null 
+        selectedCategory: {
+          main: selectedCategory.name,
+          sub: subcategory.name,
+          item: null
         }
       }
     });
@@ -284,8 +284,8 @@ const SubCategoryPage = () => {
                       src={config.fixImageUrl(subcategory.image || subcategory.video || '')}
                       alt={subcategory.name}
                       className="w-full h-full object-cover"
-                      onError={(e) => { 
-                        e.target.src = 'https://placehold.co/96x96/fffbeb/475569?text=' + encodeURIComponent(subcategory.name.charAt(0)); 
+                      onError={(e) => {
+                        e.target.src = 'https://placehold.co/96x96/fffbeb/475569?text=' + encodeURIComponent(subcategory.name.charAt(0));
                       }}
                     />
                     <div className="absolute inset-0 rounded-full bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -311,17 +311,17 @@ const SubCategoryPage = () => {
   return (
     <>
       <SEO
-        title="Decoration Categories - Birthday, Wedding & Anniversary Supplies | Decoryy"
+        title="Decoration Categories - Birthday, Wedding & Anniversary Supplies | TodayMyDream"
         description="Browse our comprehensive collection of decoration categories for birthdays, weddings, anniversaries, and celebrations. Find the perfect decoration materials for your special events."
         keywords="decoration categories, birthday decoration categories, wedding decor categories, anniversary celebration categories, party supplies categories, decoration materials by category, celebration supplies categories, event decoration categories"
-        url="https://decoryy.com/subcategory"
+        url="https://todaymydream.com/subcategory"
         image="/categories-hero.jpg"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
           "name": "Decoration Categories",
           "description": "Browse decoration categories for birthdays, weddings, anniversaries and celebrations.",
-          "url": "https://decoryy.com/subcategory",
+          "url": "https://todaymydream.com/subcategory",
           "mainEntity": {
             "@type": "ItemList",
             "name": "Decoration Categories",
@@ -335,23 +335,23 @@ const SubCategoryPage = () => {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://decoryy.com"
+                "item": "https://todaymydream.com"
               },
               {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Categories",
-                "item": "https://decoryy.com/subcategory"
+                "item": "https://todaymydream.com/subcategory"
               }
             ]
           }
         }}
       />
-      
+
       {/* Premium Background with Gradient */}
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50 font-sans">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          
+
           {/* Premium Hero Section */}
           <motion.div
             initial={{ opacity: 0, y: -30 }}
@@ -363,18 +363,18 @@ const SubCategoryPage = () => {
               <ShoppingBag className="w-5 h-5 text-amber-600" />
               <span className="text-sm font-semibold text-amber-800">Premium Categories</span>
             </div>
-            
+
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-4">
               Discover Amazing{' '}
               <span className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
                 Collections
               </span>
             </h1>
-            
+
             <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-8">
               Explore our premium collection of decoration categories with featured products for every celebration
             </p>
-            
+
             <div className="flex justify-center">
               <div className="h-1 w-24 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 rounded-full"></div>
             </div>
@@ -390,7 +390,7 @@ const SubCategoryPage = () => {
             <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-6 text-center">
               Browse by Category
             </h2>
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
               {categories.map((category) => (
                 <motion.div
@@ -410,14 +410,14 @@ const SubCategoryPage = () => {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                      
+
                       {/* Category Name Overlay */}
                       <div className="absolute bottom-0 left-0 right-0 p-3">
                         <p className="text-white font-bold text-sm md:text-base text-center drop-shadow-lg">
                           {category.name}
                         </p>
                       </div>
-                      
+
                       {/* Hover Effect */}
                       <div className="absolute inset-0 bg-gradient-to-t from-amber-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
@@ -442,12 +442,12 @@ const SubCategoryPage = () => {
                 Discover our handpicked selection of premium products from each category
               </p>
             </div>
-            
+
             {categories.map((category) => (
-              <CategoryProductSection 
-                key={category._id} 
-                category={category} 
-                selectedCity={selectedCity} 
+              <CategoryProductSection
+                key={category._id}
+                category={category}
+                selectedCity={selectedCity}
               />
             ))}
           </motion.div>

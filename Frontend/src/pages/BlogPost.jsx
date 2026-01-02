@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Calendar, 
-  Clock, 
-  Eye, 
-  Tag, 
+import {
+  Calendar,
+  Clock,
+  Eye,
+  Tag,
   ArrowLeft,
   Share2,
   Facebook,
@@ -34,10 +34,10 @@ const BlogPost = () => {
       try {
         setLoading(true);
         const response = await blogAPI.getBlogBySlug(slug);
-        
+
         if (response.data.success) {
           setBlog(response.data.blog);
-          
+
           // Fetch related blogs
           const relatedResponse = await blogAPI.getBlogs(`category=${response.data.blog.category}&limit=3`);
           const filteredRelated = relatedResponse.data.blogs.filter(b => b.slug !== slug);
@@ -120,19 +120,19 @@ const BlogPost = () => {
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Decoryy",
+      "name": "TodayMyDream",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://decoryy.com/logo.png"
+        "url": "https://todaymydream.com/TodayMyDream.png"
       }
     },
     "datePublished": blog.publishedAt,
     "dateModified": blog.lastModified || blog.publishedAt,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://decoryy.com/blog/${blog.slug}`
+      "@id": `https://todaymydream.com/blog/${blog.slug}`
     },
-    "url": `https://decoryy.com/blog/${blog.slug}`,
+    "url": `https://todaymydream.com/blog/${blog.slug}`,
     "keywords": blog.seoKeywords?.join(', ') || blog.tags?.join(', '),
     "articleSection": blog.category,
     "wordCount": blog.content?.split(' ').length || 0,
@@ -146,25 +146,25 @@ const BlogPost = () => {
         title={blog.metaTitle || blog.title}
         description={blog.metaDescription || blog.excerpt}
         keywords={blog.seoKeywords?.join(', ') || blog.tags?.join(', ')}
-        url={`https://decoryy.com/blog/${blog.slug}`}
+        url={`https://todaymydream.com/blog/${blog.slug}`}
         image={blog.socialImage || blog.featuredImage}
         type="article"
         structuredData={structuredData}
       />
-      
+
       <div className="min-h-screen bg-slate-50">
         {/* Header */}
         <div className="bg-white shadow-sm">
           <div className="container mx-auto px-4 sm:px-6 py-4">
             <div className="flex items-center justify-between">
-              <Link 
+              <Link
                 to="/blog"
                 className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
               >
                 <ArrowLeft size={20} />
                 Back to Blog
               </Link>
-              
+
               <div className="relative">
                 <button
                   onClick={() => setShowShareMenu(!showShareMenu)}
@@ -173,7 +173,7 @@ const BlogPost = () => {
                   <Share2 size={16} />
                   Share
                 </button>
-                
+
                 {showShareMenu && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -238,7 +238,7 @@ const BlogPost = () => {
                     <Calendar size={14} />
                     {new Date(blog.publishedAt).toLocaleDateString('en-GB')}
                   </span>
-                 
+
                   <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
                     {blog.category}
                   </span>
@@ -309,7 +309,7 @@ const BlogPost = () => {
           </div>
         </section>
 
-     
+
       </div>
     </>
   );

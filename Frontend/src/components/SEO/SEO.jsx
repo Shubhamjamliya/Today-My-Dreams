@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const SEO = ({ 
-  title, 
-  description, 
-  keywords, 
-  image, 
-  url, 
+const SEO = ({
+  title,
+  description,
+  keywords,
+  image,
+  url,
   type = 'website',
   structuredData,
   author,
@@ -78,19 +78,19 @@ const SEO = ({
       updatePropertyTag('og:author', author);
       updatePropertyTag('article:author', author);
     }
-    
+
     if (publishedTime) {
       updatePropertyTag('article:published_time', publishedTime);
     }
-    
+
     if (modifiedTime) {
       updatePropertyTag('article:modified_time', modifiedTime);
     }
-    
+
     if (section) {
       updatePropertyTag('article:section', section);
     }
-    
+
     if (tags && Array.isArray(tags)) {
       tags.forEach(tag => {
         const tagMeta = document.createElement('meta');
@@ -102,8 +102,8 @@ const SEO = ({
 
     // Update Twitter Card tags
     updatePropertyTag('twitter:card', 'summary_large_image');
-    updatePropertyTag('twitter:site', '@decoryy');
-    updatePropertyTag('twitter:creator', '@decoryy');
+    updatePropertyTag('twitter:site', '@todaymydream');
+    updatePropertyTag('twitter:creator', '@todaymydream');
 
     // Update viewport and other essential meta tags
     let viewport = document.querySelector('meta[name="viewport"]');

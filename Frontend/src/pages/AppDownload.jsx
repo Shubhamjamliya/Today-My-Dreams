@@ -46,7 +46,7 @@ const AppDownload = () => {
                             Now Available on Android
                         </span>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                            Get the <span className="text-primary">Decoryy</span> App
+                            Get the <span className="text-primary">TodayMyDream</span> App
                         </h1>
                         <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">
                             Transform your party planning experience. Download our app today for the easiest way to shop for balloons and decorations.
@@ -54,7 +54,7 @@ const AppDownload = () => {
 
                         <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                             <motion.a
-                                href="https://play.google.com/store/apps/details?id=com.app.decoryy"
+                                href="https://play.google.com/store/apps/details?id=com.app.todaymydream"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 whileHover={{ scale: 1.05 }}
@@ -87,7 +87,7 @@ const AppDownload = () => {
                             <div className="w-full h-full bg-white overflow-hidden relative ">
                                 <img
                                     src={AppMockupImage}
-                                    alt="Decoryy App Screenshot"
+                                    alt="TodayMyDream App Screenshot"
                                     className="w-full h-full object-cover"
                                 />
                             </div>
@@ -166,10 +166,10 @@ const AppDownload = () => {
                     <div className="relative z-10">
                         <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to start shopping?</h2>
                         <p className="text-gray-300 mb-8 max-w-xl mx-auto">
-                            Download the Decoryy app now and get the best party supplies delivered right to your doorstep.
+                            Download the TodayMyDream app now and get the best party supplies delivered right to your doorstep.
                         </p>
                         <a
-                            href="https://play.google.com/store/apps/details?id=com.app.decoryy"
+                            href="https://play.google.com/store/apps/details?id=com.app.todaymydream"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-3 bg-white text-gray-900 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-colors"

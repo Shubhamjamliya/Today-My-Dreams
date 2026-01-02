@@ -8,7 +8,7 @@ const config = {
   ...env,
 
   // Backend API URL - Change this to switch between environments
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5175' : 'https://api.decoryy.com'),
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://api.decoryy.com'),
 
   // Simple API URL getter for backward compatibility
   get API_URL() {

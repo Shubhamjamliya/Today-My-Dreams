@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Search, 
-  Calendar, 
-  Clock, 
-  Eye, 
+import {
+  Search,
+  Calendar,
+  Clock,
+  Eye,
   ArrowRight,
   X
 } from 'lucide-react';
@@ -16,7 +16,7 @@ import InternalLinking from '../components/SEO/InternalLinking';
 
 const BlogCard = React.memo(({ blog, index }) => {
   const navigate = useNavigate();
-  
+
   const handleClick = useCallback(() => {
     navigate(`/blog/${blog.slug}`);
   }, [navigate, blog.slug]);
@@ -37,14 +37,14 @@ const BlogCard = React.memo(({ blog, index }) => {
       <div className="relative overflow-hidden h-40 md:h-56">
         <img
           src={blog.featuredImage}
-        
+
           className="w-full h-full object-cover group-hover:scale-105 md:group-hover:scale-110 transition-transform duration-700"
           loading="lazy"
           decoding="async"
         />
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
+
         {/* Category Badge */}
         <div className="absolute top-2 left-2 md:top-4 md:left-4">
           <span className="inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-full text-xs font-semibold bg-white/90 backdrop-blur-sm text-slate-700 shadow-sm border border-white/20">
@@ -52,7 +52,7 @@ const BlogCard = React.memo(({ blog, index }) => {
           </span>
         </div>
       </div>
-      
+
       {/* Content Container */}
       <div className="p-4 md:p-7">
         {/* Meta Information - Hidden on mobile, shown on desktop */}
@@ -61,7 +61,7 @@ const BlogCard = React.memo(({ blog, index }) => {
             <Calendar size={14} className="text-slate-400" />
             {formattedDate}
           </span>
-         
+
           <span className="flex items-center gap-1.5 font-medium">
             <Eye size={14} className="text-slate-400" />
             {blog.views}
@@ -74,7 +74,7 @@ const BlogCard = React.memo(({ blog, index }) => {
             <Calendar size={12} />
             {formattedDate}
           </span>
-        
+
         </div>
 
         {/* Title */}
@@ -87,11 +87,11 @@ const BlogCard = React.memo(({ blog, index }) => {
           {blog.content}
         </p>
         <div className="flex items-center text-blue-600 group-hover:text-blue-700 group-hover:translate-x-1 transition-all duration-300">
-            <span className="text-xs md:text-sm font-semibold mr-1">Read</span>
-            <ArrowRight size={14} className="md:w-4 md:h-4 group-hover:translate-x-0.5 transition-transform duration-300" />
-          </div>
+          <span className="text-xs md:text-sm font-semibold mr-1">Read</span>
+          <ArrowRight size={14} className="md:w-4 md:h-4 group-hover:translate-x-0.5 transition-transform duration-300" />
+        </div>
 
-      
+
       </div>
     </motion.article>
   );
@@ -183,96 +183,96 @@ const Blog = () => {
   return (
     <>
       <SEO
-        title="Birthday, Anniversary & Baby Shower Decoration Blog - DECORYY"
-        description="Expert tips and inspiration for birthday decorations, anniversary celebrations, baby shower themes, and venue decoration ideas. Transform your special events with our comprehensive decoration guides and DIY tutorials."
+        title="Celebration Blog - TodayMyDream"
+        description="Ideas, tips and trends for your next celebration."
         keywords="birthday decoration ideas, anniversary decoration, baby shower decoration, venue decoration, party decoration tips, celebration ideas, DIY decoration, event planning, balloon decoration, party themes, decoration trends, party supplies, celebration materials, birthday party ideas, wedding decoration, anniversary party, baby shower themes, venue styling, party planning, decoration inspiration"
-        url="https://decoryy.com/blog"
+        url="https://todaymydream.com/blog"
         image="/blog-hero.jpg"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "Blog",
-          "name": "Decoryy Decoration Blog",
+          "name": "TodayMyDream Decoration Blog",
           "description": "Expert tips and inspiration for birthday decorations, anniversary celebrations, baby shower themes, and venue decoration ideas.",
-          "url": "https://decoryy.com/blog",
+          "url": "https://todaymydream.com/blog",
           "publisher": {
             "@type": "Organization",
-            "name": "Decoryy",
+            "name": "TodayMyDream",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://decoryy.com/logo.png"
+              "url": "https://todaymydream.com/TodayMyDream.png"
             }
           },
           "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https://decoryy.com/blog"
+            "@id": "https://todaymydream.com/blog"
           },
           "inLanguage": "en-US",
           "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://decoryy.com/blog?search={search_term_string}",
+            "target": "https://todaymydream.com/blog?search={search_term_string}",
             "query-input": "required name=search_term_string"
           }
         }}
       />
-      
-      <div className="min-h-screen bg-slate-50">
-      
 
-      
+      <div className="min-h-screen bg-slate-50">
+
+
+
 
         {/* Main Content */}
         <section className="py-12">
           <div className="container mx-auto px-4 sm:px-6">
             {/* Blog Grid */}
-                {error ? (
-                  <div className="text-center py-12">
-                    <div className="text-6xl mb-4">⚠️</div>
-                    <h3 className="text-2xl font-bold text-slate-900 mb-2" style={{ color: '#0f172a' }}>Error Loading Posts</h3>
-                    <p className="text-slate-600 mb-6" style={{ color: '#475569' }}>{error}</p>
-                    <button
-                      onClick={() => fetchBlogs(currentPage)}
-                      className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Try Again
-                    </button>
-                  </div>
-                ) : loading ? (
-                  <div className="flex justify-center py-12">
-                    <Loader size="lg" text="Loading blog posts..." />
-                  </div>
-                ) : blogs.length > 0 ? (
-                  <>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                      {blogs.map((blog, index) => (
-                        <BlogCard key={blog._id} blog={blog} index={index} />
-                      ))}
-                    </div>
+            {error ? (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">⚠️</div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2" style={{ color: '#0f172a' }}>Error Loading Posts</h3>
+                <p className="text-slate-600 mb-6" style={{ color: '#475569' }}>{error}</p>
+                <button
+                  onClick={() => fetchBlogs(currentPage)}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : loading ? (
+              <div className="flex justify-center py-12">
+                <Loader size="lg" text="Loading blog posts..." />
+              </div>
+            ) : blogs.length > 0 ? (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                  {blogs.map((blog, index) => (
+                    <BlogCard key={blog._id} blog={blog} index={index} />
+                  ))}
+                </div>
 
-                   
-                  </>
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="text-6xl mb-4">📝</div>
-                    <h3 className="text-2xl font-bold text-slate-900 mb-2" style={{ color: '#0f172a' }}>No blog posts found</h3>
-                    <p className="text-slate-600 mb-6" style={{ color: '#475569' }}>
-                      {hasActiveFilters 
-                        ? "Try adjusting your filters to see more results." 
-                        : "Check back later for new content!"}
-                    </p>
-                    {hasActiveFilters && (
-                      <button
-                        onClick={clearFilters}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        Clear Filters
-                      </button>
-                    )}
-                  </div>
+
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">📝</div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2" style={{ color: '#0f172a' }}>No blog posts found</h3>
+                <p className="text-slate-600 mb-6" style={{ color: '#475569' }}>
+                  {hasActiveFilters
+                    ? "Try adjusting your filters to see more results."
+                    : "Check back later for new content!"}
+                </p>
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearFilters}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Clear Filters
+                  </button>
                 )}
+              </div>
+            )}
           </div>
         </section>
 
-      
+
       </div>
     </>
   );

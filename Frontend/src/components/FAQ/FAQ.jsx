@@ -11,7 +11,7 @@ const faqData = [
   },
   {
     question: "How do we book a service with you?",
-    answer: "Booking is simple! Go to decoryy.com, select your city by entering your PIN code, choose the service you would like, and then proceed to payment to confirm your booking."
+    answer: "Booking is simple! Go to todaymydream.com, select your city by entering your PIN code, choose the service you would like, and then proceed to payment to confirm your booking."
   },
   {
     question: "How much does simple birthday decoration cost?",
@@ -91,14 +91,14 @@ const FaqPage = () => {
         </div>
 
         <div className="text-center mt-16">
-            <h3 className="text-2xl font-bold text-gray-800">Still have questions?</h3>
-            <p className="mt-2 text-gray-600">We're here to help! Contact our support team for any further inquiries.</p>
-            <a 
-              href="/contact" 
-              className="mt-6 inline-block bg-purple-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-purple-700 transition-all duration-300 shadow-md hover:shadow-lg"
-            >
-              Contact Us
-            </a>
+          <h3 className="text-2xl font-bold text-gray-800">Still have questions?</h3>
+          <p className="mt-2 text-gray-600">We're here to help! Contact our support team for any further inquiries.</p>
+          <a
+            href="/contact"
+            className="mt-6 inline-block bg-purple-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-purple-700 transition-all duration-300 shadow-md hover:shadow-lg"
+          >
+            Contact Us
+          </a>
         </div>
       </div>
     </section>

@@ -144,6 +144,65 @@ function AppContent() {
     };
   }, []);
 
+  // --- Dynamic Title Handler (Come Back Effect) ---
+  useEffect(() => {
+    const originalTitle = document.title;
+
+    // Function to handle visibility change
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        document.title = "Come back! 😢";
+      } else {
+        // Restore original title or let SEO component re-set it
+        // We can trigger a re-render or let the SEO component handle it, 
+        // but simply setting it back to what we captured might be stale if page changed.
+        // However, for the "come back" effect, we just need to clear the "Come back" text.
+        // The SEO component updates document.title on location change, so if we just switched tabs,
+        // the title should ideally revert. 
+        // A simple way is to force it back to the SEO title if available, or just reload the intended title.
+        // Since SEO component runs on props, we can rely on it, OR we can just store the 'last good title'.
+
+        // Better approach: Just restore the title we captured before blur? 
+        // No, because title might have changed via navigation in background (unlikely but possible).
+        // Let's rely on the fact that when we return, we want the Valid title.
+        // The simplest hack is:
+        // On Blur: Save current title -> Set "Come back"
+        // On Focus: Restore saved title.
+      }
+    };
+
+    const onBlur = () => {
+      document.title = "Come back! 😢";
+    };
+
+    const onFocus = () => {
+      // We need to retrieve the correct title. 
+      // Since SEO component sets document.title, we might need to let it re-run or just store the value.
+      // Let's use a ref or a variable outside.
+      // Actually, simpler: 
+      // When 'hidden' becomes true, save title. When 'hidden' becomes false, restore.
+    };
+  }, []);
+
+  // Revised approach inside the same useEffect or a new one
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        window.previousTitle = document.title;
+        document.title = "Come back! 😢";
+      } else {
+        if (window.previousTitle) {
+          document.title = window.previousTitle;
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   // SEO configuration based on current route
   const getSEOConfig = () => {
     const path = location.pathname;

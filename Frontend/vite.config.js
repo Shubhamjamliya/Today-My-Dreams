@@ -25,28 +25,28 @@ export default defineConfig({
       output: {
         manualChunks: (id) => {
           // Keep React and MUI together to ensure React is available for MUI
-          if (id.includes('node_modules/react/') || 
-              id.includes('node_modules/react-dom/') ||
-              id.includes('node_modules/@mui/') || 
-              id.includes('node_modules/@emotion/')) {
+          if (id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-dom/') ||
+            id.includes('node_modules/@mui/') ||
+            id.includes('node_modules/@emotion/')) {
             return 'react-ui';
           }
-          
+
           // Keep React Router separate
           if (id.includes('node_modules/react-router')) {
             return 'react-router';
           }
-          
+
           // Animation libraries
           if (id.includes('framer-motion')) {
             return 'animation';
           }
-          
+
           // Icon libraries
           if (id.includes('react-icons') || id.includes('@heroicons') || id.includes('lucide-react')) {
             return 'icons';
           }
-          
+
           // Utility libraries - split large utils
           if (id.includes('axios')) {
             return 'axios';
@@ -57,42 +57,42 @@ export default defineConfig({
           if (id.includes('html2canvas') || id.includes('jspdf')) {
             return 'pdf-utils';
           }
-          
+
           // Maps and location
           if (id.includes('leaflet') || id.includes('react-leaflet')) {
             return 'maps';
           }
-          
+
           // Carousel libraries
           if (id.includes('react-slick') || id.includes('react-responsive-carousel')) {
             return 'carousel';
           }
-          
+
           // Authentication
           if (id.includes('@react-oauth') || id.includes('google')) {
             return 'auth';
           }
-          
+
           // Toast notifications
           if (id.includes('react-hot-toast') || id.includes('react-toastify')) {
             return 'toast';
           }
-          
+
           // Cloudinary and file handling
           if (id.includes('cloudinary') || id.includes('multer')) {
             return 'cloudinary';
           }
-          
+
           // Payment processing
           if (id.includes('razorpay')) {
             return 'payment';
           }
-          
+
           // Email
           if (id.includes('nodemailer')) {
             return 'email';
           }
-          
+
           // Large vendor libraries that should be separate
           if (id.includes('node_modules')) {
             return 'vendor';
@@ -119,7 +119,7 @@ export default defineConfig({
       'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
     },
     proxy: {
-      '/api': 'http://localhost:5175',
+      '/api': 'http://localhost:5000',
     },
   },
   optimizeDeps: {

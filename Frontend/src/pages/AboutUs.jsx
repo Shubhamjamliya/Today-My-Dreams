@@ -5,13 +5,13 @@ import SEO from '../components/SEO/SEO';
 // --- Helper Component for Background Shapes ---
 const BackgroundShapes = () => (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 100, x: -100, rotate: -45 }}
             animate={{ opacity: 0.05, y: -100, x: 50, rotate: 15 }}
             transition={{ duration: 60, repeat: Infinity, repeatType: 'reverse' }}
             className="absolute -bottom-40 -left-40 w-96 h-96 bg-amber-300 rounded-full"
         />
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: -100, x: 100, rotate: 45 }}
             animate={{ opacity: 0.05, y: 100, x: -50, rotate: -15 }}
             transition={{ duration: 70, repeat: Infinity, repeatType: 'reverse' }}
@@ -37,15 +37,15 @@ const AboutUs = () => {
 
     return (
         <div className="w-full bg-amber-50/50 font-sans" style={{ backgroundImage: `url("data:image/svg+xml,...")` }}>
-            <SEO 
-                title="About Us - Our Story | Crafting Unforgettable Celebrations"
-                description="Learn about our mission to make booking decorations for your wedding, anniversary, or birthday a seamless and joyful experience."
+            <SEO
+                title="About TodayMyDream - Our Story & Mission"
+                description="Learn about TodayMyDream's journey in transforming celebrations with premium decoration services."
                 keywords="about us, our story, wedding decorations, event planning, birthday party decor, anniversary celebrations"
-                url="https://yourwebsite.com/about"
+                url="https://todaymydream.com/about"
                 image="/beautiful-wedding-decor.jpg"
             />
             <BackgroundShapes />
-            
+
             <section className="relative py-16 sm:py-20 md:py-32 overflow-hidden text-white bg-slate-800">
                 <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/last.png')" }}></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent"></div>
@@ -61,9 +61,9 @@ const AboutUs = () => {
                     </motion.div>
                 </div>
             </section>
-            
+
             <section className="py-12 sm:py-16">
-                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                         {stats.map((stat, index) => (
                             <motion.div
@@ -126,7 +126,7 @@ const AboutUs = () => {
                             The principles that guide us in making every celebration perfect.
                         </p>
                     </motion.div>
-                    
+
                     {/* Changed: grid-cols-2 is now the default for mobile */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                         {values.map((value, index) => (
@@ -163,7 +163,7 @@ const AboutUs = () => {
                             Ready to start planning? Get in touch with our team of celebration specialists.
                         </p>
                     </motion.div>
-                    
+
                     {/* Changed: grid-cols-2 on mobile, with the last item wrapping */}
                     <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <ContactCard icon={MapPin} title="Our Office" lines={["Arrah, Bihar, India"]} />
@@ -183,8 +183,8 @@ const ContactCard = ({ icon: Icon, title, lines, isLink = false, href = "#" }) =
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
     >
-        <a 
-            href={isLink ? href : undefined} 
+        <a
+            href={isLink ? href : undefined}
             // Changed: Reduced padding and text sizes
             className={`block bg-white p-4 text-center rounded-xl shadow-lg shadow-amber-200/30 border border-amber-200/50 h-full ${isLink ? 'transition-all duration-300 hover:shadow-2xl hover:-translate-y-1' : ''}`}
         >

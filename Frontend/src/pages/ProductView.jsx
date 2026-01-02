@@ -32,7 +32,7 @@ const ProductView = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { selectedCityData } = useCity();
-    
+
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('details');
@@ -57,18 +57,18 @@ const ProductView = () => {
     const tabs = [
         { id: 'details', label: 'Art of Celebration', icon: SparklesIcon },
         { id: 'specifications', label: 'Details', icon: CogIcon },
-        
+
         { id: 'reviews', label: 'Reviews', icon: ChatBubbleLeftRightIcon },
     ];
 
     const loadReviews = async () => {
         if (!product?._id) return;
-        
+
         setReviewsLoading(true);
         try {
             const reviewsData = await ReviewService.getProductReviews(product._id);
             setReviews(reviewsData.reviews || []);
-            
+
             if (user && user.email) {
                 try {
                     const userReviewData = await ReviewService.getUserReview(product._id, user.email);
@@ -91,7 +91,7 @@ const ProductView = () => {
             try {
                 setLoading(true);
                 setError(null);
-                
+
                 const endpoint = `${config.API_URLS.PRODUCTS}/${id}`;
                 console.log('Fetching product from:', endpoint);
                 const response = await fetch(endpoint);
@@ -99,12 +99,12 @@ const ProductView = () => {
                 if (!response.ok) {
                     throw new Error(`Product not found (status: ${response.status})`);
                 }
-                
+
                 const data = await response.json();
                 const foundProduct = data.product || data;
 
                 if (!foundProduct || !foundProduct._id) {
-                     throw new Error('Invalid product data received from API');
+                    throw new Error('Invalid product data received from API');
                 }
 
                 setProduct({
@@ -143,16 +143,16 @@ const ProductView = () => {
         try {
             setAddonsLoading(true);
             const url = `${config.API_BASE_URL}/api/addons?active=true`;
-            
+
             const response = await fetch(url);
-            
+
             if (!response.ok) {
                 setAddons([]);
                 return;
             }
-            
+
             const data = await response.json();
-            
+
             if (data.success && data.data && Array.isArray(data.data)) {
                 setAddons(data.data);
             } else {
@@ -179,7 +179,7 @@ const ProductView = () => {
                 if (categoryResponse.ok) {
                     const allProducts = await categoryResponse.json();
                     const productsArray = Array.isArray(allProducts) ? allProducts : [];
-                    
+
                     // Set total category count
                     setCategoryProductCount(productsArray.length);
 
@@ -216,18 +216,18 @@ const ProductView = () => {
                     return ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
                 })
                 .map(img => config.fixImageUrl(img));
-            
+
             if (validImages.length > 0) return validImages;
         }
-        
+
         const fallbackImage = config.fixImageUrl(product.image);
         return [fallbackImage];
     }, [product]);
-    
+
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (!product || productImages.length <= 1) return;
-            
+
             if (e.key === 'ArrowLeft') {
                 setSelectedImage(prev => prev === 0 ? productImages.length - 1 : prev - 1);
             } else if (e.key === 'ArrowRight') {
@@ -262,8 +262,8 @@ const ProductView = () => {
             "image": product.images || ["/logo.png"],
             "brand": {
                 "@type": "Brand",
-                "name": "Decoryy",
-                "logo": "https://decoryy.com/logo.png"
+                "name": "TodayMyDream",
+                "logo": "https://todaymydream.com/TodayMyDream.png"
             },
             "category": product.category?.name || "Decoration Materials",
             "sku": product.sku || product._id,
@@ -273,10 +273,10 @@ const ProductView = () => {
                 "price": product.price,
                 "priceCurrency": "INR",
                 "availability": isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
-                "url": `https://decoryy.com/product/${product._id}`,
+                "url": `https://todaymydream.com/product/${product._id}`,
                 "seller": {
                     "@type": "Organization",
-                    "name": "Decoryy"
+                    "name": "TodayMyDream"
                 },
                 "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
             },
@@ -304,7 +304,7 @@ const ProductView = () => {
             }))
         }
     };
-    
+
     const handleQuantityChange = (value) => {
         if (value >= 1) setQuantity(value);
     };
@@ -328,7 +328,7 @@ const ProductView = () => {
 
     const handlePreviousImage = () => setSelectedImage(prev => (prev === 0 ? productImages.length - 1 : prev - 1));
     const handleNextImage = () => setSelectedImage(prev => (prev === productImages.length - 1 ? 0 : prev + 1));
-    
+
     const handleBookNow = () => {
         // Always show the add-ons modal for consistent user experience
         setShowAddonsModal(true);
@@ -356,10 +356,10 @@ const ProductView = () => {
 
     const handleAddonQuantityChange = (addonId, newQuantity) => {
         if (newQuantity < 1) return;
-        setSelectedAddons(prev => 
-            prev.map(addon => 
-                addon.addonId === addonId 
-                    ? { ...addon, quantity: newQuantity } 
+        setSelectedAddons(prev =>
+            prev.map(addon =>
+                addon.addonId === addonId
+                    ? { ...addon, quantity: newQuantity }
                     : addon
             )
         );
@@ -424,7 +424,7 @@ const ProductView = () => {
     const whatsappUrl = `https://wa.me/${whatsappPhoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="min-h-screen bg-amber-50/50 font-sans"
@@ -434,7 +434,7 @@ const ProductView = () => {
 
             {/* Category & Subcategories Info Bar with Images */}
             {product.category && (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100"
@@ -449,8 +449,8 @@ const ProductView = () => {
                             >
                                 {product.category.image && (
                                     <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/40 flex-shrink-0 ring-2 ring-white/20">
-                                        <img 
-                                            src={config.fixImageUrl(product.category.image)} 
+                                        <img
+                                            src={config.fixImageUrl(product.category.image)}
                                             alt={product.category.name}
                                             className="w-full h-full object-cover"
                                             onError={(e) => { e.target.style.display = 'none'; }}
@@ -458,7 +458,7 @@ const ProductView = () => {
                                     </div>
                                 )}
                                 <span className=" bg-black text-blue-700 whitespace-nowrap font-bold">{product.category.name}</span>
-                               
+
                             </Link>
 
                             {/* Separator */}
@@ -473,24 +473,22 @@ const ProductView = () => {
                                     <Link
                                         key={subCat._id}
                                         to="/shop"
-                                        state={{ 
-                                            selectedCategory: { 
+                                        state={{
+                                            selectedCategory: {
                                                 main: product.category.name,
-                                                sub: subCat.name 
-                                            } 
+                                                sub: subCat.name
+                                            }
                                         }}
-                                        className={`flex-shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg ${
-                                            isActive
+                                        className={`flex-shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg ${isActive
                                                 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white scale-105'
                                                 : 'bg-white text-blue-700 hover:bg-blue-50 border border-blue-200 hover:border-blue-300'
-                                        }`}
+                                            }`}
                                     >
                                         {subCat.image && (
-                                            <div className={`w-9 h-9 rounded-full overflow-hidden flex-shrink-0 ${
-                                                isActive ? 'border-2 border-white/50 ring-2 ring-white/20' : 'border-2 border-blue-200'
-                                            }`}>
-                                                <img 
-                                                    src={config.fixImageUrl(subCat.image)} 
+                                            <div className={`w-9 h-9 rounded-full overflow-hidden flex-shrink-0 ${isActive ? 'border-2 border-white/50 ring-2 ring-white/20' : 'border-2 border-blue-200'
+                                                }`}>
+                                                <img
+                                                    src={config.fixImageUrl(subCat.image)}
                                                     alt={subCat.name}
                                                     className="w-full h-full object-cover"
                                                     onError={(e) => { e.target.style.display = 'none'; }}
@@ -498,7 +496,7 @@ const ProductView = () => {
                                             </div>
                                         )}
                                         <span className=" text-blue-700 whitespace-nowrap font-semibold">{subCat.name}</span>
-                                        
+
                                     </Link>
                                 );
                             })}
@@ -519,26 +517,26 @@ const ProductView = () => {
                                 <Link to={`/shop?category=${product.category.name}`} className="hover:text-amber-600 transition-colors">{product.category.name}</Link>
                             </>
                         )}
-                         {product.subCategory?.name && (
-                             <>
-                                 <span>/</span>
-                                 <span className="text-slate-900 font-medium">{product.name}</span>
-                             </>
-                         )}
-                         {!product.subCategory?.name && (
-                             <>
-                                 <span>/</span>
-                                 <span className="text-slate-900 font-medium">{product.name}</span>
-                             </>
-                         )}
+                        {product.subCategory?.name && (
+                            <>
+                                <span>/</span>
+                                <span className="text-slate-900 font-medium">{product.name}</span>
+                            </>
+                        )}
+                        {!product.subCategory?.name && (
+                            <>
+                                <span>/</span>
+                                <span className="text-slate-900 font-medium">{product.name}</span>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
 
             <div className="container mx-auto px-3 py-3 sm:py-6">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-6 lg:gap-8 items-start">
-                    
-                    <motion.div 
+
+                    <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5 }}
@@ -546,60 +544,60 @@ const ProductView = () => {
                     >
                         <div className="relative w-full rounded-2xl overflow-hidden bg-white group shadow-xl shadow-amber-200/50">
                             <div className="relative w-full flex items-center justify-center min-h-[300px] md:min-h-[500px]" id="product-image-container">
-                            
-                            {/* Attractive Badges at Top Left */}
-                            <div className="absolute top-3 left-3 flex flex-col gap-2 z-30">
-                                {product.isBestSeller && (
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.4 }}
-                                        className="flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-white px-3 py-1.5 rounded-full shadow-xl text-xs font-bold uppercase tracking-wide"
-                                    >
-                                        <Award className="w-4 h-4" />
-                                        <span>Best Seller</span>
-                                    </motion.div>
-                                )}
-                                {product.isTrending && (
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.1 }}
-                                        className="flex items-center gap-1.5 bg-red-500 text-white px-3 py-1.5 rounded-full shadow-xl text-xs font-bold uppercase tracking-wide animate-pulse"
-                                    >
-                                        <TrendingUp className="w-4 h-4" />
-                                        <span>Trending</span>
-                                    </motion.div>
-                                )}
-                                {product.isMostLoved && (
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.2 }}
-                                        className="flex items-center gap-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-3 py-1.5 rounded-full shadow-xl text-xs font-bold uppercase tracking-wide"
-                                    >
-                                        <Heart className="w-4 h-4 fill-current" />
-                                        <span>Most Loved</span>
-                                    </motion.div>
-                                )}
-                            </div>
-                            
-                            <img
-                                src={productImages[selectedImage]}
-                                alt={product.name}
-                                className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-105"
-                                onClick={handleImageClick}
+
+                                {/* Attractive Badges at Top Left */}
+                                <div className="absolute top-3 left-3 flex flex-col gap-2 z-30">
+                                    {product.isBestSeller && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ duration: 0.4 }}
+                                            className="flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-white px-3 py-1.5 rounded-full shadow-xl text-xs font-bold uppercase tracking-wide"
+                                        >
+                                            <Award className="w-4 h-4" />
+                                            <span>Best Seller</span>
+                                        </motion.div>
+                                    )}
+                                    {product.isTrending && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ duration: 0.4, delay: 0.1 }}
+                                            className="flex items-center gap-1.5 bg-red-500 text-white px-3 py-1.5 rounded-full shadow-xl text-xs font-bold uppercase tracking-wide animate-pulse"
+                                        >
+                                            <TrendingUp className="w-4 h-4" />
+                                            <span>Trending</span>
+                                        </motion.div>
+                                    )}
+                                    {product.isMostLoved && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ duration: 0.4, delay: 0.2 }}
+                                            className="flex items-center gap-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-3 py-1.5 rounded-full shadow-xl text-xs font-bold uppercase tracking-wide"
+                                        >
+                                            <Heart className="w-4 h-4 fill-current" />
+                                            <span>Most Loved</span>
+                                        </motion.div>
+                                    )}
+                                </div>
+
+                                <img
+                                    src={productImages[selectedImage]}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-105"
+                                    onClick={handleImageClick}
                                     onLoad={(e) => {
                                         // Dynamic container sizing based on image aspect ratio and device type
                                         const img = e.target;
                                         const container = img.parentElement;
                                         const aspectRatio = img.naturalWidth / img.naturalHeight;
                                         const isMobile = window.innerWidth < 768; // md breakpoint
-                                        
+
                                         // Get available space
                                         const availableWidth = container.clientWidth;
                                         let availableHeight;
-                                        
+
                                         if (isMobile) {
                                             // On mobile, use more of the viewport height for prominent display
                                             availableHeight = window.innerHeight * 0.7;
@@ -607,16 +605,16 @@ const ProductView = () => {
                                             // On desktop, use more space for prominent display
                                             availableHeight = window.innerHeight * 0.8;
                                         }
-                                        
+
                                         let displayWidth, displayHeight;
-                                        
+
                                         if (isMobile) {
                                             // Mobile-first approach: prioritize full width utilization
                                             if (aspectRatio > 1) {
                                                 // Landscape on mobile - use full width and calculate height
                                                 displayWidth = availableWidth;
                                                 displayHeight = displayWidth / aspectRatio;
-                                                
+
                                                 // Allow larger images on mobile
                                                 const maxMobileHeight = window.innerHeight * 0.75;
                                                 if (displayHeight > maxMobileHeight) {
@@ -627,14 +625,14 @@ const ProductView = () => {
                                                 // Portrait on mobile - use most of the available height
                                                 displayHeight = Math.min(availableHeight, window.innerHeight * 0.75);
                                                 displayWidth = displayHeight * aspectRatio;
-                                                
+
                                                 // Ensure it doesn't exceed screen width
                                                 if (displayWidth > availableWidth) {
                                                     displayWidth = availableWidth;
                                                     displayHeight = displayWidth / aspectRatio;
                                                 }
                                             }
-                                            
+
                                             // Minimum sizes for mobile - larger for prominence
                                             const minMobileHeight = aspectRatio > 1 ? 350 : 400;
                                             displayHeight = Math.max(displayHeight, minMobileHeight);
@@ -644,7 +642,7 @@ const ProductView = () => {
                                             if (aspectRatio > 1) {
                                                 displayWidth = Math.min(availableWidth, availableHeight * aspectRatio);
                                                 displayHeight = displayWidth / aspectRatio;
-                                                
+
                                                 const maxHeightForLandscape = window.innerHeight * 0.85;
                                                 if (displayHeight > maxHeightForLandscape) {
                                                     displayHeight = maxHeightForLandscape;
@@ -654,12 +652,12 @@ const ProductView = () => {
                                                 displayHeight = Math.min(availableHeight, availableWidth / aspectRatio);
                                                 displayWidth = displayHeight * aspectRatio;
                                             }
-                                            
+
                                             const minHeight = aspectRatio > 1 ? 400 : 500;
                                             displayHeight = Math.max(displayHeight, minHeight);
                                             displayWidth = Math.max(displayWidth, 400);
                                         }
-                                        
+
                                         // Apply calculated dimensions to fill container
                                         container.style.height = `${displayHeight}px`;
                                         img.style.width = `100%`;
@@ -672,9 +670,9 @@ const ProductView = () => {
                                     }}
                                 />
                             </div>
-                            
+
                             {isOutOfStock && (
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     className="absolute top-4 left-4 bg-rose-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg z-20"
@@ -682,7 +680,7 @@ const ProductView = () => {
                                     Out of Stock
                                 </motion.div>
                             )}
-                            
+
                             {productImages.length > 1 && (
                                 <>
                                     <motion.button
@@ -705,7 +703,7 @@ const ProductView = () => {
                             )}
 
                             {productImages.length > 1 && (
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     className="absolute bottom-4   bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg"
@@ -714,10 +712,10 @@ const ProductView = () => {
                                 </motion.div>
                             )}
                         </div>
-                       
+
                     </motion.div>
 
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
@@ -736,11 +734,11 @@ const ProductView = () => {
                                     </span>
                                 )}
                             </div>
-                            
+
                             <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 font-serif leading-tight">
                                 {product.name}
                             </h1>
-                            
+
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-1">
                                     {[...Array(5)].map((_, index) => (
@@ -775,7 +773,7 @@ const ProductView = () => {
                             )}
                         </div>
 
-      
+
 
 
                         {/* View More in Category Button */}
@@ -793,19 +791,18 @@ const ProductView = () => {
                                 </Link>
                             </div>
                         )}
-                        
+
                         {/* Desktop buttons - hidden on mobile as we have sticky buttons */}
                         <div className="hidden md:flex items-center gap-2 sm:gap-4">
-                            <motion.button 
+                            <motion.button
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.97 }}
                                 onClick={handleBookNow}
                                 disabled={isOutOfStock}
-                                className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-8 py-3 rounded-full font-semibold transition-all text-base ${
-                                    isOutOfStock
-                                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                                    : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40'
-                                }`}
+                                className={`flex-1 flex items-center justify-center gap-2 px-4 sm:px-8 py-3 rounded-full font-semibold transition-all text-base ${isOutOfStock
+                                        ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                                        : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40'
+                                    }`}
                             >
                                 <span>{isOutOfStock ? 'Out of Stock' : 'BOOK NOW'}</span>
                             </motion.button>
@@ -823,8 +820,8 @@ const ProductView = () => {
                                 </svg>
                                 <span>Contact Us</span>
                             </motion.a>
-                            
-                            <motion.button 
+
+                            <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="p-3 border border-slate-300 rounded-full hover:bg-slate-50 transition-colors flex-shrink-0"
@@ -833,406 +830,405 @@ const ProductView = () => {
                                 <PhoneIcon className="h-5 w-5 text-slate-600" />
                             </motion.button>
                         </div>
-                        
+
                         <div className="border-t border-amber-200/80 pt-2 mt-1">
- <div className="flex justify-between items-center text-center gap-4">
-   <div className="flex flex-col items-center gap-1 w-1/4">
-     <SparklesIcon className="h-6 w-6 text-amber-500"/>
-     <span className="text-[11px] text-slate-600 font-medium">Guaranteed to Dazzle</span>
-   </div>
-   <div className="flex flex-col items-center gap-1 w-1/4">
-     <GiftIcon className="h-6 w-6 text-amber-500"/>
-     <span className="text-[11px] text-slate-600 font-medium">Perfect for Gifting</span>
-   </div>
-   <div className="flex flex-col items-center gap-1 w-1/4">
-     <ShieldCheckIcon className="h-6 w-6 text-amber-500"/>
-     <span className="text-[11px] text-slate-600 font-medium">Premium Quality</span>
-   </div>
-   <div className="flex flex-col items-center gap-1 w-1/4">
-     <TruckIcon className="h-6 w-6 text-amber-500"/>
-     <span className="text-[11px] text-slate-600 font-medium">Fast & Safe Delivery</span>
-   </div>
- </div>
-</div>
+                            <div className="flex justify-between items-center text-center gap-4">
+                                <div className="flex flex-col items-center gap-1 w-1/4">
+                                    <SparklesIcon className="h-6 w-6 text-amber-500" />
+                                    <span className="text-[11px] text-slate-600 font-medium">Guaranteed to Dazzle</span>
+                                </div>
+                                <div className="flex flex-col items-center gap-1 w-1/4">
+                                    <GiftIcon className="h-6 w-6 text-amber-500" />
+                                    <span className="text-[11px] text-slate-600 font-medium">Perfect for Gifting</span>
+                                </div>
+                                <div className="flex flex-col items-center gap-1 w-1/4">
+                                    <ShieldCheckIcon className="h-6 w-6 text-amber-500" />
+                                    <span className="text-[11px] text-slate-600 font-medium">Premium Quality</span>
+                                </div>
+                                <div className="flex flex-col items-center gap-1 w-1/4">
+                                    <TruckIcon className="h-6 w-6 text-amber-500" />
+                                    <span className="text-[11px] text-slate-600 font-medium">Fast & Safe Delivery</span>
+                                </div>
+                            </div>
+                        </div>
 
-<div className="mt-6" id="reviews">
-                    <div className="border-b border-amber-200/80">
-                       <nav className="flex overflow-x-auto no-scrollbar gap-x-4 sm:gap-x-6 border-b">
- {tabs.map((tab) => (
-   <button
-     key={tab.id}
-     onClick={() => setActiveTab(tab.id)}
-     className={`flex items-center gap-1 sm:gap-2 py-3 px-2 border-b-2 font-semibold text-sm whitespace-nowrap transition-colors ${
-       activeTab === tab.id
-         ? 'border-amber-500 text-amber-600'
-         : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
-     }`}
-   >
-     <tab.icon className="h-5 w-5"/>
-     {tab.label}
-   </button>
- ))}
-</nav>
+                        <div className="mt-6" id="reviews">
+                            <div className="border-b border-amber-200/80">
+                                <nav className="flex overflow-x-auto no-scrollbar gap-x-4 sm:gap-x-6 border-b">
+                                    {tabs.map((tab) => (
+                                        <button
+                                            key={tab.id}
+                                            onClick={() => setActiveTab(tab.id)}
+                                            className={`flex items-center gap-1 sm:gap-2 py-3 px-2 border-b-2 font-semibold text-sm whitespace-nowrap transition-colors ${activeTab === tab.id
+                                                    ? 'border-amber-500 text-amber-600'
+                                                    : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                                                }`}
+                                        >
+                                            <tab.icon className="h-5 w-5" />
+                                            {tab.label}
+                                        </button>
+                                    ))}
+                                </nav>
 
-                    </div>
+                            </div>
 
-                    <div className="py-3">
-                        <AnimatePresence mode="wait">
-                            {activeTab === 'details' && (
-                                <motion.div
-                                    key="details"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="space-y-6"
-                                >
-                                    
+                            <div className="py-3">
+                                <AnimatePresence mode="wait">
+                                    {activeTab === 'details' && (
+                                        <motion.div
+                                            key="details"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="space-y-6"
+                                        >
 
-                                    {/* Features Grid */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                     
 
-                                       {/* What's Included & Excluded Card */}
-<div className="bg-white p-6 rounded-2xl border-2 border-blue-200/80 shadow-lg hover:shadow-xl transition-shadow">
-   
+                                            {/* Features Grid */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-    {/* Care Instructions */}
-{product.care && (
-    <div className="mb-4">
-        <h5 className="text-sm font-semibold text-green-700 mb-2 flex items-center gap-1">
-            <span className="text-green-600">✓</span> What's Included / Excluded
-        </h5>
-        <ul className="space-y-2">
-            {product.care
-                .split(/\n/) // Split by comma OR newline
-                .filter(item => item.trim() !== '') // Remove any empty lines
-                .map((item, index) => (
-                    <li key={index} className="flex items-start gap-3 p-2.5 bg-green-50 rounded-lg">
-                        <span className="text-green-600 text-base font-bold flex-shrink-0 mt-0.5">✓</span>
-                        <span className="text-sm text-slate-700 leading-relaxed">{item.trim()}</span>
-                    </li>
-                ))}
-        </ul>
-    </div>
-)}
 
-   
-    {/* Default message if no items */}
-    
-</div>
-<div className="bg-white p-6 rounded-2xl border-2 border-blue-200/80 shadow-lg hover:shadow-xl transition-shadow">
- 
- {/* Excluded Items */}
-    {product.excluded && product.excluded.length > 0 && (
-        <div>
-            <h5 className="text-sm font-semibold text-red-700 mb-2 flex items-center gap-1">
-                <span className="text-red-600">✗</span> Not Included
-            </h5>
-            <ul className="space-y-2">
-                {product.excluded.map((item, index) => (
-                    <li key={index} className="flex items-start gap-3 p-2.5 bg-red-50 rounded-lg">
-                        <span className="text-red-600 text-base font-bold flex-shrink-0 mt-0.5">✗</span>
-                        <span className="text-sm text-slate-700 leading-relaxed">{item}</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    )}
-    </div>
+                                                {/* What's Included & Excluded Card */}
+                                                <div className="bg-white p-6 rounded-2xl border-2 border-blue-200/80 shadow-lg hover:shadow-xl transition-shadow">
 
-                                    </div>
 
-                                    {/* Why Choose This Product */}
-                                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-200">
-                                        <h4 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                            <GiftIcon className="w-6 h-6 text-purple-600" />
-                                            Why Choose This Product?
-                                        </h4>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-2 bg-purple-200 rounded-full flex-shrink-0">
-                                                    <SparklesIcon className="w-4 h-4 text-purple-700" />
+                                                    {/* Care Instructions */}
+                                                    {product.care && (
+                                                        <div className="mb-4">
+                                                            <h5 className="text-sm font-semibold text-green-700 mb-2 flex items-center gap-1">
+                                                                <span className="text-green-600">✓</span> What's Included / Excluded
+                                                            </h5>
+                                                            <ul className="space-y-2">
+                                                                {product.care
+                                                                    .split(/\n/) // Split by comma OR newline
+                                                                    .filter(item => item.trim() !== '') // Remove any empty lines
+                                                                    .map((item, index) => (
+                                                                        <li key={index} className="flex items-start gap-3 p-2.5 bg-green-50 rounded-lg">
+                                                                            <span className="text-green-600 text-base font-bold flex-shrink-0 mt-0.5">✓</span>
+                                                                            <span className="text-sm text-slate-700 leading-relaxed">{item.trim()}</span>
+                                                                        </li>
+                                                                    ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+
+
+                                                    {/* Default message if no items */}
+
                                                 </div>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Eye-Catching Design</p>
-                                                    <p className="text-sm text-slate-600">Creates stunning visual impact that wows your guests</p>
+                                                <div className="bg-white p-6 rounded-2xl border-2 border-blue-200/80 shadow-lg hover:shadow-xl transition-shadow">
+
+                                                    {/* Excluded Items */}
+                                                    {product.excluded && product.excluded.length > 0 && (
+                                                        <div>
+                                                            <h5 className="text-sm font-semibold text-red-700 mb-2 flex items-center gap-1">
+                                                                <span className="text-red-600">✗</span> Not Included
+                                                            </h5>
+                                                            <ul className="space-y-2">
+                                                                {product.excluded.map((item, index) => (
+                                                                    <li key={index} className="flex items-start gap-3 p-2.5 bg-red-50 rounded-lg">
+                                                                        <span className="text-red-600 text-base font-bold flex-shrink-0 mt-0.5">✗</span>
+                                                                        <span className="text-sm text-slate-700 leading-relaxed">{item}</span>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                            </div>
+
+                                            {/* Why Choose This Product */}
+                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-200">
+                                                <h4 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                                    <GiftIcon className="w-6 h-6 text-purple-600" />
+                                                    Why Choose This Product?
+                                                </h4>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="p-2 bg-purple-200 rounded-full flex-shrink-0">
+                                                            <SparklesIcon className="w-4 h-4 text-purple-700" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Eye-Catching Design</p>
+                                                            <p className="text-sm text-slate-600">Creates stunning visual impact that wows your guests</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="p-2 bg-pink-200 rounded-full flex-shrink-0">
+                                                            <ShieldCheckIcon className="w-4 h-4 text-pink-700" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Quality Guaranteed</p>
+                                                            <p className="text-sm text-slate-600">100% authentic products with quality assurance</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="p-2 bg-purple-200 rounded-full flex-shrink-0">
+                                                            <TruckIcon className="w-4 h-4 text-purple-700" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Fast & Safe Delivery</p>
+                                                            <p className="text-sm text-slate-600">Carefully packaged for damage-free arrival</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="p-2 bg-pink-200 rounded-full flex-shrink-0">
+                                                            <ChatBubbleLeftRightIcon className="w-4 h-4 text-pink-700" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Expert Support</p>
+                                                            <p className="text-sm text-slate-600">24/7 customer service to help with your needs</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-2 bg-pink-200 rounded-full flex-shrink-0">
-                                                    <ShieldCheckIcon className="w-4 h-4 text-pink-700" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Quality Guaranteed</p>
-                                                    <p className="text-sm text-slate-600">100% authentic products with quality assurance</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-2 bg-purple-200 rounded-full flex-shrink-0">
-                                                    <TruckIcon className="w-4 h-4 text-purple-700" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Fast & Safe Delivery</p>
-                                                    <p className="text-sm text-slate-600">Carefully packaged for damage-free arrival</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-2 bg-pink-200 rounded-full flex-shrink-0">
-                                                    <ChatBubbleLeftRightIcon className="w-4 h-4 text-pink-700" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Expert Support</p>
-                                                    <p className="text-sm text-slate-600">24/7 customer service to help with your needs</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {activeTab === 'specifications' && (
-                                <motion.div 
-                                    key="specifications"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="space-y-6"
-                                >
-
-                                       {/* Key Features Card */}
-                                       <div className="bg-white p-6 rounded-2xl border-2 border-amber-200/80 shadow-lg hover:shadow-xl transition-shadow">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="p-2 bg-amber-100 rounded-lg">
-                                                    <SparklesIcon className="w-6 h-6 text-amber-600" />
-                                                </div>
-                                                <h4 className="text-xl font-bold text-slate-900">Key Features</h4>
-                                            </div>
-                                            <ul className="space-y-3">
-                                                <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                    <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                    <div>
-                                                        <p className="font-semibold text-slate-900">Premium Material</p>
-                                                        <p className="text-sm text-slate-600"> {product.material || 'high-quality, durable materials'}</p>
-                                                    </div>
-                                                </li>
-                                                <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                    <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                    <div>
-                                                        <p className="font-semibold text-slate-900">Perfect For</p>
-                                                        <p className="text-sm text-slate-600">{product.utility || 'Birthdays, weddings, anniversaries, and all celebrations'}</p>
-                                                    </div>
-                                                </li>
-                                                <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                    <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                    <div>
-                                                        <p className="font-semibold text-slate-900">Size Options</p>
-                                                        <p className="text-sm text-slate-600">{product.size || 'Standard size - perfect for any venue'}</p>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    {/* Main Specifications Card */}
-                                    <div className="bg-white p-6 rounded-2xl border-2 border-amber-200/80 shadow-lg hover:shadow-xl transition-shadow">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="p-2 bg-amber-100 rounded-lg">
-                                                <CogIcon className="w-6 h-6 text-amber-600" />
-                                            </div>
-                                            <h4 className="text-xl font-bold text-slate-900">Product Specifications</h4>
-                                        </div>
-                                        <ul className="space-y-3">
-                                            <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Product Name</p>
-                                                    <p className="text-sm text-slate-600">{product.name}</p>
-                                                </div>
-                                            </li>
-                                            {product.category?.name && (
-                                                <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                    <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                    <div>
-                                                        <p className="font-semibold text-slate-900">Category</p>
-                                                        <p className="text-sm text-slate-600">{product.category.name}</p>
-                                                    </div>
-                                                </li>
-                                            )}
-                                            {product.subCategory?.name && (
-                                                <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                    <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                    <div>
-                                                        <p className="font-semibold text-slate-900">Sub-Category</p>
-                                                        <p className="text-sm text-slate-600">{product.subCategory.name}</p>
-                                                    </div>
-                                                </li>
-                                            )}
-                                            <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Material</p>
-                                                    <p className="text-sm text-slate-600">{product.material || 'Premium Quality Materials'}</p>
-                                                </div>
-                                            </li>
-                                            <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Size</p>
-                                                    <p className="text-sm text-slate-600">{product.size || 'Standard Size'}</p>
-                                                </div>
-                                            </li>
-                                            <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Color</p>
-                                                    <p className="text-sm text-slate-600">{product.colour || 'As Shown'}</p>
-                                                </div>
-                                            </li>
-                                            <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Stock Status</p>
-                                                    <div className="mt-1">
-                                                        {isOutOfStock ? (
-                                                            <span className="inline-flex items-center gap-2 px-3 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full">
-                                                                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                                                                Out of Stock
-                                                            </span>
-                                                        ) : (
-                                                            <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">
-                                                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                                                In Stock & Ready to Ship
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            {product.sku && (
-                                                <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
-                                                    <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
-                                                    <div>
-                                                        <p className="font-semibold text-slate-900">SKU</p>
-                                                        <p className="text-sm text-slate-600 font-mono">{product.sku}</p>
-                                                    </div>
-                                                </li>
-                                            )}
-                                        </ul>
-                                    </div>
-
-                                    {/* Additional Product Information */}
-                                    <div className="bg-white p-6 rounded-2xl border border-amber-200/60 shadow-md">
-                                        <h4 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                            <SparklesIcon className="w-5 h-5 text-amber-500" />
-                                            What Makes This Special
-                                        </h4>
-                                        <ul className="space-y-3">
-                                            <li className="flex items-start gap-3">
-                                                <div className="mt-1 p-1 bg-amber-100 rounded-full flex-shrink-0">
-                                                    <ShieldCheckIcon className="w-4 h-4 text-amber-600" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Premium Quality</p>
-                                                    <p className="text-sm text-slate-600">Made with high-quality {product.material || 'materials'} for lasting beauty</p>
-                                                </div>
-                                            </li>
-                                            <li className="flex items-start gap-3">
-                                                <div className="mt-1 p-1 bg-amber-100 rounded-full flex-shrink-0">
-                                                    <SparklesIcon className="w-4 h-4 text-amber-600" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Perfect for Any Occasion</p>
-                                                    <p className="text-sm text-slate-600">Ideal for {product.utility || 'birthdays, weddings, anniversaries, and more'}</p>
-                                                </div>
-                                            </li>
-                                            <li className="flex items-start gap-3">
-                                                <div className="mt-1 p-1 bg-amber-100 rounded-full flex-shrink-0">
-                                                    <TruckIcon className="w-4 h-4 text-amber-600" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900">Safe Delivery Guaranteed</p>
-                                                    <p className="text-sm text-slate-600">Carefully packaged to arrive in perfect condition</p>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {activeTab === 'shipping' && (
-                                <motion.div
-                                    key="shipping"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="prose max-w-none text-slate-600"
-                                >
-                                    <h3 className="text-xl font-serif text-slate-800 mb-4">Your Celebration, Delivered Promptly & Safely</h3>
-                                    <p>We understand that timing is everything when planning an event. We take extra care to ensure your decorations arrive safely and on time.</p>
-                                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <h4 className="font-semibold text-slate-900 mb-3">Shipping Details</h4>
-                                            <ul className="space-y-2 text-sm">
-                                                <li>• Free shipping on orders above ₹1000</li>
-                                                <li>• Standard delivery: 3-5 business days</li>
-                                            </ul>
-                                        </div>
-                                        <div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {activeTab === 'reviews' && (
-                                <motion.div
-                                    key="reviews"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="space-y-8"
-                                >
-                                    {reviewsLoading ? (
-                                        <div className="flex items-center justify-center py-8">
-                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
-                                            <span className="ml-3 text-slate-600">Loading customer stories...</span>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <ReviewForm
-                                                productId={product._id}
-                                                existingReview={userReview}
-                                                isEditing={isEditingReview}
-                                                onStartEdit={() => setIsEditingReview(true)}
-                                                onCancelEdit={() => setIsEditingReview(false)}
-                                                onReviewSubmitted={handleReviewSubmitted}
-                                                onReviewUpdated={handleReviewUpdated}
-                                                onReviewDeleted={handleReviewDeleted}
-                                            />
-                                            <ReviewList
-                                                reviews={reviews}
-                                                averageRating={averageRating}
-                                                totalReviews={reviews.length}
-                                            />
-                                        </>
+                                        </motion.div>
                                     )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
+
+                                    {activeTab === 'specifications' && (
+                                        <motion.div
+                                            key="specifications"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="space-y-6"
+                                        >
+
+                                            {/* Key Features Card */}
+                                            <div className="bg-white p-6 rounded-2xl border-2 border-amber-200/80 shadow-lg hover:shadow-xl transition-shadow">
+                                                <div className="flex items-center gap-3 mb-4">
+                                                    <div className="p-2 bg-amber-100 rounded-lg">
+                                                        <SparklesIcon className="w-6 h-6 text-amber-600" />
+                                                    </div>
+                                                    <h4 className="text-xl font-bold text-slate-900">Key Features</h4>
+                                                </div>
+                                                <ul className="space-y-3">
+                                                    <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                        <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Premium Material</p>
+                                                            <p className="text-sm text-slate-600"> {product.material || 'high-quality, durable materials'}</p>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                        <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Perfect For</p>
+                                                            <p className="text-sm text-slate-600">{product.utility || 'Birthdays, weddings, anniversaries, and all celebrations'}</p>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                        <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Size Options</p>
+                                                            <p className="text-sm text-slate-600">{product.size || 'Standard size - perfect for any venue'}</p>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {/* Main Specifications Card */}
+                                            <div className="bg-white p-6 rounded-2xl border-2 border-amber-200/80 shadow-lg hover:shadow-xl transition-shadow">
+                                                <div className="flex items-center gap-3 mb-4">
+                                                    <div className="p-2 bg-amber-100 rounded-lg">
+                                                        <CogIcon className="w-6 h-6 text-amber-600" />
+                                                    </div>
+                                                    <h4 className="text-xl font-bold text-slate-900">Product Specifications</h4>
+                                                </div>
+                                                <ul className="space-y-3">
+                                                    <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                        <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Product Name</p>
+                                                            <p className="text-sm text-slate-600">{product.name}</p>
+                                                        </div>
+                                                    </li>
+                                                    {product.category?.name && (
+                                                        <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                            <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                            <div>
+                                                                <p className="font-semibold text-slate-900">Category</p>
+                                                                <p className="text-sm text-slate-600">{product.category.name}</p>
+                                                            </div>
+                                                        </li>
+                                                    )}
+                                                    {product.subCategory?.name && (
+                                                        <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                            <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                            <div>
+                                                                <p className="font-semibold text-slate-900">Sub-Category</p>
+                                                                <p className="text-sm text-slate-600">{product.subCategory.name}</p>
+                                                            </div>
+                                                        </li>
+                                                    )}
+                                                    <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                        <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Material</p>
+                                                            <p className="text-sm text-slate-600">{product.material || 'Premium Quality Materials'}</p>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                        <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Size</p>
+                                                            <p className="text-sm text-slate-600">{product.size || 'Standard Size'}</p>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                        <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Color</p>
+                                                            <p className="text-sm text-slate-600">{product.colour || 'As Shown'}</p>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                        <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Stock Status</p>
+                                                            <div className="mt-1">
+                                                                {isOutOfStock ? (
+                                                                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full">
+                                                                        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                                                        Out of Stock
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">
+                                                                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                                                        In Stock & Ready to Ship
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    {product.sku && (
+                                                        <li className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                                                            <span className="text-amber-500 text-xl font-bold flex-shrink-0">◆</span>
+                                                            <div>
+                                                                <p className="font-semibold text-slate-900">SKU</p>
+                                                                <p className="text-sm text-slate-600 font-mono">{product.sku}</p>
+                                                            </div>
+                                                        </li>
+                                                    )}
+                                                </ul>
+                                            </div>
+
+                                            {/* Additional Product Information */}
+                                            <div className="bg-white p-6 rounded-2xl border border-amber-200/60 shadow-md">
+                                                <h4 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                                    <SparklesIcon className="w-5 h-5 text-amber-500" />
+                                                    What Makes This Special
+                                                </h4>
+                                                <ul className="space-y-3">
+                                                    <li className="flex items-start gap-3">
+                                                        <div className="mt-1 p-1 bg-amber-100 rounded-full flex-shrink-0">
+                                                            <ShieldCheckIcon className="w-4 h-4 text-amber-600" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Premium Quality</p>
+                                                            <p className="text-sm text-slate-600">Made with high-quality {product.material || 'materials'} for lasting beauty</p>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start gap-3">
+                                                        <div className="mt-1 p-1 bg-amber-100 rounded-full flex-shrink-0">
+                                                            <SparklesIcon className="w-4 h-4 text-amber-600" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Perfect for Any Occasion</p>
+                                                            <p className="text-sm text-slate-600">Ideal for {product.utility || 'birthdays, weddings, anniversaries, and more'}</p>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start gap-3">
+                                                        <div className="mt-1 p-1 bg-amber-100 rounded-full flex-shrink-0">
+                                                            <TruckIcon className="w-4 h-4 text-amber-600" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-slate-900">Safe Delivery Guaranteed</p>
+                                                            <p className="text-sm text-slate-600">Carefully packaged to arrive in perfect condition</p>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {activeTab === 'shipping' && (
+                                        <motion.div
+                                            key="shipping"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="prose max-w-none text-slate-600"
+                                        >
+                                            <h3 className="text-xl font-serif text-slate-800 mb-4">Your Celebration, Delivered Promptly & Safely</h3>
+                                            <p>We understand that timing is everything when planning an event. We take extra care to ensure your decorations arrive safely and on time.</p>
+                                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <h4 className="font-semibold text-slate-900 mb-3">Shipping Details</h4>
+                                                    <ul className="space-y-2 text-sm">
+                                                        <li>• Free shipping on orders above ₹1000</li>
+                                                        <li>• Standard delivery: 3-5 business days</li>
+                                                    </ul>
+                                                </div>
+                                                <div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {activeTab === 'reviews' && (
+                                        <motion.div
+                                            key="reviews"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="space-y-8"
+                                        >
+                                            {reviewsLoading ? (
+                                                <div className="flex items-center justify-center py-8">
+                                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+                                                    <span className="ml-3 text-slate-600">Loading customer stories...</span>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <ReviewForm
+                                                        productId={product._id}
+                                                        existingReview={userReview}
+                                                        isEditing={isEditingReview}
+                                                        onStartEdit={() => setIsEditingReview(true)}
+                                                        onCancelEdit={() => setIsEditingReview(false)}
+                                                        onReviewSubmitted={handleReviewSubmitted}
+                                                        onReviewUpdated={handleReviewUpdated}
+                                                        onReviewDeleted={handleReviewDeleted}
+                                                    />
+                                                    <ReviewList
+                                                        reviews={reviews}
+                                                        averageRating={averageRating}
+                                                        totalReviews={reviews.length}
+                                                    />
+                                                </>
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
                     </motion.div>
                 </div>
 
 
                 <div>
                     {/* Why Image Section */}
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, amount: 0.1 }}
                         transition={{ duration: 0.6 }}
-                    
+
                     >
                         <div className="relative w-full h-52 py-10 md:h-66 lg:h-80 rounded-2xl overflow-hidden ">
                             <img
@@ -1244,13 +1240,13 @@ const ProductView = () => {
                                     e.target.src = 'https://placehold.co/800x400/e2e8f0/475569?text=Why+Choose+Us';
                                 }}
                             />
-                          
+
                         </div>
                     </motion.div>
 
                     {/* Video Section - Reviews and Work */}
-                    <VideoSection 
-                   
+                    <VideoSection
+
                         subtitle="See what our customers say and watch our decoration work"
                         limit={4}
                         showViewAll={false}
@@ -1263,9 +1259,9 @@ const ProductView = () => {
                             <Loader size="medium" text="Loading..." />
                         </div>
                     }>
-                        <Mostloved/>
+                        <Mostloved />
                     </Suspense>
-                    
+
                     {product && product.category && (
                         <Suspense fallback={
                             <div className="py-8 flex justify-center">
@@ -1275,7 +1271,7 @@ const ProductView = () => {
                             <RelatedProducts currentProduct={product} />
                         </Suspense>
                     )}
-                  
+
                 </div>
             </div>
 
@@ -1314,9 +1310,9 @@ const ProductView = () => {
                                         const img = e.target;
                                         const aspectRatio = img.naturalWidth / img.naturalHeight;
                                         const isMobile = window.innerWidth < 768;
-                                        
+
                                         let viewportWidth, viewportHeight;
-                                        
+
                                         if (isMobile) {
                                             // Mobile modal - use almost full screen
                                             viewportWidth = window.innerWidth * 0.98;
@@ -1326,16 +1322,16 @@ const ProductView = () => {
                                             viewportWidth = window.innerWidth * 0.95;
                                             viewportHeight = window.innerHeight * 0.95;
                                         }
-                                        
+
                                         let displayWidth, displayHeight;
-                                        
+
                                         if (isMobile) {
                                             // Mobile-first modal approach
                                             if (aspectRatio > 1) {
                                                 // Landscape on mobile - prioritize full width
                                                 displayWidth = viewportWidth;
                                                 displayHeight = displayWidth / aspectRatio;
-                                                
+
                                                 // Ensure reasonable height on mobile
                                                 if (displayHeight > viewportHeight) {
                                                     displayHeight = viewportHeight;
@@ -1345,7 +1341,7 @@ const ProductView = () => {
                                                 // Portrait on mobile - prioritize height
                                                 displayHeight = viewportHeight;
                                                 displayWidth = displayHeight * aspectRatio;
-                                                
+
                                                 if (displayWidth > viewportWidth) {
                                                     displayWidth = viewportWidth;
                                                     displayHeight = displayWidth / aspectRatio;
@@ -1356,7 +1352,7 @@ const ProductView = () => {
                                             if (aspectRatio > 1.5) {
                                                 displayWidth = Math.min(viewportWidth, img.naturalWidth);
                                                 displayHeight = displayWidth / aspectRatio;
-                                                
+
                                                 const minHeight = viewportHeight * 0.6;
                                                 if (displayHeight < minHeight) {
                                                     displayHeight = minHeight;
@@ -1365,7 +1361,7 @@ const ProductView = () => {
                                             } else if (aspectRatio > 1) {
                                                 displayWidth = Math.min(viewportWidth * 0.9, img.naturalWidth);
                                                 displayHeight = displayWidth / aspectRatio;
-                                                
+
                                                 if (displayHeight > viewportHeight) {
                                                     displayHeight = viewportHeight;
                                                     displayWidth = displayHeight * aspectRatio;
@@ -1373,32 +1369,32 @@ const ProductView = () => {
                                             } else {
                                                 displayHeight = Math.min(viewportHeight, img.naturalHeight);
                                                 displayWidth = displayHeight * aspectRatio;
-                                                
+
                                                 if (displayWidth > viewportWidth) {
                                                     displayWidth = viewportWidth;
                                                     displayHeight = displayWidth / aspectRatio;
                                                 }
                                             }
                                         }
-                                        
+
                                         // Apply calculated dimensions for modal
                                         img.style.width = `${displayWidth}px`;
                                         img.style.height = `${displayHeight}px`;
                                         img.style.objectFit = `contain`;
                                     }}
                                 />
-                                
+
                                 {productImages.length > 1 && (
                                     <>
-                                        <button 
-                                            onClick={handleModalPreviousImage} 
+                                        <button
+                                            onClick={handleModalPreviousImage}
                                             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 backdrop-blur-sm hover:bg-black/70 text-white p-4 rounded-full transition-all shadow-lg border border-white/20"
                                             aria-label="Previous image"
                                         >
                                             <ChevronLeftIcon className="h-8 w-8" />
                                         </button>
-                                        <button 
-                                            onClick={handleModalNextImage} 
+                                        <button
+                                            onClick={handleModalNextImage}
                                             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 backdrop-blur-sm hover:bg-black/70 text-white p-4 rounded-full transition-all shadow-lg border border-white/20"
                                             aria-label="Next image"
                                         >
@@ -1406,7 +1402,7 @@ const ProductView = () => {
                                         </button>
                                     </>
                                 )}
-                                
+
                                 {productImages.length > 1 && (
                                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium border border-white/20">
                                         {modalSelectedImage + 1} / {productImages.length}
@@ -1417,45 +1413,45 @@ const ProductView = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-           
+
             <AnimatePresence>
                 {isShareModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setIsShareModalOpen(false)}
+                    >
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                            onClick={() => setIsShareModalOpen(false)}
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            className="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 font-sans"
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            <motion.div
-                                initial={{ scale: 0.9, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.9, opacity: 0 }}
-                                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 font-sans"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                                    <h3 className="text-lg font-semibold text-gray-900">Share This Item</h3>
-                                    <button onClick={() => setIsShareModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                                        <XMarkIcon className="h-5 w-5 text-gray-500" />
+                            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                                <h3 className="text-lg font-semibold text-gray-900">Share This Item</h3>
+                                <button onClick={() => setIsShareModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                    <XMarkIcon className="h-5 w-5 text-gray-500" />
+                                </button>
+                            </div>
+
+                            <div className="p-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button onClick={() => handleShareOption('copy')} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
+                                        <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center"><svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></div>
+                                        <span className="text-sm font-medium text-gray-700">Copy Link</span>
+                                    </button>
+                                    <button onClick={() => handleShareOption('whatsapp')} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
+                                        <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"><svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" /></svg></div>
+                                        <span className="text-sm font-medium text-gray-700">WhatsApp</span>
                                     </button>
                                 </div>
-
-                                <div className="p-6">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <button onClick={() => handleShareOption('copy')} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
-                                            <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center"><svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></div>
-                                            <span className="text-sm font-medium text-gray-700">Copy Link</span>
-                                        </button>
-                                        <button onClick={() => handleShareOption('whatsapp')} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
-                                            <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"><svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" /></svg></div>
-                                            <span className="text-sm font-medium text-gray-700">WhatsApp</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
+                            </div>
                         </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 
@@ -1464,16 +1460,15 @@ const ProductView = () => {
                 <div className="container mx-auto px-4 py-3">
                     <div className="flex items-center gap-3">
                         {/* Book Now Button */}
-                        <motion.button 
+                        <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={handleBookNow}
                             disabled={isOutOfStock}
-                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-full font-semibold transition-all text-sm ${
-                                isOutOfStock
-                                ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                                : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/30'
-                            }`}
+                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-full font-semibold transition-all text-sm ${isOutOfStock
+                                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                                    : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/30'
+                                }`}
                         >
                             <span>{isOutOfStock ? 'Out of Stock' : 'BOOK NOW'}</span>
                         </motion.button>
@@ -1494,7 +1489,7 @@ const ProductView = () => {
                         </motion.a>
 
                         {/* Call Button (replacing share) */}
-                        <motion.button 
+                        <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => window.open(`tel:${selectedCityData?.contactNumber || '+917739873442'}`, '_self')}
@@ -1568,11 +1563,10 @@ const ProductView = () => {
                                                 <motion.div
                                                     key={addon._id}
                                                     whileHover={{ scale: 1.02 }}
-                                                    className={`border-2 rounded-2xl p-4 cursor-pointer transition-all ${
-                                                        isSelected
+                                                    className={`border-2 rounded-2xl p-4 cursor-pointer transition-all ${isSelected
                                                             ? 'border-amber-500 bg-amber-50'
                                                             : 'border-gray-200 hover:border-amber-300 bg-white'
-                                                    }`}
+                                                        }`}
                                                     onClick={() => handleAddonToggle(addon)}
                                                 >
                                                     <div className="flex gap-4">
@@ -1597,11 +1591,10 @@ const ProductView = () => {
                                                                     <h4 className="font-semibold text-gray-900">{addon.name}</h4>
                                                                     <p className="text-lg font-bold text-amber-600 mt-2">₹{addon.price}</p>
                                                                 </div>
-                                                                
+
                                                                 {/* Checkbox */}
-                                                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ml-2 flex-shrink-0 ${
-                                                                    isSelected ? 'bg-amber-500 border-amber-500' : 'border-gray-300'
-                                                                }`}>
+                                                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ml-2 flex-shrink-0 ${isSelected ? 'bg-amber-500 border-amber-500' : 'border-gray-300'
+                                                                    }`}>
                                                                     {isSelected && (
                                                                         <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -1612,7 +1605,7 @@ const ProductView = () => {
 
                                                             {/* Quantity Selector */}
                                                             {isSelected && (
-                                                                <motion.div 
+                                                                <motion.div
                                                                     initial={{ opacity: 0, height: 0 }}
                                                                     animate={{ opacity: 1, height: 'auto' }}
                                                                     exit={{ opacity: 0, height: 0 }}
@@ -1641,7 +1634,7 @@ const ProductView = () => {
                                                                             +
                                                                         </button>
                                                                     </div>
-                                                                  
+
                                                                 </motion.div>
                                                             )}
                                                         </div>
@@ -1671,7 +1664,7 @@ const ProductView = () => {
                                         </div>
                                     </div>
                                 )}
-                                
+
                                 <div className="flex gap-3">
                                     {addons && addons.length > 0 ? (
                                         <>
@@ -1709,7 +1702,7 @@ const ProductView = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            
+
         </motion.div>
     );
 };

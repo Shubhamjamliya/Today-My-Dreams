@@ -55,7 +55,7 @@ const ContactPage = () => {
     }));
   };
 
-  const recipientEmail = "support@decoryy.com";
+  const recipientEmail = "support@todaymydream.com";
   const subject = encodeURIComponent(`Inquiry from ${formData.name}`);
   const body = encodeURIComponent(
     `Hello,\n\n${formData.message}\n\n---\nFrom: ${formData.name}\nEmail: ${formData.email}`

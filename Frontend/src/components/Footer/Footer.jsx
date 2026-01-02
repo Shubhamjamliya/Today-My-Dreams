@@ -9,7 +9,7 @@ import { FaCcVisa, FaCcMastercard, FaCcAmex, FaCcPaypal } from 'react-icons/fa';
 import { categoryAPI } from '../../services/api'; // NEW: Import your category API
 import axios from 'axios';
 import { useCity } from '../../context/CityContext';
-import logo from '/logo1.png';
+import logo from '/TodayMyDream.png';
 
 // --- DYNAMIC CITY DATA ---
 const CITY_API_URL = 'https://api.decoryy.com/api/cities';
@@ -192,9 +192,7 @@ const Footer = () => {
 
           {/* Column 1: Logo & About */}
           <motion.div variants={itemVariants} className="lg:mb-0 col-span-1 md:col-span-2 lg:col-span-1 mb-8 md:mb-0">
-            <div className="bg-brand-pink rounded mb-4 p-2 flex items-center justify-center">
-              <img src={logo} alt="Everlasting Events Logo" className="h-20" />
-            </div>
+            <img src={logo} alt="TodayMyDream Logo" className="h-24 mb-4 object-contain" />
             <p className="text-sm text-slate-400 pr-4">
               Your premier destination for booking beautiful, bespoke decorations for all of life's special moments.
             </p>
@@ -278,7 +276,7 @@ const Footer = () => {
         <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-slate-500">
           {/* Left Side: Copyright */}
           <p className="order-3 md:order-1 text-center md:text-left mb-16 md:mb-0">
-            &copy; {new Date().getFullYear()} DECORYY. All Rights Reserved.
+            &copy; {new Date().getFullYear()} TodayMyDream. All Rights Reserved.
           </p>
 
           {/* Right Side: Socials & App Wrapper */}
@@ -307,22 +305,6 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* App Download Section */}
-            <div className="flex items-center gap-3">
-              <span className="font-serif font-bold text-white hidden sm:inline">Get The App</span>
-              <a
-                href="https://play.google.com/store/apps/details?id=com.app.decoryy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block transition-transform hover:scale-105"
-              >
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
-                  alt="Get it on Google Play"
-                  className="h-10 w-auto" // Slightly smaller height for better footer bar fit
-                />
-              </a>
-            </div>
 
           </div>
         </div>

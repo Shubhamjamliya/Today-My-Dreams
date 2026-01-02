@@ -15,34 +15,34 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="Decoryy - Premium Birthday, Wedding & Anniversary Decoration Materials"
-        description="Shop premium decoration materials for birthdays, weddings, anniversaries, and celebrations. Balloons, banners, lights, party props, and celebration supplies for every special event. Free shipping on orders over ₹999."
+        title="TodayMyDream - Complete Birthday & Wedding Decoration Services"
+        description="Book premium decoration services for birthdays, weddings, anniversaries and corporate events. Balloons, banners, lights, party props, and celebration supplies for every special event. Free shipping on orders over ₹999."
         keywords="birthday decoration materials, wedding decoration supplies, anniversary celebration items, party balloons, banners, lights, celebration props, decoration materials online, party supplies India, event decoration, celebration materials, birthday party supplies, wedding decor items, anniversary party decorations, baby shower decorations, venue decoration, party planning supplies"
-        url="https://decoryy.com/"
+        url="https://todaymydream.com/"
         image="/hero-image.jpg"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "name": "Decoryy",
-          "alternateName": ["Decoryy Decoration", "Celebration Materials", "Party Supplies"],
-          "url": "https://decoryy.com",
+          "name": "TodayMyDream",
+          "alternateName": ["TodayMyDream Decoration", "Celebration Materials", "Party Supplies"],
+          "url": "https://todaymydream.com",
           "description": "Premium decoration materials and celebration supplies for birthdays, weddings, anniversaries, and all special events.",
           "brand": {
             "@type": "Brand",
-            "name": "Decoryy",
-            "alternateName": "Decoryy",
-            "logo": "https://decoryy.com/logo.png",
-            "slogan": "Celebration Made Beautiful with Decoryy"
+            "name": "TodayMyDream",
+            "alternateName": "TodayMyDream",
+            "logo": "https://todaymydream.com/TodayMyDream.png",
+            "slogan": "Celebration Made Beautiful with TodayMyDream"
           },
           "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://decoryy.com/shop?search={search_term_string}",
+            "target": "https://todaymydream.com/shop?search={search_term_string}",
             "query-input": "required name=search_term_string"
           },
           "sameAs": [
-            "https://www.facebook.com/decoryy",
-            "https://www.instagram.com/decoryy",
-            "https://twitter.com/decoryy"
+            "https://www.facebook.com/todaymydream",
+            "https://www.instagram.com/todaymydream",
+            "https://twitter.com/todaymydream"
           ]
         }}
       />
@@ -74,8 +74,8 @@ export default function Home() {
 
         {/* Video Reviews Section */}
         <section aria-label="Customer Video Reviews">
-          <VideoSection 
-            title="Customer Reviews" 
+          <VideoSection
+            title="Customer Reviews"
             subtitle="See what our customers say about our decoration services"
             category="review"
             limit={4}
@@ -86,8 +86,8 @@ export default function Home() {
 
         {/* Our Work Videos Section */}
         <section aria-label="Our Work Showcase">
-          <VideoSection 
-            title="Our Work" 
+          <VideoSection
+            title="Our Work"
             subtitle="Watch our beautiful decoration setups and transformations"
             category="work"
             limit={4}
@@ -97,8 +97,8 @@ export default function Home() {
 
         {/* Video Gallery - All Videos */}
         <section aria-label="Video Gallery">
-          <VideoGallery 
-            title="Our Video Collection" 
+          <VideoGallery
+            title="Our Video Collection"
             subtitle="Explore all our videos organized by category"
             className="bg-gradient-to-br from-gray-50 via-white to-purple-50/30"
           />
@@ -111,7 +111,7 @@ export default function Home() {
 
         {/* Info Section */}
         <section aria-label="About Our Services">
-          <InfoSection/>
+          <InfoSection />
         </section>
 
         {/* Internal Linking */}
@@ -121,8 +121,8 @@ export default function Home() {
 
         {/* Video Gallery - Complete Video Collection */}
         <section aria-label="Complete Video Gallery">
-          <VideoGallery 
-            title="Complete Video Gallery" 
+          <VideoGallery
+            title="Complete Video Gallery"
             subtitle="Browse through all our videos - customer reviews, our work showcases, testimonials, and demo videos"
             className="bg-gradient-to-br from-purple-50/50 via-white to-pink-50/30"
           />
