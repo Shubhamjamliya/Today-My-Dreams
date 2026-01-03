@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearc
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-import { SellerProvider } from './context/SellerContext';
+
 import Loader from './components/Loader';
 import useScrollToTop from './hooks/useScrollToTop';
 import { seoConfig, defaultSEO } from './config/seo';
@@ -114,6 +114,9 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+// Import Admin Routes
+import AdminRoutes from './admin/AdminRoutes';
+
 function AppContent() {
   useScrollToTop();
   const { loading: authLoading } = useAuth();
@@ -160,14 +163,12 @@ function AppContent() {
     if (path === '/login') return seoConfig.login;
     if (path === '/signup') return seoConfig.signup;
     if (path === '/policies') return seoConfig.policies;
-    if (path === '/venue') return seoConfig.seller;
+    // if (path === '/venue') return seoConfig.seller; // Seller removed
     if (path === '/blog') return seoConfig.blog;
     if (path === '/app') return seoConfig.app;
 
     return defaultSEO;
   };
-
-
 
   // Show loading only if auth is still loading
   if (authLoading) {
@@ -180,7 +181,8 @@ function AppContent() {
 
   const seoData = getSEOConfig();
 
-  return (
+  // Helper for customer layout to avoid code duplication
+  const CustomerLayout = () => (
     <div className="min-h-screen flex flex-col">
       <PerformanceMonitor />
       <SEO {...seoData} />
@@ -225,11 +227,9 @@ function AppContent() {
                 <ErrorBoundary>
                   <InfoSection />
                 </ErrorBoundary>
-
               </Suspense>
             </main>
           } />
-
 
           <Route path="/about" element={
             <Suspense fallback={<Loader size="md" text="Loading..." />}>
@@ -340,24 +340,38 @@ function AppContent() {
               <NotFound />
             </Suspense>
           } />
-
         </Routes>
       </div>
+
       <Suspense fallback={<Loader size="sm" text="Loading..." />}>
         <Footer />
       </Suspense>
       <Suspense fallback={<Loader size="sm" text="Loading..." />}>
         <ScrollToTop />
       </Suspense>
-      {/* Show FloatingContactButton on all pages except ProductView */}
-      {!location.pathname.startsWith('/product/') && (
+      {/* Show FloatingContactButton on all pages except ProductView and Admin */}
+      {!location.pathname.startsWith('/product/') && !location.pathname.startsWith('/admin') && (
         <Suspense fallback={<Loader size="sm" text="Loading..." />}>
           <FloatingContactButton />
         </Suspense>
       )}
       <Toaster position="top-right" />
-
     </div>
+  );
+
+  // Main Route Structure
+  return (
+    <Routes>
+      {/* Admin Section */}
+      <Route path="/admin/*" element={
+        <Suspense fallback={<Loader size="md" text="Loading Admin..." />}>
+          <AdminRoutes />
+        </Suspense>
+      } />
+
+      {/* Customer Section - Matches everything else */}
+      <Route path="/*" element={<CustomerLayout />} />
+    </Routes>
   );
 }
 
@@ -365,11 +379,9 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <SellerProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </SellerProvider>
+        <Router>
+          <AppContent />
+        </Router>
       </AuthProvider>
     </ErrorBoundary>
   );
