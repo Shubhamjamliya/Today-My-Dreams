@@ -78,4 +78,49 @@ export const CardGridSkeleton = ({ count = 8 }) => (
   </div>
 );
 
+export const VideoSkeleton = ({ count = 6 }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+    {[...Array(count)].map((_, i) => (
+      <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+        <Skeleton variant="rect" className="w-full aspect-video" />
+        <div className="p-4 space-y-3">
+          <Skeleton variant="text" className="w-3/4 h-6" />
+          <div className="flex gap-2">
+            <Skeleton variant="rect" className="flex-1 h-10" />
+            <Skeleton variant="rect" className="flex-1 h-10" />
+            <Skeleton variant="rect" className="flex-1 h-10" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+export const SettingsSkeleton = () => (
+  <div className="p-6 space-y-8 bg-gray-50 min-h-screen animate-pulse">
+    <div className="flex justify-between items-center">
+      <Skeleton variant="text" className="w-64 h-10" />
+      <Skeleton variant="rect" className="w-32 h-10" />
+    </div>
+
+    {[...Array(3)].map((_, i) => (
+      <div key={i} className="bg-white rounded-xl shadow-sm p-6 space-y-6 border border-slate-100">
+        <Skeleton variant="text" className="w-48 h-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Skeleton variant="text" className="w-24 h-4" />
+            <Skeleton variant="rect" className="w-full h-12" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton variant="text" className="w-24 h-4" />
+            <Skeleton variant="rect" className="w-full h-12" />
+          </div>
+        </div>
+        <Skeleton variant="rect" className="w-full h-12" />
+        <Skeleton variant="rect" className="w-32 h-10" />
+      </div>
+    ))}
+  </div>
+);
+
 export default Skeleton;

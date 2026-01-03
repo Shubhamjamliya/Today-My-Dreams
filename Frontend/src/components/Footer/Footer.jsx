@@ -178,135 +178,107 @@ const Footer = () => {
 
   return (
     <motion.footer
-      className="bg-slate-900 text-slate-300 pt-16 pb-4 border-t-4 border-amber-400 md:mb-0 mb-10"
+      className="bg-slate-950 text-slate-400 pt-10 pb-6 border-t border-slate-800"
       variants={footerVariants}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
     >
-      <div className="container mx-auto px-4 sm:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-10">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-12 gap-y-8 gap-x-4 lg:gap-x-8">
 
-          {/* Column 1: Logo & About */}
-          <motion.div variants={itemVariants} className="lg:mb-0 col-span-1 md:col-span-2 lg:col-span-1 mb-8 md:mb-0">
-            <img src={logo} alt="TodayMyDream Logo" className="h-24 mb-4 object-contain" />
-            <p className="text-sm text-slate-400 pr-4">
-              Your premier destination for booking beautiful, bespoke decorations for all of life's special moments.
+          {/* Column 1: Brand (Span 3) */}
+          <div className="col-span-2 md:col-span-4 lg:col-span-3">
+            <Link to="/" className="inline-block">
+              <img src={logo} alt="TodayMyDream" className="h-10 mb-3 object-contain opacity-90 hover:opacity-100 transition-opacity" />
+            </Link>
+            <p className="text-xs leading-relaxed text-slate-500 mb-4 max-w-xs">
+              Your premier destination for booking bespoke decorations. Making life's moments unforgettable, one event at a time.
             </p>
-          </motion.div>
+            {/* Socials Inline */}
+            <div className="flex items-center gap-3">
+              <a
+                href="https://www.facebook.com/profile.php?id=61580103717383"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"
+              >
+                <Facebook size={14} />
+              </a>
+              <a
+                href="https://www.instagram.com/todaymydream.official?igsh=MXBuaGhyenhqbHBmYw=="
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"
+              >
+                <Instagram size={14} />
+              </a>
+            </div>
+          </div>
 
-          {/* Column 2: Useful Links */}
-          <motion.div variants={itemVariants}>
-            <div className="hidden lg:block">
-              <h3 className="text-lg font-serif font-bold text-white mb-4">Useful Links</h3>
-              <ul className="space-y-2 text-sm">
-                {usefulLinks.map((link, i) => (
-                  <li key={i}><Link to={link.link} className="text-slate-400 hover:text-amber-500 transition-colors">{link.label}</Link></li>
-                ))}
-              </ul>
-            </div>
-            <div className="lg:hidden">
-              <FooterAccordion title="Useful Links" items={usefulLinks} />
-            </div>
-          </motion.div>
+          {/* Column 2: Useful Links (Span 2) */}
+          <div className="col-span-1 md:col-span-1 lg:col-span-2">
+            <h3 className="text-xs font-black text-white uppercase tracking-wider mb-3">Company</h3>
+            <ul className="space-y-1.5">
+              {usefulLinks.map((link, i) => (
+                <li key={i}><Link to={link.link} className="text-[11px] font-medium hover:text-[#FCD24C] transition-colors flex items-center gap-1.5"><span className="w-1 h-1 bg-slate-700 rounded-full"></span>{link.label}</Link></li>
+              ))}
+            </ul>
+          </div>
 
-          {/* Column 3: Popular Categories */}
-          <motion.div variants={itemVariants}>
-            <div className="hidden lg:block">
-              <h3 className="text-lg font-serif font-bold text-white mb-4">Categories</h3>
-              <ul className="space-y-2 text-sm">
-                {categoryLinks.map((link, i) => (
-                  <li key={i}><Link to={link.link} className="text-slate-400 hover:text-amber-500 transition-colors">{link.label}</Link></li>
-                ))}
-              </ul>
-            </div>
-            <div className="lg:hidden">
-              <FooterAccordion title="Categories" items={categoryLinks} />
-            </div>
-          </motion.div>
+          {/* Column 3: Categories (Span 2) */}
+          <div className="col-span-1 md:col-span-1 lg:col-span-2">
+            <h3 className="text-xs font-black text-white uppercase tracking-wider mb-3">Collections</h3>
+            <ul className="space-y-1.5">
+              {categoryLinks.slice(0, 6).map((link, i) => (
+                <li key={i}><Link to={link.link} className="text-[11px] font-medium hover:text-[#FCD24C] transition-colors flex items-center gap-1.5"><span className="w-1 h-1 bg-slate-700 rounded-full"></span>{link.label}</Link></li>
+              ))}
+            </ul>
+          </div>
 
-          {/* Column 4: Available Cities */}
-          <motion.div variants={itemVariants}>
-            <div className="hidden lg:block">
-              <h3 className="text-lg font-serif font-bold text-white mb-4">Our Cities</h3>
-              <ul className="space-y-2 text-sm">
-                {cityLinks.length > 0 ? (
-                  cityLinks.map((city, i) => (
-                    <li key={i}>
-                      <button
-                        onClick={city.onClick}
-                        className="text-slate-400 hover:text-amber-500 transition-colors text-left"
-                      >
-                        {city.label}
-                      </button>
-                    </li>
-                  ))
-                ) : (
-                  <li className="text-slate-500 text-xs italic">Loading cities...</li>
-                )}
-              </ul>
-            </div>
-            <div className="lg:hidden">
-              <FooterAccordion title="Our Cities" items={cityLinks.map(city => ({
-                label: city.label,
-                link: '#',
-                onClick: city.onClick
-              }))} />
-            </div>
-          </motion.div>
+          {/* Column 4: Cities (Span 2) */}
+          <div className="col-span-1 md:col-span-1 lg:col-span-2">
+            <h3 className="text-xs font-black text-white uppercase tracking-wider mb-3">Cities</h3>
+            <ul className="space-y-1.5">
+              {cityLinks.length > 0 ? (
+                cityLinks.slice(0, 6).map((city, i) => (
+                  <li key={i}>
+                    <button onClick={city.onClick} className="text-[11px] font-medium hover:text-[#FCD24C] transition-colors text-left flex items-center gap-1.5">
+                      <span className="w-1 h-1 bg-slate-700 rounded-full"></span>{city.label}
+                    </button>
+                  </li>
+                ))
+              ) : (
+                <li className="text-[10px] italic text-slate-600">Loading...</li>
+              )}
+            </ul>
+          </div>
 
-          {/* Column 5: Why Choose Us & Social */}
-          <motion.div variants={itemVariants} className="mt-10 lg:mt-0 col-span-1 md:col-span-2 lg:col-span-1">
-            <h3 className="text-lg font-serif font-bold text-white mb-4">Why Choose Us</h3>
-            <ul className="space-y-4 text-sm">
+          {/* Column 5: Why Us (Span 3) */}
+          <div className="col-span-1 md:col-span-1 lg:col-span-3 bg-slate-900/50 rounded-2xl p-4 border border-slate-800/50">
+            <h3 className="text-xs font-black text-white uppercase tracking-wider mb-3">Why Us?</h3>
+            <ul className="space-y-2.5">
               {whyChooseUsPoints.map((point, index) => (
-                <li key={index} className="flex items-center gap-3">
-                  <span className="text-amber-400 flex-shrink-0">{point.icon}</span>
-                  <span className="text-slate-400">{point.text}</span>
+                <li key={index} className="flex items-start gap-2.5">
+                  <span className="text-[#FCD24C] mt-0.5">{React.cloneElement(point.icon, { size: 14 })}</span>
+                  <span className="text-[11px] leading-tight text-slate-400 font-medium">{point.text}</span>
                 </li>
               ))}
             </ul>
+          </div>
 
-          </motion.div>
         </div>
 
-        <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-slate-500">
-          {/* Left Side: Copyright */}
-          <p className="order-3 md:order-1 text-center md:text-left mb-16 md:mb-0">
+        <div className="border-t border-slate-900 mt-8 pt-4 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">
             &copy; {new Date().getFullYear()} Today My Dream. All Rights Reserved.
           </p>
-
-          {/* Right Side: Socials & App Wrapper */}
-          <div className="order-1 md:order-2 flex flex-col sm:flex-row items-center gap-6 md:gap-8">
-
-            {/* Social Media Section */}
-            <div className="flex items-center gap-3">
-              <span className="font-serif font-bold text-white">Follow Us</span>
-              <div className="flex space-x-3">
-                <a
-                  href="https://www.facebook.com/profile.php?id=61580103717383"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white transition-all hover:scale-110"
-                >
-                  <Facebook size={16} />
-                </a>
-                <a
-                  href="https://www.instagram.com/todaymydream.official?igsh=MXBuaGhyenhqbHBmYw=="
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white transition-all hover:scale-110"
-                >
-                  <Instagram size={16} />
-                </a>
-              </div>
-            </div>
-
-
+          <div className="flex items-center gap-4 text-slate-600">
+            <Link to="/policies" className="text-[10px] font-bold uppercase hover:text-white transition-colors">Privacy</Link>
+            <Link to="/policies" className="text-[10px] font-bold uppercase hover:text-white transition-colors">Terms</Link>
+            <Link to="/contact" className="text-[10px] font-bold uppercase hover:text-white transition-colors">Support</Link>
           </div>
         </div>
-
-
       </div>
     </motion.footer>
   );

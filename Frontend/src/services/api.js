@@ -28,7 +28,7 @@ export const categoryAPI = {
     const params = city ? `?city=${encodeURIComponent(city)}` : '';
     return api.get(`/categories/nested${params}`);
   },
-  
+
   // Add create, update, delete for categories if needed
 };
 export const subCategoryAPI = {

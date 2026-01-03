@@ -93,9 +93,18 @@ const Orders = () => {
   const paymentStatusColors = { pending: 'bg-yellow-100 text-yellow-800', pending_upfront: 'bg-blue-100 text-blue-800', completed: 'bg-green-100 text-green-800', failed: 'bg-red-100 text-red-800' };
 
   if (loading) return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-      <h1 className="text-2xl font-bold mb-6">Orders Management</h1>
-      <TableSkeleton rows={10} columns={6} />
+    <div className="max-w-7xl mx-auto p-4 animate-pulse">
+      {/* Header Skeleton */}
+      <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl shadow-sm">
+        <div className="space-y-2">
+          <div className="h-8 w-64 bg-slate-200 rounded-lg"></div>
+          <div className="h-4 w-48 bg-slate-100 rounded-lg"></div>
+        </div>
+        <div className="h-10 w-40 bg-slate-200 rounded-lg"></div>
+      </div>
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <TableSkeleton rows={10} cols={6} />
+      </div>
     </div>
   );
   if (error && !success) return <div className="text-red-600 text-center p-4">Error: {error}</div>;

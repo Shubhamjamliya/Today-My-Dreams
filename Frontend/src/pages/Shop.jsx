@@ -22,7 +22,7 @@ import { FaBirthdayCake } from 'react-icons/fa';
 
 const ShopHero = memo(({ selectedCategories }) => {
     return (
-        <div className="relative bg-slate-900 overflow-hidden h-64 md:h-80 flex items-center">
+        <div className="relative bg-slate-900 overflow-hidden h-42 md:h-56 flex items-center">
             <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-fixed"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/90 to-transparent"></div>
             <div className="container mx-auto px-6 relative z-10 w-full">
@@ -31,13 +31,13 @@ const ShopHero = memo(({ selectedCategories }) => {
                     animate={{ opacity: 1, x: 0 }}
                     className="max-w-4xl"
                 >
-                    <span className="inline-block py-1 px-3 rounded-full bg-[#FCD24C]/20 border border-[#FCD24C] text-[#FCD24C] text-xs font-bold uppercase tracking-wider mb-4">
+                    <span className="inline-block py-1 px-3 rounded-full bg-[#FCD24C]/20 border border-[#FCD24C] text-[#FCD24C] text-xs font-bold uppercase tracking-wider mb-2">
                         Premium Collection
                     </span>
-                    <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight leading-tight">
+                    <h1 className="text-3xl md:text-5xl font-black text-white mb-2 tracking-tight leading-tight">
                         {selectedCategories.main || "All Collections"}
                     </h1>
-                    <p className="text-slate-300 text-lg md:text-xl font-medium max-w-xl">
+                    <p className="text-slate-300 text-base md:text-lg font-medium max-w-xl">
                         Curated decorations for your most memorable moments.
                     </p>
                 </motion.div>
@@ -70,48 +70,122 @@ const ShopSidebar = memo(({
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 sticky top-36 max-h-[calc(100vh-160px)] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] z-30">
+        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 sticky top-[112px] self-start max-h-[calc(100vh-140px)] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] z-30 transition-all duration-300">
+            {/* ... sidebar content ... */}
+
+
+            {/* Section: Filters */}
+            <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-black text-slate-800 uppercase tracking-tight text-xs flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-slate-900 rounded-full"></span>
+                        Filters
+                    </h3>
+                    {hasActiveFilters() && (
+                        <button
+                            onClick={clearAllFilters}
+                            className="text-[10px] font-bold text-red-500 hover:bg-red-50 px-2 py-1 rounded transition-colors"
+                        >
+                            Reset
+                        </button>
+                    )}
+                </div>
+
+                <div className="mb-8">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="text-xs font-bold text-slate-500">Price Budget</span>
+                        <span className="text-[10px] font-black bg-slate-100 text-slate-900 px-2 py-1 rounded">₹{priceRange[0]} - ₹{priceRange[1]}</span>
+                    </div>
+                    <Slider
+                        value={priceRange}
+                        onChange={handleChange}
+                        onChangeCommitted={handleChangeCommitted}
+                        min={minPrice}
+                        max={maxPrice}
+                        step={500}
+                        sx={{
+                            color: '#0f172a',
+                            height: 6,
+                            padding: '13px 0',
+                            '& .MuiSlider-thumb': {
+                                height: 20,
+                                width: 20,
+                                backgroundColor: '#FCD24C',
+                                border: '3px solid #fff',
+                                boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+                                '&:hover, &.Mui-focusVisible': { boxShadow: '0 0 0 8px rgba(252, 210, 76, 0.16)' },
+                            },
+                            '& .MuiSlider-track': { border: 'none' },
+                            '& .MuiSlider-rail': { opacity: 0.3, backgroundColor: '#cbd5e1' },
+                        }}
+                    />
+                </div>
+
+                <div className="mb-2">
+                    <span className="text-xs font-bold text-slate-500 mb-2 block">Sort By</span>
+                    <div className="relative group">
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="w-full appearance-none bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900/10 cursor-pointer transition-colors"
+                        >
+                            <option value="popularity">Popularity</option>
+                            <option value="latest">Newest Arrivals</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                        </select>
+                        <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 group-hover:text-slate-600 pointer-events-none transition-colors" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-slate-200 mx-6"></div>
 
             {/* Section: Categories */}
-            <div className="p-6 border-b border-slate-100">
-                <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-[#FCD24C] rounded-full"></span>
-                    Categories
-                </h3>
+            <div className="p-5">
+                <div className="flex items-center gap-3 mb-6 px-1">
+                    <div className="p-2 bg-slate-900 rounded-lg text-[#FCD24C] shadow-lg shadow-slate-900/20">
+                        <AdjustmentsHorizontalIcon className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-black text-slate-800 tracking-tight text-lg">Collections</h3>
+                </div>
 
                 <div className="space-y-2">
                     <button
                         onClick={() => handleCategorySelect(null)}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-3 ${!selectedCategories.main
-                            ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
-                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        className={`w-full group relative flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 border ${!selectedCategories.main
+                            ? 'bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-900/30 scale-[1.02]'
+                            : 'bg-white border-transparent hover:bg-slate-50 text-slate-600 hover:text-slate-900'
                             }`}
                     >
-                        <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                            <AdjustmentsHorizontalIcon className="w-3.5 h-3.5" />
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${!selectedCategories.main ? 'bg-white/20' : 'bg-slate-100 group-hover:bg-white'}`}>
+                            <AdjustmentsHorizontalIcon className="w-4 h-4" />
                         </div>
-                        All Items
+                        <span className="font-bold text-sm">All Products</span>
+                        {!selectedCategories.main && <div className="absolute right-4 w-2 h-2 bg-[#FCD24C] rounded-full animate-pulse" />}
                     </button>
 
                     {dynamicCategories.map(cat => {
                         const isActive = selectedCategories.main === cat.name;
                         return (
-                            <div key={cat._id} className="group">
+                            <div key={cat._id} className="relative">
                                 <button
                                     onClick={() => handleCategorySelect(cat.name)}
-                                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between ${isActive
-                                        ? 'bg-[#FCD24C]/10 text-slate-900 border border-[#FCD24C]'
-                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                    className={`w-full group relative flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 border ${isActive
+                                        ? 'bg-[#FCD24C] border-[#FCD24C] text-slate-900 shadow-lg shadow-[#FCD24C]/30 scale-[1.02] z-10'
+                                        : 'bg-transparent border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                         }`}
                                 >
                                     <div className="flex items-center gap-3">
                                         {cat.image ? (
-                                            <img src={config.fixImageUrl(cat.image)} className="w-6 h-6 rounded-full object-cover shadow-sm" loading="lazy" />
+                                            <img src={config.fixImageUrl(cat.image)} className={`w-9 h-9 rounded-full object-cover shadow-sm transition-all ${isActive ? 'ring-2 ring-white scale-110' : 'grayscale group-hover:grayscale-0'}`} loading="lazy" />
                                         ) : <FaBirthdayCake className="text-slate-400" />}
-                                        {cat.name}
+                                        <span className={`text-sm ${isActive ? 'font-black' : 'font-bold'}`}>{cat.name}</span>
                                     </div>
                                     {cat.submenu?.length > 0 && (
-                                        <ChevronDownIcon className={`w-4 h-4 transition-transform duration-300 ${isActive ? 'rotate-180 text-custom-gold' : 'text-slate-300'}`} />
+                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-slate-900/10' : 'group-hover:bg-slate-100'}`}>
+                                            <ChevronDownIcon className={`w-4 h-4 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isActive ? 'rotate-180 text-slate-900' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                                        </div>
                                     )}
                                 </button>
 
@@ -122,28 +196,39 @@ const ShopSidebar = memo(({
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: 'auto', opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
+                                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
                                             className="overflow-hidden"
                                         >
-                                            <div className="pl-4 pr-2 py-2 space-y-1 ml-4 border-l-2 border-slate-100 my-1">
+                                            <div className="relative ml-8 pl-6 py-3 space-y-1">
+                                                {/* Connecting Tree Line */}
+                                                <div className="absolute left-0 top-0 bottom-4 w-[2px] bg-slate-300 rounded-full"></div>
+
                                                 <button
                                                     onClick={() => handleCategorySelect(cat.name, null)}
-                                                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${!selectedCategories.sub
-                                                        ? 'text-[#FCD24C] bg-slate-900'
-                                                        : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                                                    className={`relative w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${!selectedCategories.sub
+                                                        ? 'bg-slate-100 text-slate-900 shadow-sm'
+                                                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                                                         }`}
                                                 >
-                                                    All in {cat.name}
+                                                    {/* Horizontal connector */}
+                                                    <div className="absolute -left-6 top-1/2 w-4 h-[2px] bg-slate-300"></div>
+
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${!selectedCategories.sub ? 'bg-slate-900' : 'bg-slate-400'}`}></span>
+                                                    View All
                                                 </button>
 
                                                 {cat.submenu.map(sub => (
                                                     <button
                                                         key={sub._id}
                                                         onClick={() => handleCategorySelect(cat.name, sub.name)}
-                                                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 ${selectedCategories.sub === sub.name
-                                                            ? 'text-white bg-indigo-600 shadow-md shadow-indigo-200'
-                                                            : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                                                        className={`relative w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${selectedCategories.sub === sub.name
+                                                            ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20 scale-105 origin-left z-10'
+                                                            : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                                                             }`}
                                                     >
+                                                        {/* Horizontal connector */}
+                                                        <div className={`absolute -left-6 top-1/2 w-4 h-[2px] transition-colors ${selectedCategories.sub === sub.name ? 'bg-slate-900' : 'bg-slate-300'}`}></div>
+
                                                         {sub.name}
                                                     </button>
                                                 ))}
@@ -155,67 +240,6 @@ const ShopSidebar = memo(({
                         );
                     })}
                 </div>
-            </div>
-
-            {/* Section: Refine */}
-            <div className="p-6">
-                <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-slate-900 rounded-full"></span>
-                    Filters
-                </h3>
-
-                <div className="mb-8">
-                    <div className="flex justify-between items-center mb-4">
-                        <span className="text-xs font-bold text-slate-500">Price Range</span>
-                        <span className="text-[10px] font-bold bg-slate-100 px-2 py-1 rounded text-slate-700">₹{priceRange[0]} - ₹{priceRange[1]}</span>
-                    </div>
-                    <Slider
-                        value={priceRange}
-                        onChange={handleChange}
-                        onChangeCommitted={handleChangeCommitted}
-                        min={minPrice}
-                        max={maxPrice}
-                        step={500}
-                        sx={{
-                            color: '#0f172a', // Slate 900
-                            height: 4,
-                            '& .MuiSlider-thumb': {
-                                height: 16,
-                                width: 16,
-                                backgroundColor: '#FCD24C',
-                                border: '2px solid #fff',
-                                boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
-                            },
-                            '& .MuiSlider-rail': { opacity: 0.3, backgroundColor: '#cbd5e1' },
-                        }}
-                    />
-                </div>
-
-                <div className="mb-6">
-                    <span className="text-xs font-bold text-slate-500 mb-2 block">Sort By</span>
-                    <div className="relative">
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="w-full appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900/10 cursor-pointer"
-                        >
-                            <option value="popularity">Popularity</option>
-                            <option value="latest">Newest</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                        </select>
-                        <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
-                    </div>
-                </div>
-
-                {hasActiveFilters() && (
-                    <button
-                        onClick={clearAllFilters}
-                        className="w-full py-3 rounded-xl border border-dashed border-red-300 text-red-500 text-xs font-bold hover:bg-red-50 transition-colors"
-                    >
-                        Reset All Filters
-                    </button>
-                )}
             </div>
         </div>
     );
@@ -398,9 +422,9 @@ const Shop = () => {
                 url="https://todaymydream.com/shop"
             />
 
-            <ShopHero selectedCategories={selectedCategories} />
+            {/* Hero Removed as per request */}
 
-            <div className="container mx-auto px-4 py-12 w-full max-w-[1440px]">
+            <div className="container mx-auto px-4 pb-12 w-full max-w-[1440px]">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 relative">
 
                     {/* LEFT SIDEBAR (Sticky) */}
@@ -424,8 +448,8 @@ const Shop = () => {
                     {/* MAIN CONTENT AREA */}
                     <main className="col-span-1 lg:col-span-3">
 
-                        {/* Toolbar (Mobile Filters + Count) */}
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        {/* 1. Toolbar (Static since grid scrolls internally) */}
+                        <div className="z-10 bg-[#F8FAFC] py-4 flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-4 border-b border-slate-200/60 -mx-4 px-4 md:-mx-0 md:px-0 transition-all duration-300">
                             <div>
                                 <h2 className="text-2xl font-black text-slate-900 tracking-tight">
                                     {selectedCategories.sub || selectedCategories.main || "All Products"}
@@ -458,43 +482,46 @@ const Shop = () => {
                             )}
                         </AnimatePresence>
 
-                        {/* Loading / Error / Results */}
-                        {loading ? (
-                            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full">
-                                {[...Array(6)].map((_, i) => (
-                                    <ProductSkeleton key={i} />
-                                ))}
-                            </div>
-                        ) : error ? (
-                            <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-red-200 w-full">
-                                <p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p>
-                                <p className="text-slate-400 text-sm">{error}</p>
-                            </div>
-                        ) : filteredProducts.length === 0 ? (
-                            <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-slate-200 w-full">
-                                <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <MagnifyingGlassIcon className="w-8 h-8 text-slate-300" />
+                        {/* Scrollable Product Grid */}
+                        <div className="h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar scroll-smooth border border-slate-200/80 bg-white/50 rounded-3xl shadow-sm p-4 md:p-6 relative">
+                            {/* Loading / Error / Results */}
+                            {loading ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full">
+                                    {[...Array(6)].map((_, i) => (
+                                        <ProductSkeleton key={i} />
+                                    ))}
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">No matches found</h3>
-                                <p className="text-slate-400 max-w-xs mx-auto mb-8 leading-relaxed">We couldn't find any products matching your current filters. Try adjusting your search or price range.</p>
-                                <button onClick={clearAllFilters} className="px-8 py-3 bg-[#FCD24C] text-slate-900 font-bold rounded-xl shadow-lg shadow-[#FCD24C]/20 hover:shadow-[#FCD24C]/40 hover:-translate-y-1 transition-all">
-                                    Clear All Filters
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full">
-                                {filteredProducts.map((product, index) => (
-                                    <motion.div
-                                        key={product._id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, delay: index * 0.05 }}
-                                    >
-                                        <ProductCard product={product} />
-                                    </motion.div>
-                                ))}
-                            </div>
-                        )}
+                            ) : error ? (
+                                <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-red-200 w-full">
+                                    <p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p>
+                                    <p className="text-slate-400 text-sm">{error}</p>
+                                </div>
+                            ) : filteredProducts.length === 0 ? (
+                                <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-slate-200 w-full">
+                                    <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <MagnifyingGlassIcon className="w-8 h-8 text-slate-300" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900 mb-2">No matches found</h3>
+                                    <p className="text-slate-400 max-w-xs mx-auto mb-8 leading-relaxed">We couldn't find any products matching your current filters. Try adjusting your search or price range.</p>
+                                    <button onClick={clearAllFilters} className="px-8 py-3 bg-[#FCD24C] text-slate-900 font-bold rounded-xl shadow-lg shadow-[#FCD24C]/20 hover:shadow-[#FCD24C]/40 hover:-translate-y-1 transition-all">
+                                        Clear All Filters
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full pb-8">
+                                    {filteredProducts.map((product, index) => (
+                                        <motion.div
+                                            key={product._id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                                        >
+                                            <ProductCard product={product} />
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </main>
                 </div>
             </div>

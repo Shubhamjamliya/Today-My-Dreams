@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Play, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Play,
   Upload,
   X,
   Save
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import config from '../config/config';
+import { VideoSkeleton } from '../components/Skeleton';
 
 const Videos = () => {
   const [videos, setVideos] = useState([]);
@@ -50,7 +51,7 @@ const Videos = () => {
           'Content-Type': 'application/json'
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setVideos(data.videos || []);
@@ -64,7 +65,7 @@ const Videos = () => {
       setLoading(false);
     }
   };
-  
+
   // --- New Upload Function with Progress Tracking ---
   const uploadVideoWithProgress = (token, file) => {
     return new Promise((resolve, reject) => {
@@ -80,7 +81,7 @@ const Videos = () => {
           setUploadProgress(percentComplete);
         }
       };
-      
+
       // Handle successful upload
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
@@ -104,17 +105,17 @@ const Videos = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) {
       toast.error('Please enter a video title');
       return;
     }
-    
+
     if (!videoFile && !formData.video) {
       toast.error('Please select a video file');
       return;
     }
-    
+
     try {
       const token = localStorage.getItem('token');
       let videoUrl = formData.video;
@@ -143,10 +144,10 @@ const Videos = () => {
         video: videoUrl
       };
 
-      const url = editingVideo 
+      const url = editingVideo
         ? `${config.API_URLS.VIDEOS}/${editingVideo._id}`
         : config.API_URLS.VIDEOS;
-      
+
       const method = editingVideo ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -236,8 +237,14 @@ const Videos = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Video Management</h1>
+            <p className="text-gray-600 mt-1">Manage your video content for reviews and work showcase</p>
+          </div>
+        </div>
+        <VideoSkeleton count={6} />
       </div>
     );
   }
@@ -284,12 +291,11 @@ const Videos = () => {
                   </div>
                 )}
                 <div className="absolute top-2 left-2">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    video.category === 'review' ? 'bg-green-100 text-green-800' :
-                    video.category === 'work' ? 'bg-blue-100 text-blue-800' :
-                    video.category === 'testimonial' ? 'bg-purple-100 text-purple-800' :
-                    'bg-orange-100 text-orange-800'
-                  }`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${video.category === 'review' ? 'bg-green-100 text-green-800' :
+                      video.category === 'work' ? 'bg-blue-100 text-blue-800' :
+                        video.category === 'testimonial' ? 'bg-purple-100 text-purple-800' :
+                          'bg-orange-100 text-orange-800'
+                    }`}>
                     {categories.find(c => c.value === video.category)?.label}
                   </span>
                 </div>
@@ -419,7 +425,7 @@ const Videos = () => {
                   </label>
                   <div className="mt-1 flex items-center gap-4 p-4 border-2 border-dashed border-gray-300 rounded-lg">
                     <div className="flex-1">
-                       <input
+                      <input
                         type="file"
                         accept="video/*"
                         onChange={handleVideoChange}
@@ -444,8 +450,8 @@ const Videos = () => {
                       <span>{uploadProgress}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div 
-                        className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-linear" 
+                      <div
+                        className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-linear"
                         style={{ width: `${uploadProgress}%` }}
                       ></div>
                     </div>

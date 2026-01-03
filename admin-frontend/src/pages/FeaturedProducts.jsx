@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Plus, Search, Grid, List, Star, AlertCircle, Heart } from "lucide-react";
 import apiService from "../services/api";
 import Loader from "../components/Loader";
+import { CardGridSkeleton } from "../components/Skeleton";
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return '';
@@ -164,7 +165,7 @@ const FeaturedProducts = () => {
 
         {/* Loading State */}
         {loading && (
-          <Loader text="Loading featured products..." />
+          <CardGridSkeleton count={8} />
         )}
 
         {/* Error State */}

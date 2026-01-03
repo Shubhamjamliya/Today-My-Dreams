@@ -3,6 +3,7 @@ import apiService from '../services/api';
 import { format } from 'date-fns';
 import { Trash2, Edit, Plus, X, Check } from 'lucide-react';
 import Loader from "../components/Loader";
+import { TableSkeleton } from '../components/Skeleton';
 
 const CouponManagement = () => {
   const [coupons, setCoupons] = useState([]);
@@ -97,7 +98,17 @@ const CouponManagement = () => {
     }
   };
 
-  if (loading) return <Loader fullScreen text="Loading coupons..." />;
+  if (loading) return (
+    <div className="p-4 animate-pulse">
+      <div className="flex justify-between items-center mb-4">
+        <div className="h-8 w-64 bg-slate-200 rounded-lg"></div>
+        <div className="h-10 w-40 bg-slate-200 rounded-lg"></div>
+      </div>
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <TableSkeleton rows={10} cols={7} />
+      </div>
+    </div>
+  );
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
   return (

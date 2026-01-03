@@ -38,27 +38,27 @@ const VideoCard = ({ video, className = '', showModal = false, onClose, onClick 
   const premiumBg = 'bg-gradient-to-r from-emerald-500 to-green-600';
 
   const categoryConfig = {
-    review: { 
-      label: 'Customer Review', 
-      icon: <Star className="w-3 h-3" />, 
+    review: {
+      label: 'Customer Review',
+      icon: <Star className="w-3 h-3" />,
       gradient: premiumGradient,
       bgColor: premiumBg
     },
-    work: { 
-      label: 'Our Work', 
-      icon: <Award className="w-3 h-3" />, 
+    work: {
+      label: 'Our Work',
+      icon: <Award className="w-3 h-3" />,
       gradient: premiumGradient,
       bgColor: premiumBg
     },
-    testimonial: { 
-      label: 'Testimonial', 
-      icon: <MessageCircle className="w-3 h-3" />, 
+    testimonial: {
+      label: 'Testimonial',
+      icon: <MessageCircle className="w-3 h-3" />,
       gradient: premiumGradient,
       bgColor: premiumBg
     },
-    demo: { 
-      label: 'Demo/How-to', 
-      icon: <Lightbulb className="w-3 h-3" />, 
+    demo: {
+      label: 'Demo/How-to',
+      icon: <Lightbulb className="w-3 h-3" />,
       gradient: premiumGradient,
       bgColor: premiumBg
     }
@@ -67,8 +67,8 @@ const VideoCard = ({ video, className = '', showModal = false, onClose, onClick 
   const currentCategory = categoryConfig[video.category] || categoryConfig.demo;
 
   // Disable hover animations when in modal mode
-  const whileHoverProps = showModal 
-    ? {} 
+  const whileHoverProps = showModal
+    ? {}
     : { y: -8, scale: 1.02 };
 
   // Use a 16:9 aspect ratio for the modal, but 1:1 for the card
@@ -85,10 +85,21 @@ const VideoCard = ({ video, className = '', showModal = false, onClose, onClick 
       onClick={showModal ? undefined : onClick}
       // The className from props is applied here, allowing modal sizing from parent
       className={`relative group ${className}`}
+      onMouseEnter={() => {
+        if (!showModal && videoRef.current) {
+          videoRef.current.play().catch(() => { });
+        }
+      }}
+      onMouseLeave={() => {
+        if (!showModal && videoRef.current) {
+          videoRef.current.pause();
+          videoRef.current.currentTime = 0;
+        }
+      }}
     >
       {/* Card/Modal Container */}
       <div className="relative bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl cursor-pointer border border-gray-100 transition-all duration-300 w-full">
-        
+
         {/* Video Container: Aspect ratio is now responsive */}
         <div className={`relative ${videoAspectRatio} bg-gray-900 overflow-hidden`}>
           {/* Video Element */}
@@ -99,9 +110,9 @@ const VideoCard = ({ video, className = '', showModal = false, onClose, onClick 
               className="w-full h-full object-cover transition-transform duration-500"
               poster={video.thumbnail || ''}
               playsInline // Essential for iOS
-              autoPlay={!showModal} // Autoplay the muted preview
+              autoPlay={false} // Disable autoplay to fix performance lag
               controls={showModal} // Only show controls in modal
-              preload="metadata"
+              preload="metadata" // Only load metadata initially
               muted={!showModal} // Muted as card, unmuted as modal
               loop={!showModal} // Loop the muted preview
             />
@@ -133,7 +144,7 @@ const VideoCard = ({ video, className = '', showModal = false, onClose, onClick 
           )}
 
           {/* Category Badge (Overlay) */}
-          <motion.span 
+          <motion.span
             layout // Allow badge to animate
             className={`absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg ${currentCategory.bgColor}`}
           >
@@ -144,7 +155,7 @@ const VideoCard = ({ video, className = '', showModal = false, onClose, onClick 
 
         {/* Card Content (Title) */}
         <div className="p-4">
-          <h3 
+          <h3
             // Title is larger in the modal
             className={`text-gray-900 font-semibold ${showModal ? 'text-lg' : 'text-base'} line-clamp-2 leading-tight`}
           >

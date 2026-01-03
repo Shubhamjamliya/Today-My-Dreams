@@ -4,7 +4,7 @@ import { useCity } from '../context/CityContext';
 
 const ContactInfoBar = () => {
   const { selectedCityData } = useCity();
-  
+
   // Get contact number from city data or use default
   const contactNumber = selectedCityData?.contactNumber || '+917739873442';
   const cityName = selectedCityData?.name || '';
@@ -19,7 +19,7 @@ const ContactInfoBar = () => {
               <span className="font-medium">Location set to: {cityName}</span>
             </div>
           )}
-          <a 
+          <a
             href={`tel:${contactNumber}`}
             className="flex items-center gap-2 hover:text-amber-400 transition-colors"
           >

@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, Star, TrendingUp, Heart, Award, ShoppingBag } fr
 import { categoryAPI, subCategoryAPI } from '../services/api';
 import config from '../config/config';
 import Loader from '../components/Loader';
-import { ProductSkeleton } from '../components/Loader/Skeleton';
+import { ProductSkeleton, CircleSkeleton } from '../components/Loader/Skeleton';
 import SEO from '../components/SEO/SEO';
 import { useCity } from '../context/CityContext';
 import ProductCard from '../components/ProductCard/ProductCard';
@@ -198,8 +198,23 @@ const SubCategoryPage = () => {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen flex items-start justify-center bg-gray-50">
-        <Loader text="Loading Categories..." />
+      <div className="min-h-screen bg-white font-sans">
+        <div className="container mx-auto px-3 py-8">
+          <div className="flex flex-col items-center gap-8">
+            {/* Header Skeleton */}
+            <div className="space-y-4 w-full flex flex-col items-center">
+              <div className="h-10 w-64 bg-slate-200 rounded-lg animate-pulse"></div>
+              <div className="h-1 w-20 bg-amber-400 rounded-full animate-pulse"></div>
+            </div>
+
+            {/* Circle Skeletons Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 w-full">
+              {[...Array(12)].map((_, i) => (
+                <CircleSkeleton key={i} />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -250,8 +265,10 @@ const SubCategoryPage = () => {
 
           {/* Subcategories Content */}
           {subcategoriesLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader text="Loading Subcategories..." />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <CircleSkeleton key={i} />
+              ))}
             </div>
           ) : subcategoriesError ? (
             <div className="text-center py-16">

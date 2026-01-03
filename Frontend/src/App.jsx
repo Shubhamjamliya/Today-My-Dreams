@@ -183,180 +183,182 @@ function AppContent() {
   const seoData = getSEOConfig();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <PerformanceMonitor />
       <SEO {...seoData} />
       <Header />
-      <Routes>
-        <Route path="/" element={
-          <main>
-            <ErrorBoundary>
-              <Hero />
-            </ErrorBoundary>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+      <div className="flex-grow w-full">
+        <Routes>
+          <Route path="/" element={
+            <main>
               <ErrorBoundary>
-                <Categories />
+                <Hero />
               </ErrorBoundary>
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <BirthdaySubcategories />
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <CatCard />
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <ErrorBoundary>
-                <VideoGallery />
-              </ErrorBoundary>
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <ErrorBoundary>
-                <Testimonials />
-              </ErrorBoundary>
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <ErrorBoundary>
-                <MissionVision />
-              </ErrorBoundary>
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <Offerpage />
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <ErrorBoundary>
-                <InfoSection />
-              </ErrorBoundary>
+              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+                <ErrorBoundary>
+                  <Categories />
+                </ErrorBoundary>
+              </Suspense>
+              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+                <BirthdaySubcategories />
+              </Suspense>
+              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+                <CatCard />
+              </Suspense>
+              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+                <ErrorBoundary>
+                  <VideoGallery />
+                </ErrorBoundary>
+              </Suspense>
+              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+                <ErrorBoundary>
+                  <Testimonials />
+                </ErrorBoundary>
+              </Suspense>
+              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+                <ErrorBoundary>
+                  <MissionVision />
+                </ErrorBoundary>
+              </Suspense>
+              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+                <Offerpage />
+              </Suspense>
+              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+                <ErrorBoundary>
+                  <InfoSection />
+                </ErrorBoundary>
 
-            </Suspense>
-          </main>
-        } />
+              </Suspense>
+            </main>
+          } />
 
 
-        <Route path="/about" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <AboutUs />
-          </Suspense>
-        } />
-        <Route path="/contact" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <ContactPage />
-          </Suspense>
-        } />
-        <Route path="/shop" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Shop />
-          </Suspense>
-        } />
-        <Route path="/subcategory" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <SubCategoryPage />
-          </Suspense>
-        } />
-        <Route path="/login" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Login />
-          </Suspense>
-        } />
-        <Route path="/signup" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Signup />
-          </Suspense>
-        } />
-        <Route path="/categories" element={<Categories />} />
-        <Route path="/account" element={
-          <ProtectedRoute>
+          <Route path="/about" element={
             <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Account />
+              <AboutUs />
             </Suspense>
-          </ProtectedRoute>
-        } />
-        <Route path="/wishlist" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Wishlist />
-          </Suspense>
-        } />
-        <Route path='/dashboard' element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Becomeseller />
-          </Suspense>
-        } />
-        <Route path='/dashboard/auth' element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <SellerAuth />
-          </Suspense>
-        } />
-        <Route path='/dashboard/profile' element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <SellerProfile />
-          </Suspense>
-        } />
-        <Route path="/checkout" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Checkout />
-          </Suspense>
-        } />
-        <Route path="/order-confirmation/:id" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <OrderConfirmation />
-          </Suspense>
-        } />
-        <Route path="/product/:id" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <ProductView />
-          </Suspense>
-        } />
-        <Route path="/forgot-password" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <ForgotPassword />
-          </Suspense>
-        } />
-        <Route path="/policies" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Policies />
-          </Suspense>
-        } />
-        <Route path="/venues" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <VenuePage />
-          </Suspense>
-        } />
-        <Route path="/venues/:venueId" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <ViewVenue />
-          </Suspense>
-        } />
-        <Route path="/payment/status" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <PaymentStatus />
-          </Suspense>
-        } />
-        <Route path="/blog" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Blog />
-          </Suspense>
-        } />
-        <Route path="/blog/:slug" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <BlogPost />
-          </Suspense>
-        } />
-        <Route path="/videos" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Videos />
-          </Suspense>
-        } />
-        <Route path="/app" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <AppDownload />
-          </Suspense>
-        } />
-        <Route path="*" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <NotFound />
-          </Suspense>
-        } />
+          } />
+          <Route path="/contact" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <ContactPage />
+            </Suspense>
+          } />
+          <Route path="/shop" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Shop />
+            </Suspense>
+          } />
+          <Route path="/subcategory" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <SubCategoryPage />
+            </Suspense>
+          } />
+          <Route path="/login" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Login />
+            </Suspense>
+          } />
+          <Route path="/signup" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Signup />
+            </Suspense>
+          } />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/account" element={
+            <ProtectedRoute>
+              <Suspense fallback={<Loader size="md" text="Loading..." />}>
+                <Account />
+              </Suspense>
+            </ProtectedRoute>
+          } />
+          <Route path="/wishlist" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Wishlist />
+            </Suspense>
+          } />
+          <Route path='/dashboard' element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Becomeseller />
+            </Suspense>
+          } />
+          <Route path='/dashboard/auth' element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <SellerAuth />
+            </Suspense>
+          } />
+          <Route path='/dashboard/profile' element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <SellerProfile />
+            </Suspense>
+          } />
+          <Route path="/checkout" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Checkout />
+            </Suspense>
+          } />
+          <Route path="/order-confirmation/:id" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <OrderConfirmation />
+            </Suspense>
+          } />
+          <Route path="/product/:id" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <ProductView />
+            </Suspense>
+          } />
+          <Route path="/forgot-password" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <ForgotPassword />
+            </Suspense>
+          } />
+          <Route path="/policies" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Policies />
+            </Suspense>
+          } />
+          <Route path="/venues" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <VenuePage />
+            </Suspense>
+          } />
+          <Route path="/venues/:venueId" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <ViewVenue />
+            </Suspense>
+          } />
+          <Route path="/payment/status" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <PaymentStatus />
+            </Suspense>
+          } />
+          <Route path="/blog" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Blog />
+            </Suspense>
+          } />
+          <Route path="/blog/:slug" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <BlogPost />
+            </Suspense>
+          } />
+          <Route path="/videos" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Videos />
+            </Suspense>
+          } />
+          <Route path="/app" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <AppDownload />
+            </Suspense>
+          } />
+          <Route path="*" element={
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <NotFound />
+            </Suspense>
+          } />
 
-      </Routes>
+        </Routes>
+      </div>
       <Suspense fallback={<Loader size="sm" text="Loading..." />}>
         <Footer />
       </Suspense>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Plus, Search, Grid, List, Store, AlertCircle } from "lucide-react";
 import apiService from "../services/api";
 import Loader from "../components/Loader";
+import { CardGridSkeleton } from "../components/Skeleton";
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return '';
@@ -164,7 +165,7 @@ const Seller = () => {
 
         {/* Loading State */}
         {loading && (
-          <Loader text="Loading best sellers..." />
+          <CardGridSkeleton count={8} />
         )}
 
         {/* Error State */}

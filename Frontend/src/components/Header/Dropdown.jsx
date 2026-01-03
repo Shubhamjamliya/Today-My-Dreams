@@ -7,8 +7,8 @@ const Dropdown = ({ category }) => {
   const navigate = useNavigate();
 
   const handleCategoryClick = (main, sub = null, item = null) => {
-    navigate('/shop', { 
-      state: { 
+    navigate('/shop', {
+      state: {
         selectedCategory: {
           main,
           sub,
@@ -20,7 +20,7 @@ const Dropdown = ({ category }) => {
   };
 
   return (
-    <div 
+    <div
       className="relative group"
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
@@ -33,17 +33,17 @@ const Dropdown = ({ category }) => {
       </button>
 
       {/* Dropdown panel */}
-      <div 
+      <div
         className={`absolute left-0 mt-0 w-[280px] bg-white rounded-lg shadow-lg border border-gray-100 
           transform transition-all duration-200 ease-in-out origin-top
-          ${isOpen 
-            ? 'opacity-100 scale-y-100 translate-y-0' 
+          ${isOpen
+            ? 'opacity-100 scale-y-100 translate-y-0'
             : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}
       >
         <div className="p-4">
           {category.submenu?.map((submenu) => (
             <div key={submenu.name} className="mb-4 last:mb-0">
-              <div 
+              <div
                 className="text-gray-800 font-medium mb-2 hover:text-primary cursor-pointer transition-colors duration-200"
                 onClick={() => handleCategoryClick(category.name, submenu.name)}
               >

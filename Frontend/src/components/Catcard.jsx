@@ -7,7 +7,7 @@ import { useCity } from '../context/CityContext';
 
 // --- You should have this ProductCard component in its own file ---
 // For this example, I'm assuming it's at: '../components/ProductCard'
-import ProductCard from '../components/ProductCard/ProductCard'; 
+import ProductCard from '../components/ProductCard/ProductCard';
 import { ArrowRight } from 'lucide-react';
 
 // --- This is the new component for each category section ---
@@ -15,48 +15,48 @@ const CategoryProductGrid = ({ category, selectedCity }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProductsForCategory = async () => {
-        if (!category || !category.name) {
-            console.warn('CatCard: Invalid category', category);
-            setLoading(false);
-            return;
-        }
-
-        setLoading(true);
-        try {
-            // Request products for this category using backend query params
-            const urlParams = new URLSearchParams();
-            urlParams.append('category', category.name); // Don't encode, let axios handle it
-            urlParams.append('limit', '5'); // Fetch only 5 products per category
-            if (selectedCity) {
-                urlParams.append('city', selectedCity);
+    useEffect(() => {
+        const fetchProductsForCategory = async () => {
+            if (!category || !category.name) {
+                console.warn('CatCard: Invalid category', category);
+                setLoading(false);
+                return;
             }
-            
-            const response = await axios.get(`${config.API_URLS.SHOP}?${urlParams.toString()}`);
 
-            // Backend returns an array of products. But some endpoints historically returned { products: [...] }
-            const data = response.data || [];
-            const productsArray = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
-            
-            setProducts(productsArray); // Show all products, no slicing
+            setLoading(true);
+            try {
+                // Request products for this category using backend query params
+                const urlParams = new URLSearchParams();
+                urlParams.append('category', category.name); // Don't encode, let axios handle it
+                urlParams.append('limit', '5'); // Fetch only 5 products per category
+                if (selectedCity) {
+                    urlParams.append('city', selectedCity);
+                }
 
-        } catch (error) {
-            setProducts([]); // Set empty array on error
-        } finally {
-            setLoading(false);
-        }
-    };
+                const response = await axios.get(`${config.API_URLS.SHOP}?${urlParams.toString()}`);
 
-    fetchProductsForCategory();
-}, [category, selectedCity]);
+                // Backend returns an array of products. But some endpoints historically returned { products: [...] }
+                const data = response.data || [];
+                const productsArray = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
+
+                setProducts(productsArray); // Show all products, no slicing
+
+            } catch (error) {
+                setProducts([]); // Set empty array on error
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProductsForCategory();
+    }, [category, selectedCity]);
     // Don't render the section if there are no products for this category
     if (!loading && products.length === 0) {
         return null;
     }
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
@@ -65,8 +65,8 @@ const CategoryProductGrid = ({ category, selectedCity }) => {
             {/* Section Header */}
             <div className="flex justify-between items-center mb-4 md:mb-6">
                 <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900">{category.name}</h2>
-                <Link 
-                    to="/shop" 
+                <Link
+                    to="/shop"
                     state={{ selectedCategory: { main: category.name } }}
                     className="flex items-center gap-2 text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors group"
                 >
@@ -90,7 +90,7 @@ const CategoryProductGrid = ({ category, selectedCity }) => {
                         ))
                     )}
                 </div>
-                
+
                 {/* Desktop: Grid layout */}
                 <div className="hidden md:contents">
                     {loading ? (
@@ -124,10 +124,10 @@ const CatCard = () => {
                 if (selectedCity) {
                     urlParams.append('city', selectedCity);
                 }
-                
+
                 const response = await axios.get(`${config.API_URLS.CATEGORIES}?${urlParams.toString()}`);
                 const fetchedCategories = response.data.categories || response.data || [];
-                
+
                 setCategories(fetchedCategories);
             } catch (error) {
                 setCategories([]);
@@ -145,14 +145,14 @@ const CatCard = () => {
             </div>
         );
     }
-    
+
     if (categories.length === 0) {
         return (
             <section className="py-12 sm:py-16">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center p-8 bg-yellow-50 border border-yellow-200 rounded-lg">
                         <p className="text-gray-600">
-                            No categories available for the selected city. 
+                            No categories available for the selected city.
                             Please select a different city or contact admin to add content.
                         </p>
                     </div>
@@ -160,16 +160,16 @@ const CatCard = () => {
             </section>
         );
     }
-    
+
     return (
         <section className=" py-12 sm:py-16" >
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="space-y-12 md:space-y-16">
                     {categories.map(category => (
-                        <CategoryProductGrid 
-                            key={category._id || category.id} 
-                            category={category} 
-                            selectedCity={selectedCity} 
+                        <CategoryProductGrid
+                            key={category._id || category.id}
+                            category={category}
+                            selectedCity={selectedCity}
                         />
                     ))}
                 </div>

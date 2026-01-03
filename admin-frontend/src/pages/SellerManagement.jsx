@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import config from '../config/config';
 import { toast } from 'react-hot-toast';
 import Loader from '../components/Loader.jsx';
+import { TableSkeleton } from '../components/Skeleton';
 import RikoCraftPoster from '../components/RikoCraftPoster.jsx';
 import RikoCraftcert from '../components/RikoCraftcert.jsx';
 import html2canvas from 'html2canvas';
@@ -44,13 +45,13 @@ const SellerManagement = () => {
   const fetchSellers = async () => {
     try {
       console.log('Fetching sellers from:', `${config.API_URLS.SELLER}/all`);
-      
+
       const response = await fetch(`${config.API_URLS.SELLER}/all`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -64,14 +65,14 @@ const SellerManagement = () => {
       // Check each seller object and their withdrawals
       data.sellers.forEach(seller => {
 
-        
+
 
       });
 
       setSellers(data.sellers || []);
     } catch (error) {
       console.error('Error fetching sellers:', error);
-     
+
     } finally {
       setLoading(false);
     }
@@ -241,7 +242,7 @@ const SellerManagement = () => {
     e.preventDefault();
     try {
       setEditLoading(true);
-      
+
       // Prepare the data for submission
       const updateData = {
         businessName: editForm.businessName,
@@ -271,7 +272,7 @@ const SellerManagement = () => {
       // Update profile fields
       const response = await fetch(`${config.API_URLS.SELLER}/${editingSeller._id}/profile`, {
         method: 'PUT',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
@@ -279,12 +280,12 @@ const SellerManagement = () => {
       });
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.message || 'Failed to update seller');
-      
+
       // Update blocked status if changed
       if (editingSeller.blocked !== editForm.blocked) {
         const blockRes = await fetch(`${config.API_URLS.SELLER}/${editingSeller._id}/block`, {
           method: 'PATCH',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
@@ -293,12 +294,12 @@ const SellerManagement = () => {
         const blockData = await blockRes.json();
         if (!blockRes.ok || !blockData.success) throw new Error(blockData.message || 'Failed to update block status');
       }
-      
+
       // Update approval status if changed
       if (editingSeller.approved !== editForm.approved) {
         const approvalRes = await fetch(`${config.API_URLS.SELLER}/${editingSeller._id}/approve`, {
           method: 'PATCH',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
@@ -307,7 +308,7 @@ const SellerManagement = () => {
         const approvalData = await approvalRes.json();
         if (!approvalRes.ok || !approvalData.success) throw new Error(approvalData.message || 'Failed to update approval status');
       }
-      
+
       toast.success('Seller updated successfully');
       setEditingSeller(null);
       fetchSellers();
@@ -340,7 +341,7 @@ const SellerManagement = () => {
         upi: seller.bankDetails.upi || seller.upi || ''
       };
     }
-    
+
     // Fallback to individual fields
     return {
       accountHolderName: seller.accountHolderName || '',
@@ -355,7 +356,7 @@ const SellerManagement = () => {
   const handleWithdrawalAction = async (withdrawalId, action, additionalData = {}) => {
     try {
       setWithdrawalActionLoading(withdrawalId);
-      
+
       let url = '';
       let method = 'PATCH';
       let body = {};
@@ -414,10 +415,10 @@ const SellerManagement = () => {
       }
 
       toast.success(`Withdrawal ${action}d successfully`);
-      
+
       // Refresh sellers data to get updated withdrawal status
       await fetchSellers();
-      
+
       // Update selected seller if viewing details
       if (selectedSeller) {
         try {
@@ -426,7 +427,7 @@ const SellerManagement = () => {
               'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
           });
-          
+
           if (updatedSellersResponse.ok) {
             const updatedSellersData = await updatedSellersResponse.json();
             if (updatedSellersData.success) {
@@ -441,7 +442,7 @@ const SellerManagement = () => {
           console.error('Error updating selected seller:', error);
         }
       }
-      
+
     } catch (error) {
       console.error(`Error ${action} withdrawal:`, error);
       toast.error(error.message || `Failed to ${action} withdrawal`);
@@ -468,10 +469,10 @@ const SellerManagement = () => {
       }
 
       toast.success(`Seller ${approved ? 'approved' : 'disapproved'} successfully`);
-      
+
       // Refresh sellers data
       await fetchSellers();
-      
+
       // Update selected seller if viewing details
       if (selectedSeller && selectedSeller._id === sellerId) {
         try {
@@ -480,7 +481,7 @@ const SellerManagement = () => {
               'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
           });
-          
+
           if (updatedSellersResponse.ok) {
             const updatedSellersData = await updatedSellersResponse.json();
             if (updatedSellersData.success) {
@@ -494,7 +495,7 @@ const SellerManagement = () => {
           console.error('Error updating selected seller:', error);
         }
       }
-      
+
     } catch (error) {
       console.error(`Error updating approval status:`, error);
       toast.error(error.message || `Failed to update approval status`);
@@ -505,11 +506,11 @@ const SellerManagement = () => {
     try {
       setCommissionActionLoading(commissionId);
       console.log(`Performing ${action} action on commission:`, commissionId);
-      
+
       let url = '';
       let method = 'PUT';
       let body = {};
-      
+
       switch (action) {
         case 'confirm':
           url = `${config.API_URLS.COMMISSION}/admin/confirm/${commissionId}`;
@@ -521,7 +522,7 @@ const SellerManagement = () => {
         default:
           throw new Error('Invalid action');
       }
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -530,21 +531,21 @@ const SellerManagement = () => {
         },
         body: Object.keys(body).length > 0 ? JSON.stringify(body) : undefined
       });
-      
+
       const data = await response.json();
       console.log('Commission action response:', data);
-      
+
       if (!response.ok || !data.success) {
         throw new Error(data.message || `Failed to ${action} commission`);
       }
-      
+
       toast.success(`Commission ${action}ed successfully`);
-      
+
       // Refresh the commissions list
       if (selectedSeller) {
         await fetchSellerCommissions(selectedSeller._id);
       }
-      
+
     } catch (error) {
       console.error(`Error ${action}ing commission:`, error);
       toast.error(error.message || `Failed to ${action} commission`);
@@ -556,7 +557,7 @@ const SellerManagement = () => {
   const sortSellers = (sellers) => {
     return [...sellers].sort((a, b) => {
       let aValue, bValue;
-      
+
       switch (sortBy) {
         case 'joinedDate':
           aValue = new Date(a.createdAt);
@@ -600,7 +601,7 @@ const SellerManagement = () => {
 
   const filterSellers = (sellers) => {
     if (filterBlocked === 'all') return sellers;
-    return sellers.filter(seller => 
+    return sellers.filter(seller =>
       filterBlocked === 'blocked' ? seller.blocked : !seller.blocked
     );
   };
@@ -656,7 +657,26 @@ const SellerManagement = () => {
 
   if (loading) {
     return (
-      <Loader fullScreen text="Loading venue management..." />
+      <div className="max-w-7xl mx-auto p-4 animate-pulse">
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl shadow-sm">
+          <div className="space-y-2">
+            <div className="h-8 w-64 bg-slate-200 rounded-lg"></div>
+            <div className="h-4 w-96 bg-slate-100 rounded-lg"></div>
+          </div>
+          <div className="h-10 w-40 bg-slate-200 rounded-lg"></div>
+        </div>
+
+        {/* Filter Bar Skeleton */}
+        <div className="mb-6 bg-white rounded-xl shadow-sm p-4 border border-gray-100 flex gap-4">
+          <div className="h-8 w-32 bg-slate-100 rounded-lg"></div>
+          <div className="h-8 w-48 bg-slate-100 rounded-lg"></div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+          <TableSkeleton rows={10} cols={5} />
+        </div>
+      </div>
     );
   }
 
@@ -673,7 +693,7 @@ const SellerManagement = () => {
         </div>
 
 
-        
+
       </div>
 
       <div className="mb-8">
@@ -710,17 +730,17 @@ const SellerManagement = () => {
               <option value="blocked">Blocked Only</option>
             </select>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">Sort by:</span>
             <div className="flex gap-2">
               <SortButton field="joinedDate" label="Join Date" />
               <SortButton field="views" label="Views" />
-           
+
             </div>
           </div>
-          
-       
+
+
         </div>
       </div>
 
@@ -732,7 +752,7 @@ const SellerManagement = () => {
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Venue</th>
                 <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-               <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -740,18 +760,18 @@ const SellerManagement = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredAndSortedSellers.map((seller) => (
                 <motion.tr
-            key={seller._id}
+                  key={seller._id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="hover:bg-gray-50 transition-colors"
                 >
                   {/* Seller Info */}
                   <td className="px-6 py-4">
-                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
                         <FiUsers className="w-5 h-5 text-amber-600" />
-                  </div>
-                  <div>
+                      </div>
+                      <div>
                         <div className="text-sm font-semibold text-gray-900">{seller.businessName}</div>
                         <div className="text-xs text-gray-500">ID: {seller._id.slice(-8)}</div>
                         <div className="text-xs text-gray-500">Joined: {new Date(seller.createdAt).toLocaleDateString()}</div>
@@ -777,7 +797,7 @@ const SellerManagement = () => {
                     </div>
                   </td>
 
-                
+
 
 
                   {/* Status */}
@@ -793,7 +813,7 @@ const SellerManagement = () => {
                           Pending Approval
                         </span>
                       )}
-                      
+
                       {/* Block Status */}
                       {seller.blocked ? (
                         <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
@@ -804,23 +824,23 @@ const SellerManagement = () => {
                           Active
                         </span>
                       )}
-                      
+
                       {/* Approval Button */}
                       {!seller.approved && (
                         <button
                           onClick={() => handleApprovalAction(seller._id, true)}
                           className="flex items-center gap-1 text-xs text-green-600 hover:text-green-800 font-medium"
-                            title="Approve Venue"
+                          title="Approve Venue"
                         >
                           <FiCheck className="w-3 h-3" />
                           Approve
                         </button>
                       )}
-                      
-                      
 
 
-                </div>
+
+
+                    </div>
                   </td>
 
                   {/* Views */}
@@ -860,19 +880,19 @@ const SellerManagement = () => {
                       >
                         <FiTrash2 className="w-4 h-4" />
                       </button>
-                </div>
+                    </div>
                   </td>
                 </motion.tr>
               ))}
             </tbody>
           </table>
-                </div>
-                </div>
+        </div>
+      </div>
 
       {filteredAndSortedSellers.length === 0 && (
         <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-200">
           <p className="text-gray-500 text-lg">No venues found</p>
-                </div>
+        </div>
       )}
 
       {/* Seller Details Modal */}
@@ -887,8 +907,8 @@ const SellerManagement = () => {
               >
                 <FiX className="w-5 h-5" />
               </button>
-                </div>
-            
+            </div>
+
             <div className="space-y-8">
               {/* Basic Information */}
               <div className="bg-gray-50 rounded-lg p-6">
@@ -931,21 +951,19 @@ const SellerManagement = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-gray-700">Approval Status:</span>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        selectedSeller.approved 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${selectedSeller.approved
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                        }`}>
                         {selectedSeller.approved ? 'Approved' : 'Pending Approval'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-gray-700">Account Status:</span>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        selectedSeller.blocked 
-                          ? 'bg-red-100 text-red-800' 
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${selectedSeller.blocked
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-blue-100 text-blue-800'
+                        }`}>
                         {selectedSeller.blocked ? 'Blocked' : 'Active'}
                       </span>
                     </div>
@@ -1132,7 +1150,7 @@ const SellerManagement = () => {
                 </div>
               )}
 
-         
+
 
               {/* Business Images */}
               {Array.isArray(selectedSeller.images) && selectedSeller.images.length > 0 ? (
@@ -1551,7 +1569,7 @@ const SellerManagement = () => {
         </div>
       )}
 
-     
+
     </div>
   );
 };

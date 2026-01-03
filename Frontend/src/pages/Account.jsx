@@ -32,7 +32,7 @@ import { toast } from 'react-hot-toast';
 import orderService from '../services/orderService';
 import config from '../config/config.js';
 import OrderDetailsModal from '../components/OrderDetailsModal/OrderDetailsModal';
-import { OrderSkeleton } from '../components/Loader/Skeleton';
+import { OrderSkeleton, ProfileSkeleton } from '../components/Loader/Skeleton';
 
 // Helper to get tab from URL
 const useQuery = () => {
@@ -78,11 +78,8 @@ const Account = () => {
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
-    } else {
-      setLoading(false);
-
     }
-  }, [isAuthenticated, navigate, user]);
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     if (!user) {
@@ -378,10 +375,10 @@ const Account = () => {
                         <span>{order.orderStatus?.charAt(0).toUpperCase() + order.orderStatus?.slice(1)}</span>
                       </div>
                       <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${order.paymentStatus === 'completed'
-                          ? 'bg-green-50 text-green-700 border-green-200'
-                          : order.paymentStatus === 'failed'
-                            ? 'bg-red-50 text-red-700 border-red-200'
-                            : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                        ? 'bg-green-50 text-green-700 border-green-200'
+                        : order.paymentStatus === 'failed'
+                          ? 'bg-red-50 text-red-700 border-red-200'
+                          : 'bg-yellow-50 text-yellow-700 border-yellow-200'
                         }`}>
                         <CreditCardIcon className="h-4 w-4" />
                         <span>Payment: {order.paymentStatus?.charAt(0).toUpperCase() + order.paymentStatus?.slice(1)}</span>
@@ -470,8 +467,8 @@ const Account = () => {
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleTabChange(tab.id)}
                       className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${activeTab === tab.id
-                          ? 'bg-[#FCD24C]-50 text-primary-dark border border-primary shadow-sm'
-                          : 'text-black-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-[#FCD24C]-50 text-primary-dark border border-primary shadow-sm'
+                        : 'text-black-600 hover:bg-gray-50 hover:text-gray-900'
                         }`}
                     >
                       <tab.icon className="h-5 w-5" />
@@ -495,143 +492,149 @@ const Account = () => {
                     exit={{ opacity: 0, y: -20 }}
                     className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
                   >
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900">Profile Information</h3>
-
-                    </div>
-
-                    {isEditing ? (
-                      <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                            <input
-                              type="text"
-                              name="name"
-                              value={formData.name}
-                              onChange={handleChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                            <input
-                              type="email"
-                              name="email"
-                              value={formData.email}
-                              disabled
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                            <input
-                              type="tel"
-                              name="phone"
-                              value={formData.phone}
-                              onChange={handleChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                            <textarea
-                              name="address"
-                              value={formData.address}
-                              onChange={handleChange}
-                              rows="3"
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="border-t pt-6">
-                          <h4 className="text-lg font-medium text-gray-900 mb-4">Change Password (Optional)</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-                              <input
-                                type="password"
-                                name="currentPassword"
-                                value={formData.currentPassword}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                              <input
-                                type="password"
-                                name="newPassword"
-                                value={formData.newPassword}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                              <input
-                                type="password"
-                                name="confirmNewPassword"
-                                value={formData.confirmNewPassword}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        {error && (
-                          <div className="flex items-center space-x-2 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <XCircleIcon className="h-5 w-5 text-red-500" />
-                            <span className="text-red-700">{error}</span>
-                          </div>
-                        )}
-
-                        {message && (
-                          <div className="flex items-center space-x-2 p-4 bg-green-50 border border-green-200 rounded-lg">
-                            <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                            <span className="text-green-700">{message}</span>
-                          </div>
-                        )}
-
-                        <div className="flex justify-end space-x-4">
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            type="button"
-                            onClick={() => setIsEditing(false)}
-                            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                          >
-                            Cancel
-                          </motion.button>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            type="submit"
-                            className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-                          >
-                            Save Changes
-                          </motion.button>
-                        </div>
-                      </form>
+                    {!user ? (
+                      <ProfileSkeleton />
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
-                          <p className="text-lg font-medium text-gray-900">{user?.name}</p>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
-                          <p className="text-lg font-medium text-gray-900">{user?.email}</p>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
-                          <p className="text-lg font-medium text-gray-900">{user?.phone || 'Not provided'}</p>
+                      <>
+                        <div className="flex justify-between items-center mb-6">
+                          <h3 className="text-xl font-semibold text-gray-900">Profile Information</h3>
+
                         </div>
 
-                      </div>
+                        {isEditing ? (
+                          <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                <input
+                                  type="text"
+                                  name="name"
+                                  value={formData.name}
+                                  onChange={handleChange}
+                                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input
+                                  type="email"
+                                  name="email"
+                                  value={formData.email}
+                                  disabled
+                                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                                <input
+                                  type="tel"
+                                  name="phone"
+                                  value={formData.phone}
+                                  onChange={handleChange}
+                                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                                <textarea
+                                  name="address"
+                                  value={formData.address}
+                                  onChange={handleChange}
+                                  rows="3"
+                                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="border-t pt-6">
+                              <h4 className="text-lg font-medium text-gray-900 mb-4">Change Password (Optional)</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                                  <input
+                                    type="password"
+                                    name="currentPassword"
+                                    value={formData.currentPassword}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                                  <input
+                                    type="password"
+                                    name="newPassword"
+                                    value={formData.newPassword}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                                  <input
+                                    type="password"
+                                    name="confirmNewPassword"
+                                    value={formData.confirmNewPassword}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {error && (
+                              <div className="flex items-center space-x-2 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                <XCircleIcon className="h-5 w-5 text-red-500" />
+                                <span className="text-red-700">{error}</span>
+                              </div>
+                            )}
+
+                            {message && (
+                              <div className="flex items-center space-x-2 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                                <span className="text-green-700">{message}</span>
+                              </div>
+                            )}
+
+                            <div className="flex justify-end space-x-4">
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                type="button"
+                                onClick={() => setIsEditing(false)}
+                                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                              >
+                                Cancel
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                type="submit"
+                                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                              >
+                                Save Changes
+                              </motion.button>
+                            </div>
+                          </form>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
+                              <p className="text-lg font-medium text-gray-900">{user?.name}</p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
+                              <p className="text-lg font-medium text-gray-900">{user?.email}</p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
+                              <p className="text-lg font-medium text-gray-900">{user?.phone || 'Not provided'}</p>
+                            </div>
+
+                          </div>
+                        )}
+                      </>
                     )}
                   </motion.div>
                 )}

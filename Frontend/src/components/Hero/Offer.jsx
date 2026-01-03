@@ -46,7 +46,7 @@ const Offerpage = () => {
         const response = await fetch(`${config.API_BASE_URL}/api/hero-carousel/active`);
         if (!response.ok) throw new Error('Failed to fetch carousel data');
         const data = await response.json();
-      
+
         // Adjust filter key depending on backend field name
         const filteredData = data.filter((item) => item.isMobile === true);
 
@@ -105,12 +105,12 @@ const Offerpage = () => {
   return (
     <div className="w-full mt-4 mb-5">
       {/* ✅ Header text */}
-       <h2 className="text-2xl md:text-2xl font-serif font-bold text-slate-900 leading-tight flex items-center justify-center text-center mb-5">
-                 Our 
-                  <span className="mx-3 text-amber-600">
-                    Professional
-                  </span>
-                  works               </h2>
+      <h2 className="text-2xl md:text-2xl font-serif font-bold text-slate-900 leading-tight flex items-center justify-center text-center mb-5">
+        Our
+        <span className="mx-3 text-amber-600">
+          Professional
+        </span>
+        works               </h2>
 
       {/* ✅ Card wrapper with hover border */}
       <div
@@ -185,7 +185,7 @@ const Offerpage = () => {
               }}
               className="absolute left-3 top-1/2 -translate-y-1/2 z-[3] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 hover:bg-white shadow-md flex items-center justify-center"
             >
-             <ChevronLeft/>
+              <ChevronLeft />
             </button>
 
             <button
@@ -204,7 +204,7 @@ const Offerpage = () => {
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2 z-[3] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 hover:bg-white shadow-md flex items-center justify-center"
             >
-             <ChevronRight/>
+              <ChevronRight />
             </button>
 
             <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-[2]">
@@ -216,9 +216,8 @@ const Offerpage = () => {
                     const newDirection = index > imageIndex ? 1 : -1;
                     setPage([index, newDirection]);
                   }}
-                  className={`h-2 rounded-2xl transition-all duration-300 cursor-pointer ${
-                    imageIndex === index ? 'w-6 bg-white shadow-md' : 'w-2 bg-white/60'
-                  }`}
+                  className={`h-2 rounded-2xl transition-all duration-300 cursor-pointer ${imageIndex === index ? 'w-6 bg-white shadow-md' : 'w-2 bg-white/60'
+                    }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}

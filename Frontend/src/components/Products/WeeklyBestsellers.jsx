@@ -197,8 +197,8 @@ export default function WeeklyBestsellers() {
                   key={category}
                   onClick={() => handleCategoryChange(category)}
                   className={`px-4 md:px-6 py-2 md:py-3 rounded-full text-sm md:text-base font-medium transition-all duration-300 ${selectedCategory === category
-                      ? 'bg-[#FCD24C] text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#FCD24C] text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
                   {category}

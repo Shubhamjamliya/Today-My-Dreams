@@ -4,6 +4,7 @@ import { Plus, Search, Grid, List, Image as ImageIcon, AlertCircle, MoveUp, Move
 import apiService from "../services/api";
 import config from "../config/config";
 import Loader from "../components/Loader";
+import { CardGridSkeleton } from "../components/Skeleton";
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return '';
@@ -126,9 +127,18 @@ const HeroCarousel = () => {
     item.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
+  if (loading && items.length === 0) {
     return (
-      <Loader fullScreen text="Loading carousel items..." />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+        <div className="flex justify-between items-center mb-8">
+          <div className="space-y-2">
+            <div className="h-8 w-64 bg-slate-200 rounded-lg"></div>
+            <div className="h-4 w-48 bg-slate-100 rounded-lg"></div>
+          </div>
+          <div className="h-10 w-40 bg-slate-200 rounded-lg"></div>
+        </div>
+        <CardGridSkeleton count={4} />
+      </div>
     );
   }
 
@@ -299,10 +309,10 @@ const HeroCarousel = () => {
                       onClick={() => handleToggleActive(item._id)}
                       disabled={toggleLoading === item._id}
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${toggleLoading === item._id
-                          ? 'bg-gray-100 text-gray-500'
-                          : item.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
+                        ? 'bg-gray-100 text-gray-500'
+                        : item.isActive
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
                         }`}
                     >
                       {toggleLoading === item._id ? (

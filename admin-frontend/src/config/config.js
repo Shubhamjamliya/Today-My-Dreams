@@ -3,7 +3,7 @@
 
 const config = {
   // API Configuration
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://api.todaymydream.com'),
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
 
   // Simple API URL getter for backward compatibility
   get API_URL() {

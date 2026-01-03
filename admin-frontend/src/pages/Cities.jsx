@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Loader from '../components/Loader';
+import { TableSkeleton } from '../components/Skeleton';
 import { Search, Plus, Edit2, Trash2, Package, Download, X, Check, Grid, Layers, Image as ImageIcon, Power, ChevronDown, ChevronRight, Link as LinkIcon, Copy } from 'lucide-react';
 import config from '../config/config';
 
@@ -660,516 +661,534 @@ const Cities = () => {
     };
 
     return (
-        <div className="container mx-auto p-4 md:p-6 max-w-7xl">
-            <div className="bg-white rounded-lg shadow-md p-6">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-                    <Package className="text-blue-600" size={32} />
-                    Manage Cities & Content
-                </h1>
-
-                {/* Add City Form */}
-                <form onSubmit={handleAddCity} className="mb-8 p-4 bg-blue-50 rounded-lg">
-                    <h2 className="text-lg font-semibold mb-3 text-gray-700">Add New City</h2>
-                    <div className="flex flex-col md:flex-row gap-3">
-                        <input
-                            type="text"
-                            value={newCity.name}
-                            onChange={e => setNewCity({ ...newCity, name: e.target.value })}
-                            placeholder="City name"
-                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <input
-                            type="text"
-                            value={newCity.state}
-                            onChange={e => setNewCity({ ...newCity, state: e.target.value })}
-                            placeholder="State"
-                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <input
-                            type="text"
-                            value={newCity.contactNumber}
-                            onChange={e => setNewCity({ ...newCity, contactNumber: e.target.value })}
-                            placeholder="Contact Number"
-                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button
-                            type="submit"
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
-                            disabled={loading}
-                        >
-                            <Plus size={20} /> Add City
-                        </button>
+        <div className="max-w-7xl mx-auto p-4 md:p-6">
+            {/* Header Skeleton during initial load */}
+            {loading && cities.length === 0 ? (
+                <div className="animate-pulse space-y-6">
+                    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div className="h-8 w-64 bg-slate-200 rounded-lg mb-2"></div>
+                        <div className="h-4 w-48 bg-slate-100 rounded-lg"></div>
                     </div>
-                </form>
-
-                {loading && <Loader text="Loading cities..." />}
-                {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
-
-                {/* Cities Table */}
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">City Name</th>
-                                <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">State</th>
-                                <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Contact Number</th>
-                                <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                                <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Products</th>
-                                <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">City Link</th>
-                                <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {cities.map(city => (
-                                <tr key={city._id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="border-b border-gray-200 px-4 py-3">
-                                        {editId === city._id ? (
-                                            <input
-                                                type="text"
-                                                value={editData.name}
-                                                onChange={e => setEditData({ ...editData, name: e.target.value })}
-                                                className="border rounded px-2 py-1 w-full"
-                                            />
-                                        ) : (
-                                            <span className="font-medium text-gray-800">{city.name}</span>
-                                        )}
-                                    </td>
-                                    <td className="border-b border-gray-200 px-4 py-3">
-                                        {editId === city._id ? (
-                                            <input
-                                                type="text"
-                                                value={editData.state}
-                                                onChange={e => setEditData({ ...editData, state: e.target.value })}
-                                                className="border rounded px-2 py-1 w-full"
-                                            />
-                                        ) : (
-                                            <span className="text-gray-600">{city.state}</span>
-                                        )}
-                                    </td>
-                                    <td className="border-b border-gray-200 px-4 py-3">
-                                        {editId === city._id ? (
-                                            <input
-                                                type="text"
-                                                value={editData.contactNumber}
-                                                onChange={e => setEditData({ ...editData, contactNumber: e.target.value })}
-                                                className="border rounded px-2 py-1 w-full"
-                                            />
-                                        ) : (
-                                            <span className="text-gray-600">{city.contactNumber || '+917739873442'}</span>
-                                        )}
-                                    </td>
-                                    <td className="border-b border-gray-200 px-4 py-3">
-                                        {city.isActive !== false ? (
-                                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
-                                                Active
-                                            </span>
-                                        ) : (
-                                            <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium">
-                                                Inactive
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="border-b border-gray-200 px-4 py-3">
-                                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                            {city.productCount || 0} products
-                                        </span>
-                                    </td>
-                                    <td className="border-b border-gray-200 px-4 py-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-xs text-gray-600 truncate" title={getCityLink(city.name)}>
-                                                    <LinkIcon size={12} className="inline mr-1" />
-                                                    {getCityLink(city.name)}
-                                                </p>
-                                            </div>
-                                            <button
-                                                onClick={() => handleCopyLink(city)}
-                                                className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${copiedCityId === city._id
-                                                    ? 'bg-green-500 text-white'
-                                                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                                                    }`}
-                                                title={copiedCityId === city._id ? 'Copied!' : 'Copy link'}
-                                            >
-                                                {copiedCityId === city._id ? (
-                                                    <>
-                                                        <Check size={12} />
-                                                        <span>Copied</span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Copy size={12} />
-                                                        <span>Copy</span>
-                                                    </>
-                                                )}
-                                            </button>
-                                        </div>
-                                    </td>
-                                    <td className="border-b border-gray-200 px-4 py-3">
-                                        {editId === city._id ? (
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={handleUpdateCity}
-                                                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded flex items-center gap-1 transition-colors"
-                                                >
-                                                    <Check size={16} /> Save
-                                                </button>
-                                                <button
-                                                    onClick={() => setEditId(null)}
-                                                    className="bg-gray-300 hover:bg-gray-400 px-3 py-1 rounded flex items-center gap-1 transition-colors"
-                                                >
-                                                    <X size={16} /> Cancel
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-wrap gap-2">
-                                                <button
-                                                    onClick={() => handleToggleCityStatus(city._id)}
-                                                    className={`${city.isActive !== false ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600'} text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors`}
-                                                    title={city.isActive !== false ? 'Deactivate City' : 'Activate City'}
-                                                >
-                                                    <Power size={14} /> {city.isActive !== false ? 'Deactivate' : 'Activate'}
-                                                </button>
-                                                <button
-                                                    onClick={() => handleManageContent(city)}
-                                                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
-                                                >
-                                                    <Package size={14} /> Manage
-                                                </button>
-                                                <button
-                                                    onClick={() => handleImportContent(city)}
-                                                    className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
-                                                >
-                                                    <Download size={14} /> Import
-                                                </button>
-                                                <button
-                                                    onClick={() => handleEditCity(city._id)}
-                                                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
-                                                >
-                                                    <Edit2 size={14} /> Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteCity(city._id)}
-                                                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
-                                                >
-                                                    <Trash2 size={14} /> Delete
-                                                </button>
-                                            </div>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <div className="h-32 bg-slate-50 rounded-xl border border-dashed border-slate-200"></div>
+                    <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+                        <TableSkeleton rows={8} cols={7} />
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <>
+                    <div className="bg-white rounded-lg shadow-md p-6">
+                        <h1 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+                            <Package className="text-blue-600" size={32} />
+                            Manage Cities & Content
+                        </h1>
 
-            {/* Manage Content Modal */}
-            {showManageModal && selectedCity && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-                        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-                            <h2 className="text-2xl font-bold text-gray-800">
-                                Manage Content for {selectedCity.name}
-                            </h2>
-                            <button
-                                onClick={() => {
-                                    setShowManageModal(false);
-                                    setSelectedCity(null);
-                                    setSelectedItems([]);
-                                    setSearchQuery('');
-                                }}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
-                                <X size={24} />
-                            </button>
-                        </div>
-
-                        {/* Tabs */}
-                        <div className="border-b border-gray-200 px-6">
-                            <div className="flex gap-4 overflow-x-auto">
+                        {/* Add City Form */}
+                        <form onSubmit={handleAddCity} className="mb-8 p-4 bg-blue-50 rounded-lg">
+                            <h2 className="text-lg font-semibold mb-3 text-gray-700">Add New City</h2>
+                            <div className="flex flex-col md:flex-row gap-3">
+                                <input
+                                    type="text"
+                                    value={newCity.name}
+                                    onChange={e => setNewCity({ ...newCity, name: e.target.value })}
+                                    placeholder="City name"
+                                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    type="text"
+                                    value={newCity.state}
+                                    onChange={e => setNewCity({ ...newCity, state: e.target.value })}
+                                    placeholder="State"
+                                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <input
+                                    type="text"
+                                    value={newCity.contactNumber}
+                                    onChange={e => setNewCity({ ...newCity, contactNumber: e.target.value })}
+                                    placeholder="Contact Number"
+                                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
                                 <button
-                                    onClick={() => { setActiveTab('products'); setSelectedItems([]); setSearchQuery(''); }}
-                                    className={`py-3 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'products'
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700'
-                                        }`}
+                                    type="submit"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                                    disabled={loading}
                                 >
-                                    <Package size={16} className="inline mr-2" />
-                                    Products ({cityProducts.length})
-                                </button>
-                                <button
-                                    onClick={() => { setActiveTab('categories'); setSelectedItems([]); setSearchQuery(''); }}
-                                    className={`py-3 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'categories'
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700'
-                                        }`}
-                                >
-                                    <Grid size={16} className="inline mr-2" />
-                                    Categories ({cityCategories.length})
-                                </button>
-
-
-                                <button
-                                    onClick={() => { setActiveTab('carousel'); setSelectedItems([]); setSearchQuery(''); }}
-                                    className={`py-3 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'carousel'
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700'
-                                        }`}
-                                >
-                                    <ImageIcon size={16} className="inline mr-2" />
-                                    Carousel ({cityCarouselItems.length})
+                                    <Plus size={20} /> Add City
                                 </button>
                             </div>
-                        </div>
+                        </form>
 
-                        <div className="p-6 overflow-y-auto flex-1">
-                            {/* Current Items */}
-                            <div className="mb-6">
-                                <div className="flex justify-between items-center mb-3">
-                                    <h3 className="text-lg font-semibold text-gray-700">
-                                        Current {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} ({getCurrentItems().length})
-                                    </h3>
-                                    {activeTab === 'products' && getCurrentItems().length > 0 && (
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={expandAll}
-                                                className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-lg transition-colors"
-                                            >
-                                                Expand All
-                                            </button>
-                                            <button
-                                                onClick={collapseAll}
-                                                className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg transition-colors"
-                                            >
-                                                Collapse All
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                                {getCurrentItems().length === 0 ? (
-                                    <p className="text-gray-500">No {activeTab} assigned to this city yet.</p>
-                                ) : activeTab === 'products' ? (
-                                    // Grouped products view by category and subcategory
-                                    <div className="space-y-3">
-                                        {Object.entries(groupProductsByCategory()).map(([categoryId, categoryData]) => (
-                                            <div key={categoryId} className="border border-gray-200 rounded-lg overflow-hidden">
-                                                {/* Category Header */}
-                                                <div
-                                                    onClick={() => toggleCategory(categoryId)}
-                                                    className="bg-blue-50 hover:bg-blue-100 px-4 py-3 cursor-pointer flex items-center justify-between transition-colors"
-                                                >
-                                                    <div className="flex items-center gap-2">
-                                                        {expandedCategories[categoryId] ? (
-                                                            <ChevronDown size={20} className="text-blue-600" />
-                                                        ) : (
-                                                            <ChevronRight size={20} className="text-blue-600" />
-                                                        )}
-                                                        <Grid size={18} className="text-blue-600" />
-                                                        <span className="font-semibold text-gray-800">{categoryData.name}</span>
-                                                    </div>
-                                                    <span className="text-sm bg-blue-200 text-blue-800 px-2 py-1 rounded-full">
-                                                        {Object.values(categoryData.subCategories).reduce((sum, subCat) => sum + subCat.products.length, 0)} products
+                        {loading && <div className="animate-pulse mb-6"><TableSkeleton rows={5} cols={7} /></div>}
+                        {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
+
+                        {/* Cities Table */}
+                        {!loading && (
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                                    <thead className="bg-gray-100">
+                                        <tr>
+                                            <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">City Name</th>
+                                            <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">State</th>
+                                            <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Contact Number</th>
+                                            <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                                            <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Products</th>
+                                            <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">City Link</th>
+                                            <th className="border-b border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {cities.map(city => (
+                                            <tr key={city._id} className="hover:bg-gray-50 transition-colors">
+                                                <td className="border-b border-gray-200 px-4 py-3">
+                                                    {editId === city._id ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editData.name}
+                                                            onChange={e => setEditData({ ...editData, name: e.target.value })}
+                                                            className="border rounded px-2 py-1 w-full"
+                                                        />
+                                                    ) : (
+                                                        <span className="font-medium text-gray-800">{city.name}</span>
+                                                    )}
+                                                </td>
+                                                <td className="border-b border-gray-200 px-4 py-3">
+                                                    {editId === city._id ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editData.state}
+                                                            onChange={e => setEditData({ ...editData, state: e.target.value })}
+                                                            className="border rounded px-2 py-1 w-full"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-gray-600">{city.state}</span>
+                                                    )}
+                                                </td>
+                                                <td className="border-b border-gray-200 px-4 py-3">
+                                                    {editId === city._id ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editData.contactNumber}
+                                                            onChange={e => setEditData({ ...editData, contactNumber: e.target.value })}
+                                                            className="border rounded px-2 py-1 w-full"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-gray-600">{city.contactNumber || '+917739873442'}</span>
+                                                    )}
+                                                </td>
+                                                <td className="border-b border-gray-200 px-4 py-3">
+                                                    {city.isActive !== false ? (
+                                                        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
+                                                            Active
+                                                        </span>
+                                                    ) : (
+                                                        <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium">
+                                                            Inactive
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="border-b border-gray-200 px-4 py-3">
+                                                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                                                        {city.productCount || 0} products
                                                     </span>
-                                                </div>
-
-                                                {/* Subcategories */}
-                                                {expandedCategories[categoryId] && (
-                                                    <div className="bg-white">
-                                                        {Object.entries(categoryData.subCategories).map(([subCategoryId, subCategoryData]) => (
-                                                            <div key={subCategoryId} className="border-t border-gray-200">
-                                                                {/* Subcategory Header */}
-                                                                <div
-                                                                    onClick={() => toggleSubCategory(subCategoryId)}
-                                                                    className="bg-gray-50 hover:bg-gray-100 px-4 py-2 pl-10 cursor-pointer flex items-center justify-between transition-colors"
-                                                                >
-                                                                    <div className="flex items-center gap-2">
-                                                                        {expandedSubCategories[subCategoryId] ? (
-                                                                            <ChevronDown size={18} className="text-gray-600" />
-                                                                        ) : (
-                                                                            <ChevronRight size={18} className="text-gray-600" />
-                                                                        )}
-                                                                        <Layers size={16} className="text-gray-600" />
-                                                                        <span className="font-medium text-gray-700">{subCategoryData.name}</span>
-                                                                    </div>
-                                                                    <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
-                                                                        {subCategoryData.products.length} products
-                                                                    </span>
-                                                                </div>
-
-                                                                {/* Products in Subcategory */}
-                                                                {expandedSubCategories[subCategoryId] && (
-                                                                    <div className="p-4 pl-12 bg-white">
-                                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                                            {subCategoryData.products.map(product => (
-                                                                                <div key={product._id} className="border border-gray-200 rounded-lg p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-                                                                                    <img
-                                                                                        src={product.image}
-                                                                                        alt={product.name}
-                                                                                        className="w-16 h-16 object-cover rounded"
-                                                                                        onError={(e) => e.target.src = 'https://via.placeholder.com/64'}
-                                                                                    />
-                                                                                    <div className="flex-1 min-w-0">
-                                                                                        <p className="font-medium text-sm text-gray-800 truncate">{product.name}</p>
-                                                                                        <p className="text-sm font-semibold text-blue-600">₹{product.price}</p>
-                                                                                        <p className="text-xs text-gray-500">Stock: {product.stock || 0}</p>
-                                                                                    </div>
-                                                                                    <div className="flex flex-col gap-2">
-                                                                                        <button
-                                                                                            onClick={() => handleEditProduct(product)}
-                                                                                            className="text-blue-500 hover:text-blue-700"
-                                                                                            title="Edit Product"
-                                                                                        >
-                                                                                            <Edit2 size={18} />
-                                                                                        </button>
-                                                                                        <button
-                                                                                            onClick={() => handleRemoveItemFromCity(product._id)}
-                                                                                            className="text-red-500 hover:text-red-700"
-                                                                                            title="Remove from City"
-                                                                                        >
-                                                                                            <Trash2 size={18} />
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    // Original grid view for other tabs (categories, carousel, etc.)
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {getCurrentItems().map(item => {
-                                            const displayInfo = getItemDisplayInfo(item);
-                                            return (
-                                                <div key={item._id} className="border border-gray-200 rounded-lg p-4 flex items-center gap-3">
-                                                    <img
-                                                        src={displayInfo.image}
-                                                        alt={displayInfo.title}
-                                                        className="w-16 h-16 object-cover rounded"
-                                                        onError={(e) => e.target.src = 'https://via.placeholder.com/64'}
-                                                    />
-                                                    <div className="flex-1">
-                                                        <p className="font-medium text-sm text-gray-800">{displayInfo.title}</p>
-                                                        <p className="text-xs text-gray-500">{displayInfo.subtitle}</p>
-                                                        {displayInfo.price && <p className="text-sm font-semibold text-blue-600">{displayInfo.price}</p>}
-                                                    </div>
-                                                    <div className="flex gap-2">
+                                                </td>
+                                                <td className="border-b border-gray-200 px-4 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-xs text-gray-600 truncate" title={getCityLink(city.name)}>
+                                                                <LinkIcon size={12} className="inline mr-1" />
+                                                                {getCityLink(city.name)}
+                                                            </p>
+                                                        </div>
                                                         <button
-                                                            onClick={() => handleRemoveItemFromCity(item._id)}
-                                                            className="text-red-500 hover:text-red-700"
-                                                            title="Remove from City"
+                                                            onClick={() => handleCopyLink(city)}
+                                                            className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${copiedCityId === city._id
+                                                                ? 'bg-green-500 text-white'
+                                                                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                                                                }`}
+                                                            title={copiedCityId === city._id ? 'Copied!' : 'Copy link'}
                                                         >
-                                                            <Trash2 size={18} />
+                                                            {copiedCityId === city._id ? (
+                                                                <>
+                                                                    <Check size={12} />
+                                                                    <span>Copied</span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Copy size={12} />
+                                                                    <span>Copy</span>
+                                                                </>
+                                                            )}
                                                         </button>
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-
-                            <hr className="my-6" />
-
-                            {/* Add Items */}
-                            <div>
-                                <h3 className="text-lg font-semibold mb-3 text-gray-700">
-                                    Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-                                </h3>
-                                <div className="mb-4">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                                        <input
-                                            type="text"
-                                            placeholder={`Search ${activeTab}...`}
-                                            value={searchQuery}
-                                            onChange={e => setSearchQuery(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    </div>
-
-                                    {/* Info note for categories tab */}
-                                    {activeTab === 'categories' && (
-                                        <div className="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                            <p className="text-xs text-blue-800">
-                                                <strong>ℹ️ Auto-Import:</strong> When you add categories, their subcategories will be automatically imported to this city.
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="mb-4 flex flex-wrap items-center gap-3">
-                                    {/* Bulk Selection Buttons */}
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={handleSelectAll}
-                                            disabled={filteredItems.length === 0}
-                                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                                        >
-                                            <Check size={18} /> Select All ({filteredItems.length})
-                                        </button>
-                                        <button
-                                            onClick={handleDeselectAll}
-                                            disabled={selectedItems.length === 0}
-                                            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                                        >
-                                            <X size={18} /> Deselect All
-                                        </button>
-                                    </div>
-
-                                    {/* Add Items Button */}
-                                    {selectedItems.length > 0 && (
-                                        <button
-                                            onClick={handleAddItemsToCity}
-                                            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
-                                        >
-                                            <Plus size={20} /> Add {selectedItems.length} Selected Item(s)
-                                        </button>
-                                    )}
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-                                    {filteredItems.map(item => {
-                                        const displayInfo = getItemDisplayInfo(item);
-                                        return (
-                                            <div
-                                                key={item._id}
-                                                className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedItems.includes(item._id)
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-gray-200 hover:border-blue-300'
-                                                    }`}
-                                                onClick={() => toggleItemSelection(item._id)}
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <img
-                                                        src={displayInfo.image}
-                                                        alt={displayInfo.title}
-                                                        className="w-16 h-16 object-cover rounded"
-                                                        onError={(e) => e.target.src = 'https://via.placeholder.com/64'}
-                                                    />
-                                                    <div className="flex-1">
-                                                        <p className="font-medium text-sm text-gray-800">{displayInfo.title}</p>
-                                                        <p className="text-xs text-gray-500">{displayInfo.subtitle}</p>
-                                                        {displayInfo.price && <p className="text-sm font-semibold text-blue-600">{displayInfo.price}</p>}
-                                                    </div>
-                                                    {selectedItems.includes(item._id) && (
-                                                        <Check className="text-blue-600" size={20} />
+                                                </td>
+                                                <td className="border-b border-gray-200 px-4 py-3">
+                                                    {editId === city._id ? (
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={handleUpdateCity}
+                                                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded flex items-center gap-1 transition-colors"
+                                                            >
+                                                                <Check size={16} /> Save
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setEditId(null)}
+                                                                className="bg-gray-300 hover:bg-gray-400 px-3 py-1 rounded flex items-center gap-1 transition-colors"
+                                                            >
+                                                                <X size={16} /> Cancel
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-wrap gap-2">
+                                                            <button
+                                                                onClick={() => handleToggleCityStatus(city._id)}
+                                                                className={`${city.isActive !== false ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600'} text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors`}
+                                                                title={city.isActive !== false ? 'Deactivate City' : 'Activate City'}
+                                                            >
+                                                                <Power size={14} /> {city.isActive !== false ? 'Deactivate' : 'Activate'}
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleManageContent(city)}
+                                                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
+                                                            >
+                                                                <Package size={14} /> Manage
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleImportContent(city)}
+                                                                className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
+                                                            >
+                                                                <Download size={14} /> Import
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleEditCity(city._id)}
+                                                                className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
+                                                            >
+                                                                <Edit2 size={14} /> Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteCity(city._id)}
+                                                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
+                                                            >
+                                                                <Trash2 size={14} /> Delete
+                                                            </button>
+                                                        </div>
                                                     )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Manage Content Modal */}
+                    {showManageModal && selectedCity && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+                                <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+                                    <h2 className="text-2xl font-bold text-gray-800">
+                                        Manage Content for {selectedCity.name}
+                                    </h2>
+                                    <button
+                                        onClick={() => {
+                                            setShowManageModal(false);
+                                            setSelectedCity(null);
+                                            setSelectedItems([]);
+                                            setSearchQuery('');
+                                        }}
+                                        className="text-gray-500 hover:text-gray-700"
+                                    >
+                                        <X size={24} />
+                                    </button>
+                                </div>
+
+                                {/* Tabs */}
+                                <div className="border-b border-gray-200 px-6">
+                                    <div className="flex gap-4 overflow-x-auto">
+                                        <button
+                                            onClick={() => { setActiveTab('products'); setSelectedItems([]); setSearchQuery(''); }}
+                                            className={`py-3 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'products'
+                                                ? 'border-blue-500 text-blue-600'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                                }`}
+                                        >
+                                            <Package size={16} className="inline mr-2" />
+                                            Products ({cityProducts.length})
+                                        </button>
+                                        <button
+                                            onClick={() => { setActiveTab('categories'); setSelectedItems([]); setSearchQuery(''); }}
+                                            className={`py-3 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'categories'
+                                                ? 'border-blue-500 text-blue-600'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                                }`}
+                                        >
+                                            <Grid size={16} className="inline mr-2" />
+                                            Categories ({cityCategories.length})
+                                        </button>
+
+
+                                        <button
+                                            onClick={() => { setActiveTab('carousel'); setSelectedItems([]); setSearchQuery(''); }}
+                                            className={`py-3 px-4 font-medium text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'carousel'
+                                                ? 'border-blue-500 text-blue-600'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                                }`}
+                                        >
+                                            <ImageIcon size={16} className="inline mr-2" />
+                                            Carousel ({cityCarouselItems.length})
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 overflow-y-auto flex-1">
+                                    {/* Current Items */}
+                                    <div className="mb-6">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <h3 className="text-lg font-semibold text-gray-700">
+                                                Current {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} ({getCurrentItems().length})
+                                            </h3>
+                                            {activeTab === 'products' && getCurrentItems().length > 0 && (
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={expandAll}
+                                                        className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-lg transition-colors"
+                                                    >
+                                                        Expand All
+                                                    </button>
+                                                    <button
+                                                        onClick={collapseAll}
+                                                        className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg transition-colors"
+                                                    >
+                                                        Collapse All
+                                                    </button>
                                                 </div>
+                                            )}
+                                        </div>
+                                        {getCurrentItems().length === 0 ? (
+                                            <p className="text-gray-500">No {activeTab} assigned to this city yet.</p>
+                                        ) : activeTab === 'products' ? (
+                                            // Grouped products view by category and subcategory
+                                            <div className="space-y-3">
+                                                {Object.entries(groupProductsByCategory()).map(([categoryId, categoryData]) => (
+                                                    <div key={categoryId} className="border border-gray-200 rounded-lg overflow-hidden">
+                                                        {/* Category Header */}
+                                                        <div
+                                                            onClick={() => toggleCategory(categoryId)}
+                                                            className="bg-blue-50 hover:bg-blue-100 px-4 py-3 cursor-pointer flex items-center justify-between transition-colors"
+                                                        >
+                                                            <div className="flex items-center gap-2">
+                                                                {expandedCategories[categoryId] ? (
+                                                                    <ChevronDown size={20} className="text-blue-600" />
+                                                                ) : (
+                                                                    <ChevronRight size={20} className="text-blue-600" />
+                                                                )}
+                                                                <Grid size={18} className="text-blue-600" />
+                                                                <span className="font-semibold text-gray-800">{categoryData.name}</span>
+                                                            </div>
+                                                            <span className="text-sm bg-blue-200 text-blue-800 px-2 py-1 rounded-full">
+                                                                {Object.values(categoryData.subCategories).reduce((sum, subCat) => sum + subCat.products.length, 0)} products
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Subcategories */}
+                                                        {expandedCategories[categoryId] && (
+                                                            <div className="bg-white">
+                                                                {Object.entries(categoryData.subCategories).map(([subCategoryId, subCategoryData]) => (
+                                                                    <div key={subCategoryId} className="border-t border-gray-200">
+                                                                        {/* Subcategory Header */}
+                                                                        <div
+                                                                            onClick={() => toggleSubCategory(subCategoryId)}
+                                                                            className="bg-gray-50 hover:bg-gray-100 px-4 py-2 pl-10 cursor-pointer flex items-center justify-between transition-colors"
+                                                                        >
+                                                                            <div className="flex items-center gap-2">
+                                                                                {expandedSubCategories[subCategoryId] ? (
+                                                                                    <ChevronDown size={18} className="text-gray-600" />
+                                                                                ) : (
+                                                                                    <ChevronRight size={18} className="text-gray-600" />
+                                                                                )}
+                                                                                <Layers size={16} className="text-gray-600" />
+                                                                                <span className="font-medium text-gray-700">{subCategoryData.name}</span>
+                                                                            </div>
+                                                                            <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
+                                                                                {subCategoryData.products.length} products
+                                                                            </span>
+                                                                        </div>
+
+                                                                        {/* Products in Subcategory */}
+                                                                        {expandedSubCategories[subCategoryId] && (
+                                                                            <div className="p-4 pl-12 bg-white">
+                                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                                                    {subCategoryData.products.map(product => (
+                                                                                        <div key={product._id} className="border border-gray-200 rounded-lg p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
+                                                                                            <img
+                                                                                                src={product.image}
+                                                                                                alt={product.name}
+                                                                                                className="w-16 h-16 object-cover rounded"
+                                                                                                onError={(e) => e.target.src = 'https://via.placeholder.com/64'}
+                                                                                            />
+                                                                                            <div className="flex-1 min-w-0">
+                                                                                                <p className="font-medium text-sm text-gray-800 truncate">{product.name}</p>
+                                                                                                <p className="text-sm font-semibold text-blue-600">₹{product.price}</p>
+                                                                                                <p className="text-xs text-gray-500">Stock: {product.stock || 0}</p>
+                                                                                            </div>
+                                                                                            <div className="flex flex-col gap-2">
+                                                                                                <button
+                                                                                                    onClick={() => handleEditProduct(product)}
+                                                                                                    className="text-blue-500 hover:text-blue-700"
+                                                                                                    title="Edit Product"
+                                                                                                >
+                                                                                                    <Edit2 size={18} />
+                                                                                                </button>
+                                                                                                <button
+                                                                                                    onClick={() => handleRemoveItemFromCity(product._id)}
+                                                                                                    className="text-red-500 hover:text-red-700"
+                                                                                                    title="Remove from City"
+                                                                                                >
+                                                                                                    <Trash2 size={18} />
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
                                             </div>
-                                        );
-                                    })}
+                                        ) : (
+                                            // Original grid view for other tabs (categories, carousel, etc.)
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {getCurrentItems().map(item => {
+                                                    const displayInfo = getItemDisplayInfo(item);
+                                                    return (
+                                                        <div key={item._id} className="border border-gray-200 rounded-lg p-4 flex items-center gap-3">
+                                                            <img
+                                                                src={displayInfo.image}
+                                                                alt={displayInfo.title}
+                                                                className="w-16 h-16 object-cover rounded"
+                                                                onError={(e) => e.target.src = 'https://via.placeholder.com/64'}
+                                                            />
+                                                            <div className="flex-1">
+                                                                <p className="font-medium text-sm text-gray-800">{displayInfo.title}</p>
+                                                                <p className="text-xs text-gray-500">{displayInfo.subtitle}</p>
+                                                                {displayInfo.price && <p className="text-sm font-semibold text-blue-600">{displayInfo.price}</p>}
+                                                            </div>
+                                                            <div className="flex gap-2">
+                                                                <button
+                                                                    onClick={() => handleRemoveItemFromCity(item._id)}
+                                                                    className="text-red-500 hover:text-red-700"
+                                                                    title="Remove from City"
+                                                                >
+                                                                    <Trash2 size={18} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <hr className="my-6" />
+
+                                    {/* Add Items */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3 text-gray-700">
+                                            Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                                        </h3>
+                                        <div className="mb-4">
+                                            <div className="relative">
+                                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                                <input
+                                                    type="text"
+                                                    placeholder={`Search ${activeTab}...`}
+                                                    value={searchQuery}
+                                                    onChange={e => setSearchQuery(e.target.value)}
+                                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+
+                                            {/* Info note for categories tab */}
+                                            {activeTab === 'categories' && (
+                                                <div className="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                                    <p className="text-xs text-blue-800">
+                                                        <strong>ℹ️ Auto-Import:</strong> When you add categories, their subcategories will be automatically imported to this city.
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="mb-4 flex flex-wrap items-center gap-3">
+                                            {/* Bulk Selection Buttons */}
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={handleSelectAll}
+                                                    disabled={filteredItems.length === 0}
+                                                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                >
+                                                    <Check size={18} /> Select All ({filteredItems.length})
+                                                </button>
+                                                <button
+                                                    onClick={handleDeselectAll}
+                                                    disabled={selectedItems.length === 0}
+                                                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                >
+                                                    <X size={18} /> Deselect All
+                                                </button>
+                                            </div>
+
+                                            {/* Add Items Button */}
+                                            {selectedItems.length > 0 && (
+                                                <button
+                                                    onClick={handleAddItemsToCity}
+                                                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                                                >
+                                                    <Plus size={20} /> Add {selectedItems.length} Selected Item(s)
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+                                            {filteredItems.map(item => {
+                                                const displayInfo = getItemDisplayInfo(item);
+                                                return (
+                                                    <div
+                                                        key={item._id}
+                                                        className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedItems.includes(item._id)
+                                                            ? 'border-blue-500 bg-blue-50'
+                                                            : 'border-gray-200 hover:border-blue-300'
+                                                            }`}
+                                                        onClick={() => toggleItemSelection(item._id)}
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <img
+                                                                src={displayInfo.image}
+                                                                alt={displayInfo.title}
+                                                                className="w-16 h-16 object-cover rounded"
+                                                                onError={(e) => e.target.src = 'https://via.placeholder.com/64'}
+                                                            />
+                                                            <div className="flex-1">
+                                                                <p className="font-medium text-sm text-gray-800">{displayInfo.title}</p>
+                                                                <p className="text-xs text-gray-500">{displayInfo.subtitle}</p>
+                                                                {displayInfo.price && <p className="text-sm font-semibold text-blue-600">{displayInfo.price}</p>}
+                                                            </div>
+                                                            {selectedItems.includes(item._id) && (
+                                                                <Check className="text-blue-600" size={20} />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    )}
+                </>
             )}
 
             {/* Import Modal */}

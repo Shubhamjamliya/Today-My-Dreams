@@ -57,7 +57,7 @@ const RelatedProducts = ({ currentProduct }) => {
     }
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
@@ -66,8 +66,8 @@ const RelatedProducts = ({ currentProduct }) => {
         >
             <div className="flex justify-between items-center mb-4 md:mb-6">
                 <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900">More from {currentProduct.category.name}</h2>
-                <Link 
-                    to="/shop" 
+                <Link
+                    to="/shop"
                     state={{ selectedCategory: { main: currentProduct.category.name } }}
                     className="flex items-center gap-2 text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors group"
                 >
@@ -80,7 +80,7 @@ const RelatedProducts = ({ currentProduct }) => {
                 {relatedProducts.map(product => (
                     <ProductCard key={product._id} product={product} />
                 ))}
-                
+
             </div>
         </motion.div>
     );

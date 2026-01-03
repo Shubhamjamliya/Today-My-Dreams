@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import config from '../../config/config.js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, TrendingUp, Heart, Award } from 'lucide-react';
@@ -13,17 +13,18 @@ const ProductCard = ({ product }) => {
   const productId = product._id || product.id;
   if (!productId) return null;
 
-  const rating = product.averageRating || 0;
+  const { regularPrice, currentPrice, discountPercentage, rating } = useMemo(() => {
+    const reg = typeof product.regularPrice === 'number' ? product.regularPrice : 0;
+    const curr = typeof product.price === 'number' ? product.price : 0;
+    const disc = reg > curr && reg > 0 ? Math.round(((reg - curr) / reg) * 100) : 0;
+    const rate = product.averageRating || 0;
+    return { regularPrice: reg, currentPrice: curr, discountPercentage: disc, rating: rate };
+  }, [product.regularPrice, product.price, product.averageRating]);
+
   const numOfReviews = product.reviewCount || 0;
   const hasReviews = numOfReviews > 0;
 
-  const regularPrice = typeof product.regularPrice === 'number' ? product.regularPrice : 0;
-  const currentPrice = typeof product.price === 'number' ? product.price : 0;
-  const discountPercentage = regularPrice > currentPrice && regularPrice > 0
-    ? Math.round(((regularPrice - currentPrice) / regularPrice) * 100)
-    : 0;
-
-  const imageSources = (() => {
+  const imageSources = useMemo(() => {
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
       return product.images.map(img => {
         if (typeof img === 'string') return img;
@@ -35,11 +36,13 @@ const ProductCard = ({ product }) => {
       return [product.image];
     }
     return [];
-  })();
+  }, [product.images, product.image]);
 
-  const mainImage = imageSources.length > 0
-    ? config.fixImageUrl(imageSources[currentImageIndex] || imageSources[0])
-    : 'https://placehold.co/500x500/f1f5f9/475569?text=No+Image';
+  const mainImage = useMemo(() =>
+    imageSources.length > 0
+      ? config.fixImageUrl(imageSources[currentImageIndex] || imageSources[0])
+      : 'https://placehold.co/500x500/f1f5f9/475569?text=No+Image',
+    [imageSources, currentImageIndex]);
 
   const handleDotClick = (e, index) => {
     e.preventDefault();
@@ -103,8 +106,8 @@ const ProductCard = ({ product }) => {
                   key={index}
                   onClick={(e) => handleDotClick(e, index)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${currentImageIndex === index
-                      ? 'w-6 bg-white shadow-sm'
-                      : 'w-1.5 bg-white/60 hover:bg-white'
+                    ? 'w-6 bg-white shadow-sm'
+                    : 'w-1.5 bg-white/60 hover:bg-white'
                     }`}
                   aria-label={`View image ${index + 1}`}
                 />

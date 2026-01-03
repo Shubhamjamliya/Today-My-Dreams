@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, Power, PowerOff, Package } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import config from '../config/config';
 import Loader from "../components/Loader";
+import Skeleton, { CardGridSkeleton } from '../components/Skeleton';
 
 const Addons = () => {
   const [addons, setAddons] = useState([]);
@@ -92,7 +93,24 @@ const Addons = () => {
 
   if (loading) {
     return (
-      <Loader fullScreen text="Loading add-ons..." />
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Header Skeleton */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="space-y-2">
+              <Skeleton variant="text" className="h-8 w-64" />
+              <Skeleton variant="text" className="h-4 w-96" />
+            </div>
+            <Skeleton variant="rect" className="h-12 w-48" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <Skeleton variant="rect" className="h-20" />
+            <Skeleton variant="rect" className="h-20" />
+            <Skeleton variant="rect" className="h-20" />
+          </div>
+        </div>
+        <CardGridSkeleton count={6} />
+      </div>
     );
   }
 
@@ -211,8 +229,8 @@ const Addons = () => {
                   <button
                     onClick={() => handleToggleStatus(addon._id)}
                     className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors ${addon.isActive
-                        ? 'bg-orange-50 text-orange-600 hover:bg-orange-100'
-                        : 'bg-green-50 text-green-600 hover:bg-green-100'
+                      ? 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                      : 'bg-green-50 text-green-600 hover:bg-green-100'
                       }`}
                   >
                     {addon.isActive ? <PowerOff size={16} /> : <Power size={16} />}

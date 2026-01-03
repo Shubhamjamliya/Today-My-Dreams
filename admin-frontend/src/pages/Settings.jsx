@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import apiService from '../services/api';
 import { toast } from 'react-hot-toast';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
+import { SettingsSkeleton } from '../components/Skeleton';
 
 // Check if apiService is available
 if (!apiService) {
@@ -14,7 +15,7 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  
+
   // Admin credentials state
   const [adminCredentials, setAdminCredentials] = useState({
     username: '',
@@ -48,9 +49,9 @@ const Settings = () => {
       console.log('Fetching settings...');
       setLoading(true);
       setError(null);
-      
+
       const response = await apiService.getSettings();
-      
+
       setSettings(response.data.settings || []);
     } catch (err) {
       console.error('Error fetching settings:', err);
@@ -87,9 +88,9 @@ const Settings = () => {
   };
 
   const handleSettingChange = (key, value) => {
-    setSettings(prev => 
-      prev.map(setting => 
-        setting.key === key 
+    setSettings(prev =>
+      prev.map(setting =>
+        setting.key === key
           ? { ...setting, value: value }
           : setting
       )
@@ -101,16 +102,16 @@ const Settings = () => {
       toast.error('Invalid setting data');
       return;
     }
-    
+
     try {
       setSaving(true);
-      
+
       await apiService.updateSetting(setting.key, {
         key: setting.key,
         value: setting.value,
         description: setting.description
       });
-      
+
       toast.success('Setting saved successfully');
     } catch (err) {
       console.error('Error saving setting:', err);
@@ -146,7 +147,7 @@ const Settings = () => {
 
     try {
       setUpdatingCredentials(true);
-      
+
       const updateData = {
         currentPassword: adminCredentials.currentPassword
       };
@@ -154,19 +155,19 @@ const Settings = () => {
       if (adminCredentials.username.trim()) {
         updateData.username = adminCredentials.username.trim();
       }
-      
+
       if (adminCredentials.email.trim()) {
         updateData.email = adminCredentials.email.trim();
       }
-      
+
       if (adminCredentials.newPassword.trim()) {
         updateData.newPassword = adminCredentials.newPassword.trim();
       }
 
       const response = await apiService.updateAdminCredentials(updateData);
-      
+
       toast.success('Admin credentials updated successfully');
-      
+
       // Clear password fields
       setAdminCredentials(prev => ({
         ...prev,
@@ -179,7 +180,7 @@ const Settings = () => {
       if (response.data.user) {
         localStorage.setItem('admin_user', JSON.stringify(response.data.user));
       }
-      
+
     } catch (err) {
       console.error('Error updating admin credentials:', err);
       const errorMessage = err.response?.data?.message || 'Failed to update admin credentials';
@@ -302,7 +303,7 @@ const Settings = () => {
       return null;
     }
     const { key, value, description } = setting;
-    
+
     // Handle different types of settings
     if (key === 'cod_upfront_amount') {
       return (
@@ -327,7 +328,7 @@ const Settings = () => {
         </div>
       );
     }
-    
+
     // Default input for other settings
     return (
       <div className="space-y-4">
@@ -351,11 +352,7 @@ const Settings = () => {
   };
 
   if (loading) {
-    return (
-      <div className="p-6 flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="text-xl text-gray-600">Loading settings...</div>
-      </div>
-    );
+    return <SettingsSkeleton />;
   }
 
   if (error) {
@@ -382,7 +379,7 @@ const Settings = () => {
         {/* Admin Credentials Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-6">Admin Login Details</h2>
-          
+
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -397,7 +394,7 @@ const Settings = () => {
                   placeholder="Enter username"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email
@@ -411,7 +408,7 @@ const Settings = () => {
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Current Password *
@@ -425,7 +422,7 @@ const Settings = () => {
                 required
               />
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -439,7 +436,7 @@ const Settings = () => {
                   placeholder="Enter new password (min 6 characters)"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Confirm New Password
@@ -453,7 +450,7 @@ const Settings = () => {
                 />
               </div>
             </div>
-            
+
             <div className="flex justify-end">
               <button
                 onClick={handleUpdateCredentials}
@@ -656,7 +653,7 @@ const Settings = () => {
           </div>
         </div>
 
-       
+
       </div>
     );
   } catch (error) {

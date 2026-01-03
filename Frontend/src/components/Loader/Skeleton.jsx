@@ -221,4 +221,20 @@ export const VenueDetailSkeleton = () => (
   </div>
 );
 
+export const ProfileSkeleton = () => (
+  <div className="space-y-6 animate-pulse">
+    <div className="flex justify-between items-center mb-6">
+      <Skeleton variant="text" className="w-48 h-8" />
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {[...Array(3)].map((_, i) => (
+        <div key={i} className="space-y-2">
+          <Skeleton variant="text" className="w-24 h-4" />
+          <Skeleton variant="text" className="w-full h-10" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 export default Skeleton;

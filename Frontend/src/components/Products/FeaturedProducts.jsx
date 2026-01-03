@@ -54,12 +54,12 @@ export default function FeaturedProducts() {
       try {
         // Invalidate cache when city changes
         const cacheKey = `trending_${selectedCity || 'all'}`;
-        
+
         // Check cache first (city-specific cache)
-        if (productsCache && 
-            productsCache.city === selectedCity &&
-            cacheTimestamp && 
-            (Date.now() - cacheTimestamp) < CACHE_DURATION) {
+        if (productsCache &&
+          productsCache.city === selectedCity &&
+          cacheTimestamp &&
+          (Date.now() - cacheTimestamp) < CACHE_DURATION) {
           setProducts(productsCache.data);
           setLoading(false);
           return;
@@ -67,36 +67,36 @@ export default function FeaturedProducts() {
 
         setLoading(true);
         setError(null);
-        
+
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
+
         const urlParams = new URLSearchParams();
         if (selectedCity) {
           urlParams.append('city', selectedCity);
         }
-        
+
         const res = await fetch(`${config.API_URLS.SHOP}/section/trending?${urlParams.toString()}`, {
           signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
-        
+
         if (!res.ok) throw new Error('Failed to fetch trending products');
         const data = await res.json();
-        
+
         const productsData = Array.isArray(data) ? data : data.products || [];
-        
+
         // Cache the data with city information
         productsCache = {
           city: selectedCity,
           data: productsData
         };
         cacheTimestamp = Date.now();
-        
+
         setProducts(productsData);
       } catch (err) {
-       
+
         setError(err.message || 'Error fetching trending products');
         // Set empty array to prevent crashes
         setProducts([]);
@@ -151,13 +151,13 @@ export default function FeaturedProducts() {
         >
           <div className="max-w-3xl mx-auto">
             <h2 className="text-xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-2 md:mb-4">
-            Trending <span className="font-serif italic">Products</span>
-          </h2>
+              Trending <span className="font-serif italic">Products</span>
+            </h2>
             <p className="text-gray-600 text-xs md:text-base lg:text-lg leading-relaxed mb-3 md:mb-6 max-w-2xl mx-auto">
               Discover what's trending right now in our collection
             </p>
             <div className="w-12 md:w-20 h-0.5 bg-gradient-to-r from-[#FCD24C]-500 to-[#FCD24C]-600 mx-auto"></div>
-        </div>
+          </div>
         </motion.div>
 
         {/* Products Horizontal Scroll */}
@@ -170,8 +170,8 @@ export default function FeaturedProducts() {
         >
           <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory">
             {displayedProducts.map((product) => (
-              <motion.div 
-                key={product.id} 
+              <motion.div
+                key={product.id}
                 variants={itemVariants}
                 className="flex-shrink-0 w-48 md:w-56 lg:w-64 snap-start"
               >
@@ -180,7 +180,7 @@ export default function FeaturedProducts() {
             ))}
           </div>
         </motion.div>
-        
+
         {/* Show "View More" button on mobile if there are more products */}
         {isMobile && products.length > 4 && (
           <motion.div
