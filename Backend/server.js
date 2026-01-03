@@ -33,17 +33,16 @@ if (!process.env.JWT_SECRET_SELLER) {
   console.log('Generated random JWT_SECRET_SELLER');
 }
 
-// CORS configuration - Allow specific origins for production
+// CORS configuration - Allow specific origins from ENV and defaults
+const envOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
-
   'http://localhost:5175', // Backend port (for testing)
-  'https://www.todaymydream.com',
-  'https://ballon-frontend.vercel.app',
-  'https://ballon-admin-beta.vercel.app',
-  'https://admin.todaymydream.com'
-];
+  process.env.FRONTEND_URL,
+  ...envOrigins
+].filter(Boolean);
 
 
 
