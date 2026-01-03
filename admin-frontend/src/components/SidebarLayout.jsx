@@ -34,7 +34,7 @@ const SidebarLayout = ({ children }) => {
     { path: '/admin/categories', icon: <Tag size={20} />, label: 'Categories' },
     { path: '/admin/videos', icon: <Video size={20} />, label: 'Videos' },
     { path: '/admin/orders', icon: <Users size={20} />, label: 'Orders' },
-    { path: '/admin/venue', icon: <Store size={20} />, label: 'Venue' },
+
     { path: '/admin/data', icon: <File size={20} />, label: 'Data' },
     { path: '/admin/coupons', icon: <Users size={20} />, label: 'Coupons' },
     { path: '/admin/cities', icon: <Users size={20} />, label: 'City' },

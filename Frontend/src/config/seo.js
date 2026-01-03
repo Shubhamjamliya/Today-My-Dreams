@@ -124,13 +124,7 @@ export const seoConfig = {
     image: "/logo.png"
   },
 
-  seller: {
-    title: "Become a Partner | Today My Dream Decoration Materials",
-    description: "Partner with Today My Dream to sell decoration materials and celebration supplies for birthdays, weddings, anniversaries, and events. Grow your business with us.",
-    keywords: "become seller, decoration materials partner, join today my dream, celebration supplies partner, decoration business opportunities",
-    url: "https://todaymydream.com/seller",
-    image: "/seller.png"
-  },
+
 
   blog: {
     title: "Birthday, Anniversary & Baby Shower Decoration Blog - TODAY MY DREAM",

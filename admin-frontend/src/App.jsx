@@ -139,13 +139,11 @@ const App = () => {
           <Route path="/admin/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/admin/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
           <Route path="/admin/categories/edit/:id" element={<ProtectedRoute><EditCategories /></ProtectedRoute>} />
-          <Route path="/admin/seller" element={<ProtectedRoute><Seller /></ProtectedRoute>} />
-          <Route path="/admin/seller/edit/:id" element={<ProtectedRoute><Editseller /></ProtectedRoute>} />
-          <Route path="/admin/seller/new" element={<ProtectedRoute><Editseller /></ProtectedRoute>} />
+
           <Route path="/admin/hero-carousel" element={<ProtectedRoute><HeroCarousel /></ProtectedRoute>} />
           <Route path="/admin/hero-carousel/edit/:id" element={<ProtectedRoute><EditHeroCarousel /></ProtectedRoute>} />
           <Route path="/admin/hero-carousel/new" element={<ProtectedRoute><EditHeroCarousel /></ProtectedRoute>} />
-          <Route path="/admin/venue" element={<ProtectedRoute><SellerManagement /></ProtectedRoute>} />
+
           <Route path="/admin/coupons" element={<ProtectedRoute><CouponManagement /></ProtectedRoute>} />
           <Route path="/admin/data" element={<ProtectedRoute><DataPage /></ProtectedRoute>} />
           <Route path="/admin/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

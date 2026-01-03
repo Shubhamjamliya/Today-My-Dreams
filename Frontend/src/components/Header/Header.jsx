@@ -145,7 +145,7 @@ const BottomNav = ({ user }) => {
                 <BottomNavItem to="/" icon={<FaHome size={20} />} label="Home" isActive={currentPath === '/'} />
                 <BottomNavItem to="/shop" icon={<FaThLarge size={20} />} label="Shop" isActive={currentPath.startsWith('/shop')} />
                 <BottomNavItem to="/subcategory" icon={<FaBirthdayCake size={20} />} label="Categories" isActive={currentPath.startsWith('/subcategory')} />
-                <BottomNavItem to="/venues" icon={<Building2 size={20} />} label="Venues" isActive={currentPath === '/venues'} />
+
                 <BottomNavItem to="/contact" icon={<FaPhoneAlt size={20} />} label="Contact" isActive={currentPath === '/contact'} />
 
             </div>
@@ -354,7 +354,7 @@ const Header = () => {
     const menuLinks = [
 
         { label: 'Contact Us', href: '/contact', icon: <FaPhoneAlt /> },
-        { label: 'Choose Venue', href: '/venues', icon: <MdOutlineCelebration /> },
+
         { label: 'About us', href: '/about', icon: < FaInfoCircle /> },
         { label: 'Blog', href: '/blog', icon: <BookOpen /> },
         { label: 'Policies', href: '/policies', icon: <FaFileAlt /> },
@@ -422,10 +422,7 @@ const Header = () => {
                                         </button>
                                     </div>
 
-                                    <Link to="/venues" className="flex items-center gap-2 font-bold text-sm tracking-widest uppercase hover:text-[#FCD24C] transition-colors duration-300 relative group py-2">
-                                        <MdOutlineCelebration size={18} /> Venue
-                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FCD24C] transition-all duration-300 group-hover:w-full"></span>
-                                    </Link>
+
                                 </nav>
                             </div>
 

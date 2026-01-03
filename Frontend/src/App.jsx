@@ -37,9 +37,7 @@ const Checkout = lazy(() => import('./pages/Checkout'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
 const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'));
-const Becomeseller = lazy(() => import('./pages/BecomeSeller'));
-const SellerAuth = lazy(() => import('./pages/SellerAuth'));
-const SellerProfile = lazy(() => import('./pages/SellerProfile'));
+
 const Policies = lazy(() => import('./pages/Policies'));
 const PaymentStatus = lazy(() => import('./pages/PaymentStatus'));
 const VenuePage = lazy(() => import('./pages/Venupage'));
@@ -276,21 +274,7 @@ function AppContent() {
               <Wishlist />
             </Suspense>
           } />
-          <Route path='/dashboard' element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Becomeseller />
-            </Suspense>
-          } />
-          <Route path='/dashboard/auth' element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <SellerAuth />
-            </Suspense>
-          } />
-          <Route path='/dashboard/profile' element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <SellerProfile />
-            </Suspense>
-          } />
+
           <Route path="/checkout" element={
             <Suspense fallback={<Loader size="md" text="Loading..." />}>
               <Checkout />
