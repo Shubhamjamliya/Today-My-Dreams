@@ -117,7 +117,7 @@ const Offerpage = () => {
         className="relative w-[99%] md:w-[85%] mx-auto h-[200px] md:h-[450px] overflow-hidden items-center m-auto cursor-pointer 
                    border-2 border-transparent rounded-2xl group hover:border-[#FCD24C] shadow-2xl"
         style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
-        onClick={() => navigate(currentItem?.link || '/shop')}
+        onClick={() => navigate(currentItem?.link || '/services')}
       >
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div

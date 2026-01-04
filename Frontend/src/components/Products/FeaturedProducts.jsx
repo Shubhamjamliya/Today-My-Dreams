@@ -76,7 +76,7 @@ export default function FeaturedProducts() {
           urlParams.append('city', selectedCity);
         }
 
-        const res = await fetch(`${config.API_URLS.SHOP}/section/trending?${urlParams.toString()}`, {
+        const res = await fetch(`${config.API_URLS.PRODUCTS}/section/trending?${urlParams.toString()}`, {
           signal: controller.signal
         });
 
@@ -190,7 +190,7 @@ export default function FeaturedProducts() {
             className="text-center mt-6 md:mt-12"
           >
             <Link
-              to="/shop"
+              to="/services"
               className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-[#FCD24C] to-[#FCD24C] hover:from-[#FCD24C] hover:to-[#FCD24C] transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               View More Products

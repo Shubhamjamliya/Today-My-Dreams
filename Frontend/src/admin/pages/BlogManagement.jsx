@@ -257,7 +257,7 @@ const BlogManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Blog Management</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">Blog Management</h1>
           <p className="text-gray-600">Manage your blog posts and content</p>
         </div>
         <Link

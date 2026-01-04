@@ -5,8 +5,7 @@ import axios from 'axios';
 import config from '../config/config';
 import { useCity } from '../context/CityContext';
 
-// --- You should have this ProductCard component in its own file ---
-// For this example, I'm assuming it's at: '../components/ProductCard'
+// --- ProductCard component for displaying products ---
 import ProductCard from '../components/ProductCard/ProductCard';
 import { ArrowRight } from 'lucide-react';
 
@@ -33,7 +32,7 @@ const CategoryProductGrid = ({ category, selectedCity }) => {
                     urlParams.append('city', selectedCity);
                 }
 
-                const response = await axios.get(`${config.API_URLS.SHOP}?${urlParams.toString()}`);
+                const response = await axios.get(`${config.API_URLS.PRODUCTS}?${urlParams.toString()}`);
 
                 // Backend returns an array of products. But some endpoints historically returned { products: [...] }
                 const data = response.data || [];
@@ -66,7 +65,7 @@ const CategoryProductGrid = ({ category, selectedCity }) => {
             <div className="flex justify-between items-center mb-4 md:mb-6">
                 <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900">{category.name}</h2>
                 <Link
-                    to="/shop"
+                    to="/services"
                     state={{ selectedCategory: { main: category.name } }}
                     className="flex items-center gap-2 text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors group"
                 >

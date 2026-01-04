@@ -8,13 +8,14 @@ import {
   ArrowLeft,
   CreditCard,
   Lock,
-
+  ChevronLeft,
   Phone,
   User,
   Mail,
   Building,
   Truck,
   Shield,
+  ShieldCheck,
   CheckCircle,
 
   Sparkles,
@@ -227,7 +228,7 @@ const Checkout = () => {
     billingCountry: 'India',
 
     // Payment Information - will be set after cart loads
-    paymentMethod: 'phonepe'
+    paymentMethod: 'razorpay'
   });
 
   // NEW: State for new fields
@@ -580,9 +581,10 @@ const Checkout = () => {
     }
   };
 
-  const handlePhonePePayment = async () => {
+  const handleRazorpayPayment = async () => {
     setPaymentProcessing(true);
     setError(null);
+
     if (!validateForm()) {
       setError("Please fill in all required fields correctly.");
       setPaymentProcessing(false);
@@ -608,28 +610,98 @@ const Checkout = () => {
     };
 
     try {
-      const data = await paymentService.initiatePhonePePayment(paymentPayload);
-      if (data.success && data.redirectUrl) {
-        const PhonePeCheckout = await getPhonePeCheckout();
-        PhonePeCheckout.transact({
-          tokenUrl: data.redirectUrl,
-          callback: (response) => {
-            if (response === 'CONCLUDED') {
-              setTimeout(() => {
-                window.location.href = `${window.location.origin}/payment/status?orderId=${data.orderId}`;
-              }, 1000);
-            } else {
-              toast.error('Payment was cancelled or failed.');
+      // Create Razorpay order
+      const data = await paymentService.createRazorpayOrder(paymentPayload);
+
+      if (data.success && data.orderId) {
+        // Load Razorpay script if not already loaded
+        if (!window.Razorpay) {
+          const script = document.createElement('script');
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          script.async = true;
+          document.body.appendChild(script);
+          await new Promise((resolve) => script.onload = resolve);
+        }
+
+        // Configure Razorpay options
+        const options = {
+          key: data.keyId,
+          amount: data.amount,
+          currency: data.currency || 'INR',
+          name: 'TodayMyDream',
+          description: 'Order Payment',
+          order_id: data.orderId,
+          handler: async function (response) {
+            try {
+              // Verify payment on backend
+              const verifyResult = await paymentService.verifyRazorpayPayment({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              });
+
+              if (verifyResult.success) {
+                // Payment verified, create order
+                const orderPayload = {
+                  ...paymentPayload,
+                  paymentStatus: formData.paymentMethod === 'cod' ? 'partial' : 'completed',
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpayOrderId: response.razorpay_order_id
+                };
+
+                const orderResponse = await orderService.createOrder(orderPayload);
+
+                if (orderResponse.success) {
+                  toast.success('Payment successful! Order placed.');
+                  clearCart();
+                  localStorage.removeItem('checkoutFormData');
+                  localStorage.removeItem('checkoutCartItems');
+
+                  if (isAuthenticated) {
+                    navigate('/account?tab=orders');
+                  } else {
+                    navigate(`/order-confirmation/${orderResponse.order._id}`, {
+                      state: { order: orderResponse.order }
+                    });
+                  }
+                } else {
+                  setError('Payment successful but order creation failed. Please contact support.');
+                }
+              } else {
+                setError('Payment verification failed. Please contact support.');
+              }
+            } catch (err) {
+              console.error('Payment verification error:', err);
+              setError('Payment verification failed: ' + (err.message || 'Unknown error'));
+            }
+            setPaymentProcessing(false);
+          },
+          prefill: {
+            name: formData.fullName,
+            email: formData.email,
+            contact: formData.phone
+          },
+          theme: {
+            color: '#FCD24C'
+          },
+          modal: {
+            ondismiss: function () {
               setPaymentProcessing(false);
+              toast.error('Payment was cancelled.');
             }
           }
-        });
+        };
+
+        // Open Razorpay checkout
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+
       } else {
-        setError(data.message || "Failed to initiate PhonePe payment.");
+        setError(data.message || "Failed to create payment order.");
         setPaymentProcessing(false);
       }
     } catch (error) {
-      setError(error.message || "Failed to process PhonePe payment.");
+      setError(error.message || "Failed to process payment.");
       setPaymentProcessing(false);
     }
   };
@@ -720,8 +792,8 @@ const Checkout = () => {
     // Handle different payment methods
     if (formData.paymentMethod === 'cod') {
       await handleCodOrder();
-    } else if (formData.paymentMethod === 'phonepe') {
-      await handlePhonePePayment();
+    } else if (formData.paymentMethod === 'razorpay') {
+      await handleRazorpayPayment();
     } else {
       setError("Please select a valid payment method.");
     }
@@ -820,24 +892,71 @@ const Checkout = () => {
   const finalTotal = appliedCoupon ? appliedCoupon.finalPrice : subtotal;
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50/30">
+      {/* Checkout Header with Progress */}
+      <div className="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Back Button & Title */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate(-1)}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <ChevronLeft size={24} className="text-slate-600" />
+              </button>
+              <div>
+                <h1 className="text-xl md:text-2xl font-black text-slate-900">Secure Checkout</h1>
+                <p className="text-sm text-slate-500 hidden md:block">{cartItems.length} item(s) in your cart</p>
+              </div>
+            </div>
 
+            {/* Progress Steps */}
+            <div className="flex items-center gap-2 md:gap-4">
+              {/* Step 1 */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#FCD24C] to-[#F5A623] rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                  1
+                </div>
+                <span className="text-sm font-semibold text-slate-900 hidden sm:inline">Details</span>
+              </div>
+              <div className="w-8 md:w-12 h-0.5 bg-slate-200" />
+              {/* Step 2 */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 font-bold text-sm">
+                  2
+                </div>
+                <span className="text-sm font-medium text-slate-400 hidden sm:inline">Payment</span>
+              </div>
+              <div className="w-8 md:w-12 h-0.5 bg-slate-200" />
+              {/* Step 3 */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 font-bold text-sm">
+                  3
+                </div>
+                <span className="text-sm font-medium text-slate-400 hidden sm:inline">Done</span>
+              </div>
+            </div>
 
-      <div className="container mx-auto ">
-        <div className="flex flex-col lg:flex-row gap-8">
+            {/* Trust Badge */}
+            <div className="hidden lg:flex items-center gap-2 text-sm text-emerald-600">
+              <ShieldCheck size={18} />
+              <span className="font-medium">100% Secure</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* Checkout Form */}
-          <div className="w-full">
+          <div className="w-full lg:w-2/3">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="bg-white rounded-2xl shadow-xl border overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100 overflow-hidden"
             >
-              <div className="p-8">
-
-
-
-
+              <div className="p-6 md:p-8">
                 <form onSubmit={handleSubmit}>
                   {/* Shipping Information */}
                   <div className="mb-8">
@@ -1041,33 +1160,38 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  {/* NEW: Delivery Schedule Section */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 transition-all duration-300">
+                  {/* NEW: Delivery Schedule Section - User Friendly */}
+                  <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl p-6 transition-all duration-300 mb-6">
                     {!showScheduler ? (
                       // Initial Collapsed View
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-white border rounded-full flex items-center justify-center">
-                            <CalendarDays size={20} className="text-[#FCD24C]" />
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-r from-[#FCD24C] to-[#F5A623] rounded-xl flex items-center justify-center shadow-md shadow-amber-200/50">
+                            <CalendarDays size={22} className="text-white" />
                           </div>
                           <div>
-                            <h3 className="font-semibold text-blue-800">Schedule Your Delivery</h3>
-
+                            <h3 className="font-bold text-slate-900">Schedule Your Delivery</h3>
+                            <p className="text-sm text-slate-500">Choose when you want it delivered</p>
                           </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => setShowScheduler(true)}
-                          className="px-4 py-2 text-sm font-semibold text-blue bg-grey rounded-lg hover:bg-grey/90 transition-colors"
+                          className="px-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-800 transition-all duration-300 shadow-md hover:shadow-lg"
                         >
-                          <CalendarDays size={20} className="text-[#FCD24C]" />
+                          Select Date & Time
                         </button>
                       </div>
                     ) : (
                       // Expanded Scheduler View
                       <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-bold text-grey">Select a Date & Time Slot</h3>
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-[#FCD24C] to-[#F5A623] rounded-xl flex items-center justify-center">
+                              <CalendarDays size={18} className="text-white" />
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-900">Select Delivery Slot</h3>
+                          </div>
                           <button
                             type="button"
                             onClick={() => {
@@ -1075,53 +1199,106 @@ const Checkout = () => {
                               setScheduledDate('');
                               setScheduledTime('');
                             }}
-                            className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-100 rounded-full"
+                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                             aria-label="Clear schedule"
                           >
                             <X size={20} />
                           </button>
                         </div>
 
-                        <div className="space-y-4">
-                          {/* Step 1: Date Picker */}
-                          <div>
-                            <label className="block text-sm font-semibold text-grey mb-2">1. Choose a Date (you can only book for minimum 1 day advance)</label>
-                            <input
-                              type="date"
-                              name="scheduledDate"
-                              value={scheduledDate}
-                              onChange={(e) => setScheduledDate(e.target.value)}
-                              min={minDate.toISOString().split('T')[0]}
-                              className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-grey focus:border-transparent transition-all duration-200"
-                            />
-                          </div>
+                        {/* Step 1: Date Selection - Clickable Cards */}
+                        <div className="mb-6">
+                          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-3">
+                            <span className="w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center text-xs">1</span>
+                            Choose a Date
+                          </label>
+                          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                            {Array.from({ length: 7 }, (_, i) => {
+                              const date = new Date();
+                              date.setDate(date.getDate() + i + 1); // Start from tomorrow
+                              const dateStr = date.toISOString().split('T')[0];
+                              const isSelected = scheduledDate === dateStr;
+                              const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                              const dayNum = date.getDate();
+                              const monthName = date.toLocaleDateString('en-US', { month: 'short' });
 
-                          {/* Step 2: Time Input (only show after a date is selected) */}
-                          {scheduledDate && (
-                            <div>
-                              <label className="block text-sm font-semibold text-grey mb-2">2. Select Delivery Time (9:00 AM - 9:00 PM)</label>
-                              <input
-                                type="time"
-                                name="scheduledTime"
-                                value={scheduledTime}
-                                onChange={(e) => setScheduledTime(e.target.value)}
-                                min="09:00"
-                                max="21:00"
-                                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-grey focus:border-transparent transition-all duration-200"
-                                required
-                              />
-                              {scheduledTime && !validateTime(scheduledTime) && (
-                                <p className="text-red-500 text-xs mt-1">Please select a time between 9:00 AM and 9:00 PM</p>
-                              )}
-                            </div>
-                          )}
+                              return (
+                                <button
+                                  key={dateStr}
+                                  type="button"
+                                  onClick={() => setScheduledDate(dateStr)}
+                                  className={`flex-shrink-0 flex flex-col items-center justify-center w-16 h-20 rounded-xl border-2 transition-all duration-300 ${isSelected
+                                    ? 'bg-gradient-to-br from-[#FCD24C] to-[#F5A623] border-transparent text-slate-900 shadow-lg shadow-amber-300/40 scale-105'
+                                    : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                                    }`}
+                                >
+                                  <span className={`text-xs font-medium ${isSelected ? 'text-slate-900/70' : 'text-slate-400'}`}>{dayName}</span>
+                                  <span className={`text-xl font-bold ${isSelected ? 'text-slate-900' : 'text-slate-700'}`}>{dayNum}</span>
+                                  <span className={`text-xs ${isSelected ? 'text-slate-900/70' : 'text-slate-400'}`}>{monthName}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
                         </div>
 
+                        {/* Step 2: Time Slot Selection - Clickable Buttons */}
+                        {scheduledDate && (
+                          <div className="mb-4">
+                            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-3">
+                              <span className="w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center text-xs">2</span>
+                              Choose a Time Slot
+                            </label>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                              {[
+                                { time: '09:00', label: '9:00 AM', icon: '🌅' },
+                                { time: '10:00', label: '10:00 AM', icon: '☀️' },
+                                { time: '11:00', label: '11:00 AM', icon: '☀️' },
+                                { time: '12:00', label: '12:00 PM', icon: '🌞' },
+                                { time: '13:00', label: '1:00 PM', icon: '🌞' },
+                                { time: '14:00', label: '2:00 PM', icon: '🌞' },
+                                { time: '15:00', label: '3:00 PM', icon: '☀️' },
+                                { time: '16:00', label: '4:00 PM', icon: '🌤️' },
+                                { time: '17:00', label: '5:00 PM', icon: '🌤️' },
+                                { time: '18:00', label: '6:00 PM', icon: '🌆' },
+                                { time: '19:00', label: '7:00 PM', icon: '🌆' },
+                                { time: '20:00', label: '8:00 PM', icon: '🌙' },
+                              ].map((slot) => {
+                                const isSelected = scheduledTime === slot.time;
+                                return (
+                                  <button
+                                    key={slot.time}
+                                    type="button"
+                                    onClick={() => setScheduledTime(slot.time)}
+                                    className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl border-2 transition-all duration-300 ${isSelected
+                                      ? 'bg-gradient-to-br from-emerald-500 to-green-600 border-transparent text-white shadow-lg shadow-green-300/40'
+                                      : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                                      }`}
+                                  >
+                                    <span className="text-base">{slot.icon}</span>
+                                    <span className={`text-xs font-semibold ${isSelected ? 'text-white' : 'text-slate-700'}`}>{slot.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
                         {/* Confirmation Message */}
-                        {scheduledDate && scheduledTime && validateTime(scheduledTime) && (
-                          <div className="mt-5 p-3 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm text-center">
-                            🚚 Delivery scheduled for <strong>{new Date(scheduledDate).toLocaleDateString('en-GB', { weekday: 'long', month: 'long', day: 'numeric' })}</strong>
-                            at <strong>{new Date(`2000-01-01T${scheduledTime}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</strong>
+                        {scheduledDate && scheduledTime && (
+                          <div className="mt-4 p-4 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-xl">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center">
+                                <CheckCircle size={20} className="text-white" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold text-emerald-800">Delivery Scheduled!</p>
+                                <p className="text-sm text-emerald-700">
+                                  📅 <strong>{new Date(scheduledDate).toLocaleDateString('en-GB', { weekday: 'long', month: 'long', day: 'numeric' })}</strong>
+                                  {' '}at{' '}
+                                  <strong>{new Date(`2000-01-01T${scheduledTime}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</strong>
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1129,40 +1306,63 @@ const Checkout = () => {
                   </div>
 
                   {/* Payment Method */}
-                  <div className="bg-white text-black rounded-xl p-6 mb-8">
-                    <h2 className="text-lg font-semibold mb-4">Payment Method</h2>
-                    <div className="flex flex-col gap-4">
-                      <label className="flex items-center gap-3 cursor-pointer">
+                  <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-slate-200 p-6 mb-6">
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <CreditCard size={18} className="text-white" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-bold text-slate-900">Payment Method</h2>
+                        <p className="text-sm text-slate-500">Choose how you want to pay</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      {/* Razorpay Option */}
+                      <label className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${formData.paymentMethod === 'razorpay'
+                        ? 'border-violet-500 bg-violet-50 shadow-md'
+                        : 'border-slate-200 bg-white hover:border-slate-300'
+                        }`}>
                         <input
                           type="radio"
                           name="paymentMethod"
-                          value="phonepe"
-                          checked={formData.paymentMethod === 'phonepe'}
+                          value="razorpay"
+                          checked={formData.paymentMethod === 'razorpay'}
                           onChange={handleInputChange}
-                          className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="h-5 w-5 text-violet-600 focus:ring-violet-500 border-slate-300"
                         />
                         <div className="flex-1">
-                          <span className="text-gray-800 font-medium">UPI (PhonePe)</span>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Pay securely using UPI via PhonePe
+                          <div className="flex items-center gap-2">
+                            <span className="text-slate-900 font-bold">Pay Online</span>
+                            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Recommended</span>
+                          </div>
+                          <p className="text-sm text-slate-500 mt-1">
+                            UPI, Credit/Debit Card, Net Banking, Wallets
                           </p>
                         </div>
+                        <img src="https://cdn.razorpay.com/logo.svg" alt="Razorpay" className="h-6" />
                       </label>
-                      <label className="flex items-center gap-3 cursor-pointer">
+
+                      {/* COD Option */}
+                      <label className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${formData.paymentMethod === 'cod'
+                        ? 'border-amber-500 bg-amber-50 shadow-md'
+                        : 'border-slate-200 bg-white hover:border-slate-300'
+                        }`}>
                         <input
                           type="radio"
                           name="paymentMethod"
                           value="cod"
                           checked={formData.paymentMethod === 'cod'}
                           onChange={handleInputChange}
-                          className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="h-5 w-5 text-amber-600 focus:ring-amber-500 border-slate-300"
                         />
                         <div className="flex-1">
-                          <span className="text-gray-800 font-medium">Cash on Delivery (COD)</span>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Pay upon receiving your order.
+                          <span className="text-slate-900 font-bold">Cash on Delivery</span>
+                          <p className="text-sm text-slate-500 mt-1">
+                            Pay when you receive your order
                           </p>
                         </div>
+                        <span className="text-2xl">💵</span>
                       </label>
                     </div>
                   </div>
@@ -1176,15 +1376,22 @@ const Checkout = () => {
           {/* Order Summary */}
           <div className="w-full lg:w-1/3">
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="bg-white rounded-2xl shadow-xl border border-grey/20 p-6 sticky top-24"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100 p-6 sticky top-20"
             >
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-8 h-8 bg-gradient-to-r from-grey to-grey rounded-full flex items-center justify-center">
-                  <Truck size={16} className="text-white" />
+              {/* Order Summary Header */}
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-[#FCD24C] to-[#F5A623] rounded-xl flex items-center justify-center shadow-md shadow-amber-200/50">
+                    <Truck size={18} className="text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900">Order Summary</h3>
+                    <p className="text-xs text-slate-500">{cartItems.length} item(s)</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-grey">Order Summary</h3>
               </div>
 
               <div className="space-y-4 mb-6">
@@ -1446,38 +1653,45 @@ const Checkout = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSubmit}
                 disabled={loading || paymentProcessing || !cartLoaded || !formData.paymentMethod || pinCodeServiceFeeLoading || (formData.zipCode && /^\d{6}$/.test(formData.zipCode) && !pinCodeServiceFeeChecked)}
-                className="w-full mt-6 
-             bg-gradient-to-r from-[#FCD24C] to-[#FCD24C]
-             hover:from-[#FCD24C] hover:to-[#FCD24C]
-             text-white px-6 py-4 rounded-xl font-semibold
-             transition-all duration-200 
-             disabled:opacity-50 disabled:cursor-not-allowed
-             flex items-center justify-center space-x-2 shadow-md"
+                className="relative w-full mt-6 overflow-hidden
+                  bg-gradient-to-r from-[#FCD24C] to-[#F5A623]
+                  hover:from-[#F5A623] hover:to-[#FCD24C]
+                  text-slate-900 px-6 py-4 rounded-xl font-bold text-base
+                  transition-all duration-300 
+                  disabled:opacity-50 disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-300
+                  flex items-center justify-center space-x-2 
+                  shadow-lg shadow-amber-300/30 hover:shadow-xl hover:shadow-amber-400/40
+                  group"
               >
-                {loading || paymentProcessing || !cartLoaded || !formData.paymentMethod ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                ) : pinCodeServiceFeeLoading ? (
-                  <>
-                    <RefreshCw size={20} className="text-white animate-spin" />
-                    <span>Checking Pin Code...</span>
-                  </>
-                ) : (formData.zipCode && /^\d{6}$/.test(formData.zipCode) && !pinCodeServiceFeeChecked) ? (
-                  <>
-                    <RefreshCw size={20} className="text-white" />
-                    <span>Please wait for pin code verification...</span>
-                  </>
-                ) : (
-                  <>
-                    <Lock size={20} className="text-white" />
-                    <span>
-                      {formData.paymentMethod === 'cod' && codUpfrontAmount === 0
-                        ? 'Place Order (Pay on Delivery)'
-                        : formData.paymentMethod === 'cod'
-                          ? `Pay ₹${codUpfrontAmount} Online + Rest on Delivery`
-                          : 'Proceed to PhonePe Payment'}
-                    </span>
-                  </>
-                )}
+                {/* Shine Effect */}
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+
+                <span className="relative flex items-center gap-2">
+                  {loading || paymentProcessing || !cartLoaded || !formData.paymentMethod ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-slate-900/30 border-t-slate-900"></div>
+                  ) : pinCodeServiceFeeLoading ? (
+                    <>
+                      <RefreshCw size={20} className="animate-spin" />
+                      <span>Verifying Pin Code...</span>
+                    </>
+                  ) : (formData.zipCode && /^\d{6}$/.test(formData.zipCode) && !pinCodeServiceFeeChecked) ? (
+                    <>
+                      <RefreshCw size={20} />
+                      <span>Waiting for verification...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock size={18} />
+                      <span>
+                        {formData.paymentMethod === 'cod' && codUpfrontAmount === 0
+                          ? '📦 Place Order (Pay on Delivery)'
+                          : formData.paymentMethod === 'cod'
+                            ? `💳 Pay ₹${codUpfrontAmount} Now + Rest on Delivery`
+                            : '💳 Pay with PhonePe'}
+                      </span>
+                    </>
+                  )}
+                </span>
               </motion.button>
 
               {error && (

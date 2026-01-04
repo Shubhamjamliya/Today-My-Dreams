@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import { useAuth } from '../../context/AuthContext';
 import { useCity } from '../../context/CityContext';
+import { useCart } from '../../context/CartContext';
 import { cityAPI } from '../../services/api';
 
 // --- CONFIG & ASSETS ---
@@ -15,6 +16,63 @@ import logo from '/TodayMyDream.png';
 import Loader from '../Loader';
 import { slugify } from '../../utils/slugify';
 import ContactInfoBar from '../ContactInfoBar';
+// ShopMegaMenu Component
+const ShopMegaMenu = ({ categories, closeMenu }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 15, pointerEvents: 'none' }}
+        animate={{ opacity: 1, y: 0, pointerEvents: 'auto' }}
+        exit={{ opacity: 0, y: 15, pointerEvents: 'none' }}
+        transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+        className="absolute top-full left-0 w-full bg-slate-900 border-t border-slate-800 shadow-2xl z-40"
+    >
+        <div className="container mx-auto px-6 py-10">
+            <div className="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+                <h3 className="text-xl font-bold text-white tracking-wide uppercase flex items-center gap-3">
+                    <FaShoppingBag className="text-[#FCD24C]" />
+                    Shop Collections
+                </h3>
+                <Link to="/shop" onClick={closeMenu} className="text-[#FCD24C] hover:text-white text-sm font-semibold flex items-center gap-2 transition-colors group">
+                    View All Shop Products <FaChevronDown className="-rotate-90 group-hover:translate-x-1 transition-transform" size={12} />
+                </Link>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                {(categories || []).slice(0, 10).map((cat) => (
+                    <Link
+                        key={cat._id}
+                        to="/shop"
+                        state={{ selectedCategory: { main: cat.name } }}
+                        onClick={closeMenu}
+                        className="group relative overflow-hidden rounded-2xl bg-slate-800/50 hover:bg-slate-800 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#FCD24C]/5 border border-slate-800 hover:border-[#FCD24C]/30"
+                    >
+                        <div className="flex flex-col items-center text-center gap-4">
+                            <div className="relative w-20 h-20 rounded-full bg-slate-900 border-2 border-slate-700 group-hover:border-[#FCD24C] flex items-center justify-center overflow-hidden shadow-sm transition-colors duration-300">
+                                {cat.image ? (
+                                    <img
+                                        src={config.fixImageUrl(cat.image)}
+                                        alt={cat.name}
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    />
+                                ) : (
+                                    <FaShoppingBag size={28} className="text-slate-400 group-hover:text-[#FCD24C] transition-colors" />
+                                )}
+                            </div>
+                            <div className="w-full">
+                                <h4 className="font-extrabold text-white text-sm tracking-wide group-hover:text-[#FCD24C] transition-colors truncate">{cat.name}</h4>
+                                <p className="text-[10px] text-slate-400 mt-1.5 font-medium uppercase tracking-wider group-hover:text-slate-300">
+                                    Browse Products
+                                </p>
+                            </div>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </div>
+    </motion.div>
+);
+
+
+
 
 // --- ICONS ---
 import {
@@ -143,7 +201,13 @@ const BottomNav = ({ user }) => {
             style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
             <div className="flex justify-around items-center h-14 px-2">
                 <BottomNavItem to="/" icon={<FaHome size={20} />} label="Home" isActive={currentPath === '/'} />
-                <BottomNavItem to="/shop" icon={<FaThLarge size={20} />} label="Shop" isActive={currentPath.startsWith('/shop')} />
+                <Link
+                    to="/shop"
+                    className="flex flex-col items-center justify-center text-center w-16 group focus:outline-none"
+                >
+                    <div className={`transition-all duration-300 ease-in-out transform ${currentPath === '/shop' ? 'scale-110 -translate-y-0.5 text-blue' : 'text-slate-500 group-hover:text-blue'}`}><FaThLarge size={20} /></div>
+                    <span className={`text-[10px] mt-1 font-semibold transition-colors duration-300 ${currentPath === '/shop' ? 'text-blue' : 'text-slate-600'}`}>Shop</span>
+                </Link>
                 <BottomNavItem to="/subcategory" icon={<FaBirthdayCake size={20} />} label="Categories" isActive={currentPath.startsWith('/subcategory')} />
 
                 <BottomNavItem to="/contact" icon={<FaPhoneAlt size={20} />} label="Contact" isActive={currentPath === '/contact'} />
@@ -176,7 +240,7 @@ const MegaMenu = ({ categories, closeMenu }) => (
                 {categories.slice(0, 10).map((cat, index) => (
                     <Link
                         key={cat._id}
-                        to="/shop"
+                        to="/services"
                         state={{ selectedCategory: { main: cat.name } }}
                         onClick={closeMenu}
                         className="group relative overflow-hidden rounded-2xl bg-slate-800/50 hover:bg-slate-800 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#FCD24C]/5 border border-slate-800 hover:border-[#FCD24C]/30"
@@ -212,6 +276,7 @@ const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+    const [isShopMegaMenuOpen, setIsShopMegaMenuOpen] = useState(false);
 
     // Use CityContext for city selection
     const { selectedCity, updateCity, shouldShowCityModal, setShouldShowCityModal } = useCity();
@@ -231,18 +296,20 @@ const Header = () => {
     const [searchError, setSearchError] = useState(null);
 
     const [dynamicCategories, setDynamicCategories] = useState([]);
+    const [shopCategories, setShopCategories] = useState([]);
     const [categoriesLoading, setCategoriesLoading] = useState(true);
 
     // --- REFS & ROUTING ---
     const searchInputRef = useRef(null);
     const searchBarRef = useRef(null);
     const desktopSearchRef = useRef(null);
+    const { user, logout } = useAuth();
+    const { getCartCount } = useCart();
     const navigate = useNavigate();
+    const location = useLocation();
 
 
-    const { user } = useAuth();
-
-    // --- EFFECT: Fetch Categories ---
+    // --- EFFECT: Fetch Categories (Service & Shop) ---
     useEffect(() => {
         setCategoriesLoading(true);
         const urlParams = new URLSearchParams();
@@ -250,9 +317,15 @@ const Header = () => {
             urlParams.append('city', selectedCity);
         }
 
-        axios.get(`${config.API_URLS.CATEGORIES}?${urlParams.toString()}`)
-            .then(response => setDynamicCategories(response.data.categories || []))
-            .catch(error => { /* Error fetching categories */ })
+        Promise.all([
+            axios.get(`${config.API_URLS.CATEGORIES}?${urlParams.toString()}`),
+            axios.get(`${config.API_URLS.SHOP_CATEGORIES}?${urlParams.toString()}`)
+        ])
+            .then(([catsRes, shopRes]) => {
+                setDynamicCategories(catsRes.data.categories || []);
+                setShopCategories(shopRes.data.categories || shopRes.data || []);
+            })
+            .catch(error => { console.error("Error fetching categories", error); })
             .finally(() => setCategoriesLoading(false));
     }, [selectedCity]);
 
@@ -328,7 +401,7 @@ const Header = () => {
     const handleSearchSubmit = useCallback((e) => {
         e.preventDefault();
         if (searchQuery.trim()) {
-            navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+            navigate(`/services?search=${encodeURIComponent(searchQuery.trim())}`);
             setIsSearchOpen(false);
             setIsDesktopSearchFocused(false);
         }
@@ -338,7 +411,7 @@ const Header = () => {
         if (item.type === 'product') {
             navigate(`/product/${item.id}`);
         } else if (item.type === 'category') {
-            navigate(`/shop?category=${encodeURIComponent(item.name)}`);
+            navigate(`/services?category=${encodeURIComponent(item.name)}`);
         }
         setIsSearchOpen(false);
         setIsDesktopSearchFocused(false);
@@ -360,7 +433,6 @@ const Header = () => {
         { label: 'Policies', href: '/policies', icon: <FaFileAlt /> },
 
         { label: 'Categories', href: '/subcategory', icon: <FaBirthdayCake /> },
-        { label: 'Shop', href: '/shop', icon: <FaShoppingCart /> },
     ];
 
     // Handler for My Orders click
@@ -399,10 +471,23 @@ const Header = () => {
 
                                 {/* Desktop Navigation Links (White text) */}
                                 <nav className="hidden xl:flex items-center gap-8 text-white">
-                                    <Link to="/shop" className="font-bold text-sm tracking-widest uppercase hover:text-[#FCD24C] transition-colors duration-300 relative group py-2">
-                                        Shop
-                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FCD24C] transition-all duration-300 group-hover:w-full"></span>
-                                    </Link>
+                                    <div
+                                        onMouseEnter={() => {
+                                            if (window.shopMenuTimeout) clearTimeout(window.shopMenuTimeout);
+                                            setIsShopMegaMenuOpen(true);
+                                        }}
+                                        onMouseLeave={() => {
+                                            window.shopMenuTimeout = setTimeout(() => {
+                                                setIsShopMegaMenuOpen(false);
+                                            }, 200);
+                                        }}
+                                        className="relative h-full flex items-center"
+                                    >
+                                        <button className="flex items-center gap-2 font-bold text-sm tracking-widest uppercase hover:text-[#FCD24C] transition-colors duration-300 group py-2 text-white">
+                                            Shop
+                                            <FaChevronDown size={10} className="group-hover:rotate-180 transition-transform duration-300 transform group-hover:text-[#FCD24C]" />
+                                        </button>
+                                    </div>
 
                                     <div
                                         onMouseEnter={() => {
@@ -526,6 +611,16 @@ const Header = () => {
                                         <span>Login</span>
                                     </Link>
                                 )}
+
+                                {/* Cart Icon */}
+                                <Link to="/shop/cart" className="relative p-3 bg-white/10 hover:bg-white/15 rounded-xl text-white group transition-all duration-300">
+                                    <FaShoppingCart size={22} className="group-hover:scale-110 transition-transform" />
+                                    {getCartCount() > 0 && (
+                                        <span className="absolute -top-1.5 -right-1.5 bg-[#FCD24C] text-slate-900 text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full shadow-lg">
+                                            {getCartCount()}
+                                        </span>
+                                    )}
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -541,8 +636,16 @@ const Header = () => {
                         <Link to="/" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                             <img src={logo} alt="Logo" className="h-16 w-auto object-contain" />
                         </Link>
-                        <div className="flex items-center gap-1.5">
-                            {/* --- MODIFICATION START: Location selector moved from here --- */}
+                        <div className="flex items-center gap-4">
+                            <Link to="/shop/cart" className="relative text-white hover:text-[#FCD24C] transition-colors">
+                                <FaShoppingCart size={22} />
+                                {getCartCount() > 0 && (
+                                    <span className="absolute -top-1.5 -right-1.5 bg-[#FCD24C] text-slate-900 text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-lg">
+                                        {getCartCount()}
+                                    </span>
+                                )}
+                            </Link>
+
                             {user ? (
                                 <Link to="/account" className="flex items-center gap-1.5 text-white hover:text-[#FCD24C] transition-colors">
                                     <FaUserCircle size={22} />
@@ -577,7 +680,7 @@ const Header = () => {
                     </div>
                 </div>
 
-                {/* --- MEGA MENU RENDER --- */}
+                {/* --- MEGA MENU RENDER (Service Categories) --- */}
                 <div
                     className="hidden md:block"
                     onMouseEnter={() => {
@@ -592,6 +695,24 @@ const Header = () => {
                 >
                     <AnimatePresence>
                         {isMegaMenuOpen && !categoriesLoading && <MegaMenu categories={dynamicCategories} closeMenu={closeAllMenus} />}
+                    </AnimatePresence>
+                </div>
+
+                {/* --- SHOP MEGA MENU RENDER --- */}
+                <div
+                    className="hidden md:block"
+                    onMouseEnter={() => {
+                        if (window.shopMenuTimeout) clearTimeout(window.shopMenuTimeout);
+                        setIsShopMegaMenuOpen(true);
+                    }}
+                    onMouseLeave={() => {
+                        window.shopMenuTimeout = setTimeout(() => {
+                            setIsShopMegaMenuOpen(false);
+                        }, 200);
+                    }}
+                >
+                    <AnimatePresence>
+                        {isShopMegaMenuOpen && !categoriesLoading && <ShopMegaMenu categories={shopCategories} closeMenu={closeAllMenus} />}
                     </AnimatePresence>
                 </div>
             </header>
@@ -639,7 +760,7 @@ const Header = () => {
                             <ul>
                                 {dynamicCategories.map((cat) => (
                                     <li key={cat._id}>
-                                        <Link to="/shop" state={{ selectedCategory: { main: cat.name } }} onClick={closeAllMenus} className="group flex items-center gap-3 py-3 px-2 text-sm font-semibold text-slate-700 rounded-lg hover:bg-[#FDD14E] transition-colors">
+                                        <Link to="/services" state={{ selectedCategory: { main: cat.name } }} onClick={closeAllMenus} className="group flex items-center gap-3 py-3 px-2 text-sm font-semibold text-slate-700 rounded-lg hover:bg-[#FDD14E] transition-colors">
                                             <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center">
                                                 {cat.image ? (
                                                     <img
@@ -648,7 +769,7 @@ const Header = () => {
                                                         className="w-8 h-8 object-cover rounded-lg"
                                                     />
                                                 ) : (
-                                                    <FaBirthdayCake size={16} className="text-blue" />
+                                                    <FaBirthdayCake size={16} className="text-custom-dark-blue" />
                                                 )}
                                             </div>
                                             {cat.name}
@@ -658,6 +779,15 @@ const Header = () => {
                             </ul>
                             <hr className="my-4 border-slate-200/80" />
                             <ul>
+                                <li>
+                                    <Link
+                                        to="/shop"
+                                        onClick={closeAllMenus}
+                                        className="w-full flex items-center gap-3 py-3 px-2 text-sm font-semibold text-slate-700 rounded-lg hover:bg-[#FDD14E] transition-colors"
+                                    >
+                                        <span className="text-slate-500 w-5 text-center"><FaShoppingCart /></span> Shop
+                                    </Link>
+                                </li>
                                 {menuLinks.map((link) => (
                                     <li key={link.label}>
                                         <Link to={link.href} onClick={closeAllMenus} className="flex items-center gap-3 py-3 px-2 text-sm font-semibold text-slate-700 rounded-lg hover:bg-[#FDD14E] transition-colors">
@@ -706,7 +836,7 @@ const Header = () => {
                                                     <img src={config.fixImageUrl(item.image)} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
                                                 ) : (
                                                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                        <FaBirthdayCake size={20} className="text-blue" />
+                                                        <FaBirthdayCake size={20} className="text-custom-dark-blue" />
                                                     </div>
                                                 )}
                                             </div>
@@ -721,9 +851,9 @@ const Header = () => {
                                             </div>
                                             <div className="text-right">
                                                 {item.type === 'product' ? (
-                                                    <p className="font-bold text-blue">₹{item.price}</p>
+                                                    <p className="font-bold text-custom-dark-blue">₹{item.price}</p>
                                                 ) : (
-                                                    <span className="text-xs text-blue font-medium uppercase">Category</span>
+                                                    <span className="text-xs text-custom-dark-blue font-medium uppercase">Category</span>
                                                 )}
                                             </div>
                                         </li>
@@ -747,6 +877,7 @@ const Header = () => {
                 onSelectLocation={updateCity}
                 currentLocation={selectedCity}
             />
+
             <BottomNav user={user} />
         </>
     );

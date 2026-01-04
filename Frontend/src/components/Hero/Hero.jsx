@@ -179,7 +179,7 @@ const Offerpage = () => {
       className="relative w-full h-[200px] md:h-[250px] overflow-hidden cursor-pointer 
                  border-2 border-transparent rounded-2xl group hover:border-[#FCD24C] shadow-2xl"
       style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
-      onClick={() => navigate(item?.link || '/shop')}
+      onClick={() => navigate(item?.link || '/services')}
     >
       <AnimatePresence initial={false} custom={direction} mode="wait">
         <motion.div

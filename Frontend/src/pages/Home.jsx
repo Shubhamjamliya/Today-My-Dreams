@@ -36,7 +36,7 @@ export default function Home() {
           },
           "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://todaymydream.com/shop?search={search_term_string}",
+            "target": "https://todaymydream.com/services?search={search_term_string}",
             "query-input": "required name=search_term_string"
           },
           "sameAs": [

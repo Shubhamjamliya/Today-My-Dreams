@@ -11,7 +11,7 @@ function toIST(dateString) {
   return new Date(dateString).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 }
 
-const Orders = () => {
+const Orders = ({ module }) => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,14 +26,15 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [module]);
 
   const fetchOrders = async () => {
     try {
-      const response = await apiService.getOrders();
-      const ordersData = response.data.orders || [];
+      const response = await apiService.getOrders({ module });
+      let ordersData = response.data.orders || [];
+
       setOrders(ordersData);
-      setFilteredOrders(ordersData);
+      setFilteredOrders(ordersData); // Initialize filteredOrders with all fetched orders
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch orders');
     } finally {
@@ -41,6 +42,8 @@ const Orders = () => {
     }
   };
 
+  // The state filtering logic below is distinct from module-based filtering
+  // and is kept as it's a separate user-driven filter.
   const handleStateFilterChange = (selectedStates) => {
     setStateFilter(selectedStates);
     const filtered = selectedStates.length === 0
@@ -110,8 +113,8 @@ const Orders = () => {
   if (error && !success) return <div className="text-red-600 text-center p-4">Error: {error}</div>;
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-      <h1 className="text-2xl font-bold mb-6">Orders Management</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6">{module === 'shop' ? 'Shop Orders' : 'Orders Management'}</h1>
       {success && <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">{success}</div>}
       {error && <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{error}</div>}
 

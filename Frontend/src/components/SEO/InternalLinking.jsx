@@ -40,14 +40,14 @@ const InternalLinking = ({
   const getContextualLinks = () => {
     if (type === 'product' && product) {
       return [
-        { to: `/shop?category=${product.category?.name}`, text: `More ${product.category?.name} Items`, description: 'Explore similar products' },
+        { to: `/services?category=${product.category?.name}`, text: `More ${product.category?.name} Items`, description: 'Explore similar products' },
         { to: '/blog', text: `${product.category?.name} Decoration Ideas`, description: 'Get inspired with our guides' }
       ];
     }
 
     if (type === 'blog' && category) {
       return [
-        { to: `/shop?category=${category}`, text: `Shop ${category} Materials`, description: 'Buy the materials mentioned' },
+        { to: `/services?category=${category}`, text: `Shop ${category} Materials`, description: 'Buy the materials mentioned' },
         { to: '/blog', text: 'More Decoration Ideas', description: 'Explore our complete blog' }
       ];
     }

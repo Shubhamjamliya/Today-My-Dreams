@@ -5,15 +5,17 @@ import orderService from './orderService';
 const API_BASE_URL = config.API_BASE_URL;
 
 const paymentService = {
-  // Initiate PhonePe payment (returns { success, redirectUrl, orderId, ... })
-  initiatePhonePePayment: async (orderData) => {
+  // ============ RAZORPAY METHODS ============
+
+  // Create Razorpay Order
+  createRazorpayOrder: async (orderData) => {
     try {
       // Handle address structure - could be object or flat fields
       let address = orderData.address;
       let city = orderData.city;
       let pincode = orderData.pincode;
       let country = orderData.country;
-      
+
       // If address is an object, extract fields
       if (typeof address === 'object' && address !== null) {
         const addressObj = address;
@@ -22,7 +24,86 @@ const paymentService = {
         pincode = addressObj.pincode || addressObj.zipCode || pincode || '';
         country = addressObj.country || country || 'India';
       }
-      
+
+      const response = await axios.post(`${API_BASE_URL}/api/payment/razorpay/create-order`, {
+        amount: orderData.amount,
+        customerName: orderData.customerName,
+        email: orderData.email,
+        phone: orderData.phone,
+        address: address,
+        city: city,
+        pincode: pincode,
+        country: country,
+        items: orderData.items,
+        totalAmount: orderData.totalAmount,
+        shippingCost: orderData.shippingCost || 0,
+        codExtraCharge: orderData.codExtraCharge || 0,
+        finalTotal: orderData.finalTotal || orderData.totalAmount,
+        paymentMethod: orderData.paymentMethod,
+        paymentStatus: orderData.paymentStatus,
+        upfrontAmount: orderData.upfrontAmount || 0,
+        remainingAmount: orderData.remainingAmount || 0,
+        sellerToken: orderData.sellerToken || '',
+        couponCode: orderData.couponCode,
+        scheduledDelivery: orderData.scheduledDelivery,
+        addOns: orderData.addOns
+      }, {
+        timeout: 30000,
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      return response.data;
+    } catch (error) {
+      let errorMessage = 'Failed to create Razorpay order';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      throw new Error(errorMessage);
+    }
+  },
+
+  // Verify Razorpay Payment
+  verifyRazorpayPayment: async (paymentData) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/payment/razorpay/verify`, {
+        razorpay_order_id: paymentData.razorpay_order_id,
+        razorpay_payment_id: paymentData.razorpay_payment_id,
+        razorpay_signature: paymentData.razorpay_signature
+      }, {
+        timeout: 30000,
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      return response.data;
+    } catch (error) {
+      let errorMessage = 'Payment verification failed';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      throw new Error(errorMessage);
+    }
+  },
+
+  // ============ PHONEPE METHODS ============
+
+  // Initiate PhonePe payment (returns { success, redirectUrl, orderId, ... })
+  initiatePhonePePayment: async (orderData) => {
+    try {
+      // Handle address structure - could be object or flat fields
+      let address = orderData.address;
+      let city = orderData.city;
+      let pincode = orderData.pincode;
+      let country = orderData.country;
+
+      // If address is an object, extract fields
+      if (typeof address === 'object' && address !== null) {
+        const addressObj = address;
+        address = addressObj.street || addressObj.address || '';
+        city = addressObj.city || city || '';
+        pincode = addressObj.pincode || addressObj.zipCode || pincode || '';
+        country = addressObj.country || country || 'India';
+      }
+
       // Send all fields as required by backend controller
       const response = await axios.post(`${API_BASE_URL}/api/payment/phonepe`, {
         amount: orderData.amount,
@@ -93,7 +174,7 @@ const paymentService = {
           throw new Error('PhonePe is not configured. Please contact support.');
         }
       }
-      
+
       let errorMessage = 'Failed to check PhonePe payment status';
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
@@ -110,14 +191,14 @@ const paymentService = {
   async verifyPhonePeCallback(callbackData) {
     try {
       console.log('PaymentService - Verifying PhonePe callback:', callbackData);
-      
+
       const response = await axios.post(`${API_BASE_URL}/api/payment/phonepe/callback`, callbackData, {
         timeout: 30000,
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      
+
       console.log('PaymentService - Callback verification response:', response.data);
       return response.data;
     } catch (error) {
@@ -129,22 +210,22 @@ const paymentService = {
   // Process refund through PhonePe
   async processRefund(refundData) {
     try {
-  
-      
+
+
       const response = await axios.post(`${API_BASE_URL}/api/payment/phonepe/refund`, refundData, {
         timeout: 30000,
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      
-      
+
+
       return response.data;
     } catch (error) {
       console.error('PaymentService - Refund error:', error);
-      
+
       let errorMessage = 'Failed to process refund';
-      
+
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.response?.data?.error?.message) {
@@ -156,7 +237,7 @@ const paymentService = {
       } else if (error.response?.status === 500) {
         errorMessage = 'Refund gateway error. Please try again later.';
       }
-      
+
       throw new Error(errorMessage);
     }
   },
@@ -164,22 +245,22 @@ const paymentService = {
   // Check refund status
   async checkRefundStatus(merchantRefundId) {
     try {
-  
-      
+
+
       const response = await axios.get(`${API_BASE_URL}/api/payment/phonepe/refund/${merchantRefundId}/status`, {
         timeout: 30000,
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      
-      
+
+
       return response.data;
     } catch (error) {
       console.error('PaymentService - Refund status check error:', error);
-      
+
       let errorMessage = 'Failed to check refund status';
-      
+
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.response?.data?.error?.message) {
@@ -189,7 +270,7 @@ const paymentService = {
       } else if (error.response?.status === 404) {
         errorMessage = 'Refund not found. Please contact support.';
       }
-      
+
       throw new Error(errorMessage);
     }
   },
@@ -198,12 +279,12 @@ const paymentService = {
   async createOrderAfterPayment(orderData, paymentStatus = 'completed') {
     try {
       console.log('PaymentService - Creating order after payment with data:', orderData);
-      
+
       // Ensure orderData is not null or undefined
       if (!orderData) {
         throw new Error('Order data is required to create order');
       }
-      
+
       const orderPayload = {
         customerName: orderData.customerName,
         email: orderData.email,
@@ -238,12 +319,12 @@ const paymentService = {
   async completePaymentFlow(orderId, orderData) {
     try {
       console.log('PaymentService - Completing payment flow for order:', orderId);
-      
+
       // First verify payment status with PhonePe
       const paymentStatus = await this.getPhonePeStatus(orderId);
-      
+
       console.log('PaymentService - Payment status response:', paymentStatus);
-      
+
       if (paymentStatus.success && paymentStatus.data?.state === 'COMPLETED') {
         // Payment is successful, create order
         console.log('PaymentService - Payment completed, creating order...');

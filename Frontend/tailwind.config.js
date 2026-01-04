@@ -7,7 +7,7 @@ export default {
   ],
   theme: {
     extend: {
-       fontFamily: {
+      fontFamily: {
         sans: ['Manrope', 'sans-serif'],
         body: ['Montserrat', 'sans-serif'],
         display: ['"General Sans"', 'sans-serif'],
@@ -19,8 +19,8 @@ export default {
         'dark-text': '#333333',
         'light-text': '#666666',
         'light': '#FDE68A', // A lighter shade for gradients
-          'dark': '#FBBF24',  // A darker shade for hovers
-        'blue':'#1D1B4A'
+        'dark': '#FBBF24',  // A darker shade for hovers
+        'custom-dark-blue': '#1D1B4A'
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'], // Add Poppins or another modern font

@@ -719,5 +719,109 @@
     "updatedAt": "2025-11-25T10:20:07.817Z",
     "__v": 0,
     "id": "692582d7269b2b52df76f145"
+  },
+  {
+    "customOrderId": "decorationcelebration19",
+    "customerName": "shubham Jamliya",
+    "email": "sujal@example.com",
+    "phone": "7896541236",
+    "address": {
+      "street": "428-A Sarvsampanna Nagar",
+      "pincode": "122001",
+      "country": "India"
+    },
+    "scheduledDelivery": "2026-01-13T05:01:00.000Z",
+    "items": [
+      {
+        "productId": "68e0da42629ffed67a534c57",
+        "name": "Birthday Decoration at Home",
+        "price": 999,
+        "quantity": 1,
+        "image": "https://res.cloudinary.com/drztexsbw/image/upload/v1759566401/pawnshop-products/jdt4uqkuh0mqx3movinx.webp"
+      }
+    ],
+    "addOns": [],
+    "totalAmount": 999,
+    "paymentMethod": "cod",
+    "orderStatus": "processing",
+    "paymentStatus": "pending",
+    "upfrontAmount": 0,
+    "remainingAmount": 999,
+    "sellerToken": "",
+    "commission": 0,
+    "_id": "6959f41ab18680003ed3d6b9",
+    "createdAt": "2026-01-04T05:01:14.394Z",
+    "updatedAt": "2026-01-04T05:01:14.394Z",
+    "__v": 0,
+    "id": "6959f41ab18680003ed3d6b9"
+  },
+  {
+    "address": {
+      "street": "428-A Sarvsampanna Nagar",
+      "pincode": "122001",
+      "country": "India"
+    },
+    "_id": "695ac5eefeed7dd064ba6fc8",
+    "customOrderId": "decorationcelebration20",
+    "customerName": "Sujal Jamliya",
+    "email": "jamliyasujal@gmail.com",
+    "phone": "7896541236",
+    "scheduledDelivery": null,
+    "items": [
+      {
+        "productId": "68e0da42629ffed67a534c57",
+        "name": "Birthday Decoration at Home",
+        "price": 999,
+        "quantity": 1,
+        "image": "https://res.cloudinary.com/drztexsbw/image/upload/v1759566401/pawnshop-products/jdt4uqkuh0mqx3movinx.webp"
+      }
+    ],
+    "addOns": [],
+    "totalAmount": 999,
+    "paymentMethod": "razorpay",
+    "orderStatus": "manufacturing",
+    "paymentStatus": "completed",
+    "upfrontAmount": 0,
+    "remainingAmount": 0,
+    "sellerToken": "",
+    "commission": 0,
+    "createdAt": "2026-01-04T19:56:30.271Z",
+    "updatedAt": "2026-01-04T20:07:40.545Z",
+    "__v": 0,
+    "id": "695ac5eefeed7dd064ba6fc8"
+  },
+  {
+    "customOrderId": "decorationcelebration21",
+    "customerName": "Sujal Jamliya",
+    "email": "jamliyasujal@gmail.com",
+    "phone": "7896541236",
+    "address": {
+      "street": "428-A Sarvsampanna Nagar",
+      "pincode": "122001",
+      "country": "India"
+    },
+    "scheduledDelivery": null,
+    "items": [
+      {
+        "productId": "69590dd89d4064800f832060",
+        "name": "neclaces",
+        "price": 10000,
+        "quantity": 1,
+        "image": "http://localhost:5000/todaymydream/data/products/mainImage-1767443928714-732146610.jfif"
+      }
+    ],
+    "addOns": [],
+    "totalAmount": 10000,
+    "paymentMethod": "razorpay",
+    "orderStatus": "processing",
+    "paymentStatus": "completed",
+    "upfrontAmount": 0,
+    "remainingAmount": 0,
+    "commission": 0,
+    "_id": "695acbb519f9379751430314",
+    "createdAt": "2026-01-04T20:21:09.864Z",
+    "updatedAt": "2026-01-04T20:21:09.864Z",
+    "__v": 0,
+    "id": "695acbb519f9379751430314"
   }
 ]

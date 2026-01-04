@@ -17,13 +17,13 @@ export const CityProvider = ({ children }) => {
         // Check URL parameter first
         const urlParams = new URLSearchParams(window.location.search);
         const cityFromUrl = urlParams.get('city');
-        
+
         if (cityFromUrl) {
             // Save to localStorage
             localStorage.setItem('selectedCity', cityFromUrl);
             return cityFromUrl;
         }
-        
+
         // Get from localStorage or return null (no default city)
         return localStorage.getItem('selectedCity') || null;
     });
@@ -85,20 +85,20 @@ export const CityProvider = ({ children }) => {
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const cityFromUrl = urlParams.get('city');
-        
+
         if (cityFromUrl && cityFromUrl !== selectedCity) {
             setSelectedCity(cityFromUrl);
-            
+
             // Show notification
             toast.success(`📍 Location set to ${cityFromUrl}`, {
                 duration: 3000,
                 position: 'top-center',
             });
-            
+
             // Clean up URL (remove the city parameter) after capturing it
             if (window.history && window.history.replaceState) {
                 urlParams.delete('city');
-                const newUrl = urlParams.toString() 
+                const newUrl = urlParams.toString()
                     ? `${window.location.pathname}?${urlParams.toString()}`
                     : window.location.pathname;
                 window.history.replaceState({}, '', newUrl);
@@ -108,7 +108,7 @@ export const CityProvider = ({ children }) => {
 
     const updateCity = async (cityName, cityId = null, cityData = null) => {
         const isChanging = selectedCity && selectedCity !== cityName;
-        
+
         // Update localStorage
         localStorage.setItem('selectedCity', cityName);
         if (cityId) {
@@ -117,13 +117,13 @@ export const CityProvider = ({ children }) => {
         if (cityData) {
             localStorage.setItem('selectedCityData', JSON.stringify(cityData));
         }
-        
+
         // Show notification
         toast.success(`📍 Location set to ${cityName}`, {
             duration: 2000,
             position: 'top-center',
         });
-        
+
         // If city is changing (not first selection), refresh the page
         if (isChanging) {
             setTimeout(() => {
@@ -157,5 +157,5 @@ export const CityProvider = ({ children }) => {
     );
 };
 
-export default CityContext;
+// export default CityContext;
 

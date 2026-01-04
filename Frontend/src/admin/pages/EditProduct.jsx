@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Upload, X, ImagePlus, AlertCircle, CheckCircle, Plus, Copy, Hash } from 'lucide-react';
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { Upload, X, ImagePlus, AlertCircle, CheckCircle, Plus, Copy, Hash, ArrowLeft } from 'lucide-react';
 import apiService from "../services/api";
 import Loader from "../components/Loader";
 
 const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isNew = id === "new";
+
+  // Effect to handle initial state for new product from query params
+  useEffect(() => {
+    if (isNew) {
+      const searchParams = new URLSearchParams(location.search);
+      const moduleParam = searchParams.get('module');
+      if (moduleParam) {
+        setProduct(prev => ({ ...prev, module: moduleParam }));
+      }
+    }
+  }, [isNew, location.search]);
 
   const [product, setProduct] = useState({
     id: "",
@@ -31,7 +43,8 @@ const EditProduct = () => {
     isTrending: false,
     isMostLoved: false,
     codAvailable: true,
-    stock: 10
+    stock: 10,
+    module: "service"
   });
 
   const [files, setFiles] = useState({
@@ -89,19 +102,27 @@ const EditProduct = () => {
     const fetchCategories = async () => {
       try {
         const response = await apiService.getCategories();
-        setCategories(response.data.categories || response.data || []);
+        let allCats = response.data.categories || response.data || [];
+        // Filter by current product module
+        if (product.module) {
+          allCats = allCats.filter(cat => cat.module === product.module);
+        }
+        setCategories(allCats);
       } catch (error) {
         console.error("Failed to fetch categories", error);
         showToast("Failed to load categories", "error");
       }
     };
     fetchCategories();
-  }, []);
+  }, [product.module]);
 
   // Fetch product data if editing an existing product
   useEffect(() => {
     if (!isNew) {
-      apiService.getProduct(id)
+      setLoading(true);
+      const queryParams = new URLSearchParams(location.search);
+      const moduleParam = queryParams.get('module');
+      apiService.getProduct(id, { module: moduleParam || product.module })
         .then((response) => {
           const prod = response.data.product || response.data;
           if (prod) {
@@ -113,7 +134,8 @@ const EditProduct = () => {
               subCategory: prod.subCategory?._id || "", // Set subCategory ID
               price: prod.price?.toString() || "",
               regularPrice: prod.regularPrice?.toString() || "",
-              stock: prod.stock || 0
+              stock: prod.stock || 0,
+              module: prod.module || "service"
             });
 
             // If a category is already set, fetch its sub-categories
@@ -153,7 +175,7 @@ const EditProduct = () => {
       return;
     }
     try {
-      const response = await apiService.getSubCategories(categoryId);
+      const response = await apiService.getSubCategories(categoryId, { module: product.module });
       setSubCategories(response.data || []);
     } catch (error) {
       console.error("Failed to fetch sub-categories", error);
@@ -316,7 +338,7 @@ const EditProduct = () => {
         await apiService.updateProduct(product.id, formData);
         showToast("Product updated successfully!");
       }
-      navigate("/admin/products");
+      navigate(product.module === 'shop' ? "/admin/shop/products" : "/admin/products");
     } catch (error) {
       console.error('=== Error saving product ===');
       console.error('Error:', error);
@@ -441,9 +463,18 @@ Error: ${error.message}`;
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="p-6 sm:p-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">
-              {isNew ? "Add New Product" : "Edit Product"}
-            </h1>
+            <div className="flex items-center mb-8">
+              <button
+                onClick={() => navigate(-1)}
+                className="mr-4 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Go Back"
+              >
+                <ArrowLeft size={24} />
+              </button>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {isNew ? "Add New Product" : "Edit Product"}
+              </h1>
+            </div>
 
             {/* MongoDB ID Display */}
             {!isNew && product._id && (
@@ -599,6 +630,22 @@ Error: ${error.message}`;
                     <label className="block font-medium text-gray-700">Colour <span className="text-red-500">*</span></label>
                     <input type="text" name="colour" value={product.colour} onChange={handleChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
                   </div>
+                  {product.module === 'shop' && (
+                    <div>
+                      <label className="block font-medium text-gray-700">Module <span className="text-red-500">*</span></label>
+                      <select
+                        name="module"
+                        value={product.module}
+                        onChange={handleChange}
+                        className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        required
+                      >
+                        <option value="service" disabled>Service (Decoration)</option>
+                        <option value="shop">Shop (Jewellery, Shoes, etc.)</option>
+                      </select>
+                      <p className="mt-1 text-sm text-gray-500">This product is part of the Shop module.</p>
+                    </div>
+                  )}
 
                 </div>
               </div>

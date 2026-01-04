@@ -35,7 +35,7 @@ const CategoryProductSection = ({ category, selectedCity }) => {
           urlParams.append('city', selectedCity);
         }
 
-        const response = await axios.get(`${config.API_URLS.SHOP}?${urlParams.toString()}`);
+        const response = await axios.get(`${config.API_URLS.PRODUCTS}?${urlParams.toString()}`);
         const data = response.data || [];
         const productsArray = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
 
@@ -78,7 +78,7 @@ const CategoryProductSection = ({ category, selectedCity }) => {
           </div>
         </div>
         <button
-          onClick={() => navigate('/shop', { state: { selectedCategory: { main: category.name } } })}
+          onClick={() => navigate('/services', { state: { selectedCategory: { main: category.name } } })}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white rounded-full hover:from-amber-600 hover:to-yellow-600 transition-all duration-300 shadow-lg hover:shadow-xl group"
         >
           <span className="text-sm font-semibold">View</span>
@@ -146,8 +146,8 @@ const SubCategoryPage = () => {
         setSubcategories(subCategories);
         setShowSubcategories(true);
       } else {
-        // If no subcategories, navigate directly to shop
-        navigate(`/shop`, {
+        // If no subcategories, navigate directly to services
+        navigate(`/services`, {
           state: {
             selectedCategory: { main: category.name, sub: null, item: null }
           }
@@ -156,8 +156,8 @@ const SubCategoryPage = () => {
     } catch (error) {
       // Error fetching subcategories
       setSubcategoriesError('Failed to load subcategories');
-      // On error, navigate directly to shop
-      navigate(`/shop`, {
+      // On error, navigate directly to services
+      navigate(`/services`, {
         state: {
           selectedCategory: { main: category.name, sub: null, item: null }
         }
@@ -175,7 +175,7 @@ const SubCategoryPage = () => {
   };
 
   const handleSubcategoryClick = (subcategory) => {
-    navigate(`/shop`, {
+    navigate(`/services`, {
       state: {
         selectedCategory: {
           main: selectedCategory.name,

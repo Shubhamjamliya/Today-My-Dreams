@@ -5,7 +5,7 @@ import axios from 'axios';
 import config from '../config/config';
 import ProductCard from './ProductCard/ProductCard';
 import { ArrowRight } from 'lucide-react';
-import Loader from './Loader'; // Assuming Loader is in the same components directory
+import Loader from './Loader';
 
 const RelatedProducts = ({ currentProduct }) => {
     const [relatedProducts, setRelatedProducts] = useState([]);
@@ -20,21 +20,21 @@ const RelatedProducts = ({ currentProduct }) => {
 
             setLoading(true);
             try {
-                // Fetch only 20 products (to filter out current and show up to 18)
+                const isShop = currentProduct.module === 'shop';
+                const endpoint = isShop ? config.API_URLS.SHOP : config.API_URLS.PRODUCTS;
+
                 const response = await axios.get(
-                    `${config.API_URLS.SHOP}?category=${encodeURIComponent(currentProduct.category.name)}&limit=20`,
-                    { timeout: 15000 } // 15 second timeout for better reliability
+                    `${endpoint}?category=${encodeURIComponent(currentProduct.category.name)}&limit=20`,
+                    { timeout: 15000 }
                 );
                 const allProducts = response.data.products || response.data || [];
 
-                // Filter out the current product and take the first 18
                 const filteredProducts = allProducts
                     .filter((product) => product._id !== currentProduct._id)
                     .slice(0, 18);
 
                 setRelatedProducts(filteredProducts);
             } catch (error) {
-                // Failed to fetch related products
                 setRelatedProducts([]);
             } finally {
                 setLoading(false);
@@ -53,7 +53,7 @@ const RelatedProducts = ({ currentProduct }) => {
     }
 
     if (relatedProducts.length === 0) {
-        return null; // Don't render if no related products are found
+        return null;
     }
 
     return (
@@ -67,7 +67,7 @@ const RelatedProducts = ({ currentProduct }) => {
             <div className="flex justify-between items-center mb-4 md:mb-6">
                 <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900">More from {currentProduct.category.name}</h2>
                 <Link
-                    to="/shop"
+                    to="/services"
                     state={{ selectedCategory: { main: currentProduct.category.name } }}
                     className="flex items-center gap-2 text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors group"
                 >
@@ -80,7 +80,6 @@ const RelatedProducts = ({ currentProduct }) => {
                 {relatedProducts.map(product => (
                     <ProductCard key={product._id} product={product} />
                 ))}
-
             </div>
         </motion.div>
     );

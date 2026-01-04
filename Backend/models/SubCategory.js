@@ -54,7 +54,7 @@ subCategorySchema.index({ slug: 1 });
 subCategorySchema.index({ parentCategory: 1 }); // Index the parent category for efficient queries
 
 // Pre-save middleware to generate slug from the name
-subCategorySchema.pre('save', function(next) {
+subCategorySchema.pre('save', function (next) {
   if (this.isModified('name')) {
     this.slug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   }

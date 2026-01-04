@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, ShoppingBag, CreditCard, ArrowRight } from 'lucide-react';
 
-const AuthPrompt = ({ 
-  title = "Sign In Required", 
-  message = "Please sign in to continue", 
+const AuthPrompt = ({
+  title = "Sign In Required",
+  message = "Please sign in to continue",
   action = "cart",
-  showSignup = true 
+  showSignup = true
 }) => {
   const getIcon = () => {
     switch (action) {
@@ -46,21 +46,21 @@ const AuthPrompt = ({
         >
           {getIcon()}
         </motion.div>
-        
+
         <motion.h2
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-2xl font-bold text-blue mb-3"
+          className="text-2xl font-bold text-custom-dark-blue mb-3"
         >
           {title}
         </motion.h2>
-        
+
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="text-blue mb-8 leading-relaxed"
+          className="text-custom-dark-blue mb-8 leading-relaxed"
         >
           {message}
         </motion.p>
@@ -103,8 +103,8 @@ const AuthPrompt = ({
               <span className="text-white text-xs font-bold">!</span>
             </div>
             <div className="text-left">
-              <p className="text-blue text-sm font-medium mb-1">Why sign in?</p>
-              <ul className="text-blue text-xs space-y-1">
+              <p className="text-custom-dark-blue text-sm font-medium mb-1">Why sign in?</p>
+              <ul className="text-custom-dark-blue text-xs space-y-1">
                 <li>• Save your cart for later</li>
                 <li>• Track your orders</li>
                 <li>• Faster checkout process</li>

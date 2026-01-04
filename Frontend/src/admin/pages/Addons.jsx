@@ -115,12 +115,12 @@ const Addons = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="space-y-6">
       {/* Header */}
       <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Add-ons Management</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Add-ons Management</h1>
             <p className="text-gray-600">Manage additional items customers can add to their orders</p>
           </div>
           <Link

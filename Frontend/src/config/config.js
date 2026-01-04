@@ -22,6 +22,10 @@ const config = {
     SHOP: '/api/shop',
     ORDERS: '/api/orders',
     CATEGORIES: '/api/categories',
+    SHOP_CATEGORIES: '/api/shop/categories',
+    SHOP_CATEGORIES_NESTED: '/api/shop/categories/nested',
+    SHOP_PRODUCTS: '/api/shop/products',
+    SHOP_ORDERS: '/api/shop/orders',
     PRODUCTS: '/api/products',
     SELLER: '/api/seller',
     VENUE: '/api/seller', // Venue endpoint uses seller API

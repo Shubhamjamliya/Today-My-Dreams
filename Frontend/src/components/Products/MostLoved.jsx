@@ -76,7 +76,7 @@ export default function MostLoved() {
           urlParams.append('city', selectedCity);
         }
 
-        const res = await fetch(`${config.API_URLS.SHOP}/section/mostloved?${urlParams.toString()}`, {
+        const res = await fetch(`${config.API_URLS.PRODUCTS}/section/mostloved?${urlParams.toString()}`, {
           signal: controller.signal
         });
 
@@ -193,7 +193,7 @@ export default function MostLoved() {
             className="text-center mt-8 md:mt-12"
           >
             <Link
-              to="/shop"
+              to="/services"
               className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-[#FCD24C] to-[#FCD24C] hover:from-[#FCD24C] hover:to-[#FCD24C] transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               View More Products

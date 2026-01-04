@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cake, Gem, Baby, Heart, UserCheck, Tag, Palette, ThumbsUp } from 'lucide-react'; 
+import { Cake, Gem, Baby, Heart, UserCheck, Tag, Palette, ThumbsUp } from 'lucide-react';
 import whyChooseUsImage from '/last.png';
 
 // --- Data for the component ---
@@ -67,14 +67,14 @@ const itemVariants = {
 
 const InfoSection = () => {
   return (
-    <section 
-        className=" py-4 md:py-12 font-sans" 
-       
+    <section
+      className=" py-4 md:py-12 font-sans"
+
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-10 md:space-y-28">
 
         {/* --- 1. Introduction --- */}
-        <motion.div 
+        <motion.div
           className="text-center max-w-4xl mx-auto"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -82,7 +82,7 @@ const InfoSection = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <h2 className="text-2xl md:text-2xl font-serif font-bold text-slate-900 leading-tight">
-            Decorate Your Home with Our 
+            Decorate Your Home with Our
             <span className="relative inline-block mx-3 text-amber-600">
               Professional
               <motion.svg
@@ -96,7 +96,7 @@ const InfoSection = () => {
                 <path d="M 2 5 C 20 2, 80 2, 98 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
               </motion.svg>
             </span>
-              Service
+            Service
           </h2>
           <p className="mt-6 text-sm text-lg text-slate-600">
             Decoration is an indispensable part of any celebration. A little touch of our magic can elevate your birthdays, anniversaries, and baby showers, creating a vibrant and happy mood for you and your guests.
@@ -105,29 +105,29 @@ const InfoSection = () => {
 
         {/* --- 2. Our Services (Now a Slider on Mobile) --- */}
         <motion.div variants={sectionVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-            
-           
-            <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 lg:grid lg:grid-cols-4 lg:gap-8 lg:overflow-visible lg:pb-0">
-                {services.map((service, index) => (
-                    // Added classes to make the cards work inside the slider
-                    <motion.div 
-                        key={index} 
-                        variants={itemVariants} 
-                        className="flex-shrink-0 snap-center w-[80%] sm:w-[45%] lg:w-auto bg-white p-6 rounded-2xl  border border-amber-200/50 text-center"
-                    >
-                        <div className="inline-block p-4  -100 text-amber-600 rounded-full mb-4">
-                            {service.icon}
-                        </div>
-                        <h3 className="text-xl font-semibold text-slate-800 mb-2">{service.title}</h3>
-                        <p className="text-slate-500 text-sm">{service.description}</p>
-                    </motion.div>
-                ))}
-            </div>
+
+
+          <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 lg:grid lg:grid-cols-4 lg:gap-8 lg:overflow-visible lg:pb-0">
+            {services.map((service, index) => (
+              // Added classes to make the cards work inside the slider
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="flex-shrink-0 snap-center w-[80%] sm:w-[45%] lg:w-auto bg-white p-6 rounded-2xl  border border-amber-200/50 text-center"
+              >
+                <div className="inline-block p-4  -100 text-amber-600 rounded-full mb-4">
+                  {service.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-2">{service.title}</h3>
+                <p className="text-slate-500 text-sm">{service.description}</p>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         {/* --- 3. Why Choose Us --- */}
         <div className="flex flex-col lg:flex-row items-center lg:gap-16">
-          <motion.div 
+          <motion.div
             className="lg:w-1/2"
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -149,7 +149,7 @@ const InfoSection = () => {
               ))}
             </div>
           </motion.div>
-          <motion.div 
+          <motion.div
             className="lg:w-1/2 mt-6"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -160,7 +160,7 @@ const InfoSection = () => {
           </motion.div>
         </div>
 
-   
+
       </div>
     </section>
   );

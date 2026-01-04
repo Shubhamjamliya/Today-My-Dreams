@@ -138,7 +138,7 @@ const BirthdaySubcategories = () => {
       }
       urlParams.append('limit', '1000');
 
-      const response = await axios.get(`${config.API_URLS.SHOP}?${urlParams.toString()}`);
+      const response = await axios.get(`${config.API_URLS.PRODUCTS}?${urlParams.toString()}`);
       const products = response.data || [];
 
       // Count products per subcategory
@@ -240,7 +240,7 @@ const BirthdaySubcategories = () => {
               className="flex flex-col items-center text-center group"
             >
               <Link
-                to="/shop"
+                to="/services"
                 state={{
                   selectedCategory: {
                     main: birthdayCategoryName,
@@ -321,7 +321,7 @@ const BirthdaySubcategories = () => {
           className="text-center mt-6 md:mt-8 w-full flex justify-center"
         >
           <Link
-            to="/shop"
+            to="/services"
             state={{
               selectedCategory: {
                 main: birthdayCategoryName,

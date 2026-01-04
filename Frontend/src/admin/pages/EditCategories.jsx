@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Upload, X, ImagePlus, Video, AlertCircle, CheckCircle, Trash2, Pencil } from 'lucide-react';
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { Upload, X, ImagePlus, Video, AlertCircle, CheckCircle, Trash2, Pencil, Check } from 'lucide-react';
 import apiService from "../services/api";
 import Loader from "../components/Loader";
 
 const EditCategories = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isNew = id === "new";
+
+  // Effect to handle initial state for new category from query params
+  useEffect(() => {
+    if (isNew) {
+      const searchParams = new URLSearchParams(location.search);
+      const moduleParam = searchParams.get('module');
+      if (moduleParam) {
+        setCategory(prev => ({ ...prev, module: moduleParam }));
+      }
+    }
+  }, [isNew, location.search]);
 
   // State for the main category
   const [category, setCategory] = useState({
@@ -17,6 +29,7 @@ const EditCategories = () => {
     image: "",
     video: "",
     sortOrder: 0,
+    module: "service",
   });
 
   // State for file uploads and previews
@@ -61,7 +74,9 @@ const EditCategories = () => {
   useEffect(() => {
     if (!isNew) {
       // Fetch main category details
-      apiService.getCategory(id)
+      const queryParams = new URLSearchParams(location.search);
+      const moduleParam = queryParams.get('module');
+      apiService.getCategory(id, { module: moduleParam || category.module })
         .then((response) => {
           const cat = response.data.category || response.data;
           if (cat) {
@@ -72,6 +87,7 @@ const EditCategories = () => {
               image: cat.image || '',
               video: cat.video || '',
               sortOrder: cat.sortOrder || 0,
+              module: cat.module || 'service',
             });
             setPreviewUrls({ image: cat.image || '', video: cat.video || '' });
           } else {
@@ -92,7 +108,7 @@ const EditCategories = () => {
   const fetchSubCategories = () => {
     if (isNew) return;
     setSubCategoryLoading(true);
-    apiService.getSubCategories(id)
+    apiService.getSubCategories(id, { module: category.module })
       .then(response => {
         setSubCategories(response.data);
       })
@@ -169,6 +185,7 @@ const EditCategories = () => {
     formData.append('name', category.name);
     formData.append('description', category.description);
     formData.append('sortOrder', category.sortOrder || 0);
+    formData.append('module', category.module || 'service');
     if (files.image) formData.append('image', files.image);
     if (files.video) formData.append('video', files.video);
 
@@ -252,10 +269,10 @@ const EditCategories = () => {
       }
 
       if (editingSubCategoryId) {
-        await apiService.updateSubCategory(editingSubCategoryId, formData);
+        await apiService.updateSubCategory(editingSubCategoryId, formData, { module: category.module });
         showToast("Sub-category updated successfully!");
       } else {
-        await apiService.createSubCategory(id, formData);
+        await apiService.createSubCategory(id, formData, { module: category.module });
         showToast("Sub-category added successfully!");
       }
       handleCancelEdit(); // Reset form
@@ -284,7 +301,7 @@ const EditCategories = () => {
   const handleDeleteSubCategory = async (subCategoryId) => {
     if (window.confirm("Are you sure you want to delete this sub-category? This action cannot be undone.")) {
       try {
-        await apiService.deleteSubCategory(subCategoryId);
+        await apiService.deleteSubCategory(subCategoryId, { module: category.module });
         showToast("Sub-category deleted successfully!");
         fetchSubCategories();
       } catch (error) {
@@ -306,34 +323,38 @@ const EditCategories = () => {
       <div className="col-span-1">
         <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
         <div
-          className={`relative border-2 border-dashed rounded-lg p-4 text-center ${isDragging ? 'border-blue-500 bg-blue-50' : hasPreview ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-gray-400'
+          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-all ${isDragging ? 'border-blue-500 bg-blue-50' : hasPreview ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
             }`}
           onDrop={(e) => handleDrop(e, fieldName)}
           onDragOver={(e) => handleDragOver(e, fieldName)}
           onDragLeave={(e) => handleDragLeave(e, fieldName)}
         >
           {hasPreview ? (
-            <div className="relative">
+            <div className="relative group">
               {isVideo ? (
-                <video src={previewUrls[fieldName]} className="w-full h-48 object-cover rounded-lg" controls />
+                <video src={previewUrls[fieldName]} className="w-full h-48 object-cover rounded-lg shadow-sm" controls />
               ) : (
-                <img src={previewUrls[fieldName]} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
+                <img src={previewUrls[fieldName]} alt="Preview" className="w-full h-48 object-cover rounded-lg shadow-sm" />
               )}
-              <button type="button" onClick={() => removeImage(fieldName)} className="absolute top-2 right-2 p-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200 focus:outline-none">
+              <button
+                type="button"
+                onClick={() => removeImage(fieldName)}
+                className="absolute top-2 right-2 p-2 bg-white text-red-600 rounded-full shadow-md hover:bg-gray-100 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3 py-4">
               <div className="mx-auto w-12 h-12 text-gray-400">{isVideo ? <Video className="w-12 h-12" /> : <ImagePlus className="w-12 h-12" />}</div>
               <div className="text-sm text-gray-600">
-                <label className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500">
+                <label className="relative cursor-pointer rounded-md font-medium text-custom-dark-blue hover:text-blue-500">
                   <span>Upload a {isVideo ? 'video' : 'image'}</span>
                   <input type="file" className="sr-only" accept={isVideo ? "video/*" : "image/*"} onChange={(e) => handleFileChange(e, fieldName)} />
                 </label>
-                <p className="pl-1">or drag and drop</p>
+                <p className="pl-1 text-gray-500">or drag and drop</p>
               </div>
-              <p className="text-xs text-gray-500">{isVideo ? 'Video up to 50MB' : 'Image up to 10MB'}</p>
+              <p className="text-xs text-gray-400">{isVideo ? 'Video up to 50MB' : 'Image up to 10MB'}</p>
             </div>
           )}
         </div>
@@ -342,183 +363,232 @@ const EditCategories = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="p-6 sm:p-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">
-              {isNew ? "Add New Category" : "Edit Category"}
-            </h1>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
+            {isNew ? "Add New Category" : "Edit Category"}
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">
+            {isNew ? "Create a new category for your products or services." : `Editing category: ${category.name}`}
+          </p>
+        </div>
+      </div>
 
-            {toast.show && (
-              <div className={`mb-6 p-4 rounded-lg flex items-center space-x-2 ${toast.type === "error" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
-                }`}>
-                {toast.type === "error" ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
-                <span>{toast.message}</span>
+      {toast.show && (
+        <div className={`p-4 rounded-lg flex items-center space-x-2 border animate-fadeIn ${toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" : "bg-green-50 border-green-200 text-green-700"
+          }`}>
+          {toast.type === "error" ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
+          <span>{toast.message}</span>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Basic Info Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 bg-gray-50">
+            <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
+          </div>
+          <div className="p-6 grid grid-cols-1 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Name <span className="text-red-500">*</span></label>
+              <input type="text" name="name" value={category.name} onChange={handleChange} className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" required placeholder="e.g. Living Room Decor" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Description <span className="text-red-500">*</span></label>
+              <textarea name="description" value={category.description} onChange={handleChange} rows={4} className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" required placeholder="Describe the category..." />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+                <input
+                  type="number"
+                  name="sortOrder"
+                  value={category.sortOrder}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  placeholder="0"
+                  min="0"
+                />
+                <p className="mt-1 text-xs text-gray-500">Lower numbers appear first. Default is 0.</p>
               </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
-                <div className="grid grid-cols-1 gap-6">
-                  <div>
-                    <label className="block font-medium text-gray-700">Name <span className="text-red-500">*</span></label>
-                    <input type="text" name="name" value={category.name} onChange={handleChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
-                  </div>
-                  <div>
-                    <label className="block font-medium text-gray-700">Description <span className="text-red-500">*</span></label>
-                    <textarea name="description" value={category.description} onChange={handleChange} rows={4} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
-                  </div>
-                  <div>
-                    <label className="block font-medium text-gray-700">Sort Order</label>
-                    <input
-                      type="number"
-                      name="sortOrder"
-                      value={category.sortOrder}
-                      onChange={handleChange}
-                      className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      placeholder="0"
-                      min="0"
-                    />
-                    <p className="mt-1 text-sm text-gray-500">Lower numbers appear first. Default is 0.</p>
-                  </div>
+              {category.module === 'shop' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Module <span className="text-red-500">*</span></label>
+                  <select
+                    name="module"
+                    value={category.module}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    required
+                  >
+                    <option value="service" disabled>Service (Decoration)</option>
+                    <option value="shop">Shop (Jewellery, Shoes, etc.)</option>
+                  </select>
                 </div>
-              </div>
+              )}
+            </div>
+          </div>
+        </div>
 
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Category Media</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {renderFileInput('image', 'Category Image')}
-                  {renderFileInput('video', 'Category Video')}
+        {/* Media Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 bg-gray-50">
+            <h2 className="text-lg font-semibold text-gray-900">Category Media</h2>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {renderFileInput('image', 'Category Image')}
+            {renderFileInput('video', 'Category Video')}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end space-x-4 pt-4">
+          <button type="button" onClick={() => navigate("/admin/categories")} className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors">Cancel</button>
+          <button type="submit" disabled={loading} className="px-6 py-2.5 bg-custom-dark-blue text-white rounded-lg font-medium hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-dark-blue transition-colors flex items-center space-x-2 shadow-lg shadow-blue-500/30">
+            {loading && <Loader size="tiny" inline text="" />}
+            <span>{isNew ? "Create Category" : "Update Category"}</span>
+          </button>
+        </div>
+      </form>
+
+      {!isNew && (
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Sub-Categories</h2>
+            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">{subCategories.length} items</span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Form Column */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-6">
+                <div className="p-5 border-b border-gray-100 bg-gray-50">
+                  <h3 className="text-lg font-semibold text-gray-800">{editingSubCategoryId ? 'Edit Sub-Category' : 'Add New Sub-Category'}</h3>
                 </div>
-              </div>
-
-              <div className="flex items-center justify-end space-x-4">
-                <button type="button" onClick={() => navigate("/admin/categories")} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
-                <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2">
-                  {loading && <Loader size="tiny" inline text="" />}
-                  <span>{isNew ? "Create Category" : "Update Category"}</span>
-                </button>
-              </div>
-            </form>
-
-            {!isNew && (
-              <div className="mt-12 pt-8 border-t border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Sub-Categories</h2>
-
-                <div className="bg-gray-50 rounded-xl p-6 mb-8">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">{editingSubCategoryId ? 'Edit Sub-Category' : 'Add New Sub-Category'}</h3>
-                  <form onSubmit={handleSubCategorySubmit} className="space-y-4">
-                    <div>
-                      <label className="block font-medium text-gray-700 text-sm">Name</label>
-                      <input type="text" name="name" value={currentSubCategory.name} onChange={handleSubCategoryChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500" required />
-                    </div>
-                    <div>
-                      <label className="block font-medium text-gray-700 text-sm">Description</label>
-                      <textarea name="description" value={currentSubCategory.description} onChange={handleSubCategoryChange} rows={3} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500" required />
-                    </div>
-                    <div>
-                      <label className="block font-medium text-gray-700 text-sm">Sub-Category Image</label>
-                      <div
-                        className={`mt-1 border-2 border-dashed rounded-lg p-4 text-center transition-colors ${subCategoryDragOver.image
-                          ? 'border-blue-400 bg-blue-50'
-                          : 'border-gray-300 hover:border-gray-400'
-                          }`}
-                        onDragOver={(e) => handleSubCategoryDragOver(e, 'image')}
-                        onDragLeave={(e) => handleSubCategoryDragLeave(e, 'image')}
-                        onDrop={(e) => handleSubCategoryDrop(e, 'image')}
-                      >
-                        {subCategoryPreviewUrls.image ? (
-                          <div className="space-y-2">
-                            <img
-                              src={subCategoryPreviewUrls.image}
-                              alt="Preview"
-                              className="mx-auto h-20 w-20 object-cover rounded-lg"
+                <form onSubmit={handleSubCategorySubmit} className="p-5 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <input type="text" name="name" value={currentSubCategory.name} onChange={handleSubCategoryChange} className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-sm" required placeholder="Sub-category Name" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea name="description" value={currentSubCategory.description} onChange={handleSubCategoryChange} rows={3} className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-sm" required placeholder="Short description..." />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
+                    <div
+                      className={`mt-1 border-2 border-dashed rounded-lg p-4 text-center transition-all ${subCategoryDragOver.image
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+                        }`}
+                      onDragOver={(e) => handleSubCategoryDragOver(e, 'image')}
+                      onDragLeave={(e) => handleSubCategoryDragLeave(e, 'image')}
+                      onDrop={(e) => handleSubCategoryDrop(e, 'image')}
+                    >
+                      {subCategoryPreviewUrls.image ? (
+                        <div className="space-y-2">
+                          <img
+                            src={subCategoryPreviewUrls.image}
+                            alt="Preview"
+                            className="mx-auto h-32 w-full object-cover rounded-lg shadow-sm"
+                          />
+                          <div className="flex justify-center pt-2">
+                            <button
+                              type="button"
+                              onClick={() => removeSubCategoryFile('image')}
+                              className="text-red-600 hover:text-red-800 text-sm font-medium flex items-center"
+                            >
+                              <X className="h-4 w-4 mr-1" /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 py-2">
+                          <ImagePlus className="mx-auto h-8 w-8 text-gray-400" />
+                          <div className="text-xs text-gray-600">
+                            <label htmlFor="subcategory-image-upload" className="cursor-pointer">
+                              <span className="text-custom-dark-blue hover:text-blue-500 font-medium">Upload</span> or drop
+                            </label>
+                            <input
+                              id="subcategory-image-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleSubCategoryFileChange('image', e.target.files[0])}
+                              className="hidden"
                             />
-                            <div className="flex justify-center space-x-2">
-                              <button
-                                type="button"
-                                onClick={() => removeSubCategoryFile('image')}
-                                className="text-red-600 hover:text-red-800 text-sm"
-                              >
-                                <X className="h-4 w-4" />
-                              </button>
-                            </div>
                           </div>
-                        ) : (
-                          <div className="space-y-2">
-                            <ImagePlus className="mx-auto h-8 w-8 text-gray-400" />
-                            <div className="text-sm text-gray-600">
-                              <label htmlFor="subcategory-image-upload" className="cursor-pointer">
-                                <span className="text-blue-600 hover:text-blue-800">Click to upload</span> or drag and drop
-                              </label>
-                              <input
-                                id="subcategory-image-upload"
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => handleSubCategoryFileChange('image', e.target.files[0])}
-                                className="hidden"
-                              />
-                            </div>
-                            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-end space-x-3">
-                      {editingSubCategoryId && (
-                        <button type="button" onClick={handleCancelEdit} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                        </div>
                       )}
-                      <button type="submit" disabled={subCategoryLoading} className="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center">
-                        {subCategoryLoading && <Loader size="tiny" inline text="" />}
-                        {editingSubCategoryId ? 'Update' : 'Add Sub-Category'}
-                      </button>
                     </div>
-                  </form>
-                </div>
+                  </div>
+                  <div className="flex items-center justify-end space-x-3 pt-2">
+                    {editingSubCategoryId && (
+                      <button type="button" onClick={handleCancelEdit} className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    )}
+                    <button type="submit" disabled={subCategoryLoading} className="w-full px-4 py-2 text-sm font-medium text-white bg-custom-dark-blue rounded-lg hover:bg-opacity-90 flex items-center justify-center shadow-md">
+                      {subCategoryLoading && <Loader size="tiny" inline text="" />}
+                      {editingSubCategoryId ? 'Update' : 'Add Sub-Category'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
 
-                <div className="space-y-4">
-                  {subCategories.length > 0 ? (
-                    subCategories.map((sub) => (
-                      <div key={sub._id} className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center space-x-4">
-                          {sub.image && (
+            {/* List Column */}
+            <div className="lg:col-span-2">
+              <div className="space-y-4">
+                {subCategories.length > 0 ? (
+                  subCategories.map((sub) => (
+                    <div key={sub._id} className="group flex items-start sm:items-center justify-between bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-200">
+                      <div className="flex items-start sm:items-center space-x-4">
+                        <div className="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                          {sub.image ? (
                             <img
                               src={sub.image}
                               alt={sub.name}
-                              className="h-12 w-12 object-cover rounded-lg"
+                              className="h-full w-full object-cover"
                               onError={(e) => {
                                 e.target.style.display = 'none';
+                                e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
+                                e.target.parentElement.innerHTML = '<svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
                               }}
                             />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center">
+                              <ImagePlus className="w-6 h-6 text-gray-400" />
+                            </div>
                           )}
-                          <div>
-                            <p className="font-semibold text-gray-800">{sub.name}</p>
-                            <p className="text-sm text-gray-600">{sub.description}</p>
-                          </div>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <button onClick={() => handleEditClick(sub)} className="p-2 text-gray-500 hover:text-blue-600 rounded-full hover:bg-gray-100">
-                            <Pencil className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => handleDeleteSubCategory(sub._id)} className="p-2 text-gray-500 hover:text-red-600 rounded-full hover:bg-gray-100">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 group-hover:text-custom-dark-blue transition-colors">{sub.name}</h4>
+                          <p className="text-sm text-gray-500 line-clamp-2 mt-0.5">{sub.description}</p>
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 bg-gray-50 rounded-lg">
-                      <p className="text-gray-500">No sub-categories found. Add one using the form above.</p>
+                      <div className="flex items-center space-x-2 ml-4">
+                        <button onClick={() => handleEditClick(sub)} className="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors" title="Edit">
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDeleteSubCategory(sub._id)} className="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12 bg-white rounded-xl border border-gray-200 border-dashed">
+                    <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                      <ImagePlus className="w-6 h-6 text-gray-400" />
+                    </div>
+                    <h3 className="text-sm font-medium text-gray-900">No sub-categories yet</h3>
+                    <p className="text-sm text-gray-500 mt-1">Get started by creating a new sub-category.</p>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

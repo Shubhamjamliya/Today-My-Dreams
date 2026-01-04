@@ -56,7 +56,7 @@ export default function WeeklyBestsellers() {
           urlParams.append('city', selectedCity);
         }
 
-        const res = await fetch(`${config.API_URLS.SHOP}/section/bestsellers?${urlParams.toString()}`);
+        const res = await fetch(`${config.API_URLS.PRODUCTS}/section/bestsellers?${urlParams.toString()}`);
         if (!res.ok) {
           throw new Error(`Failed to fetch bestseller products: ${res.status} ${res.statusText}`);
         }
@@ -259,7 +259,7 @@ export default function WeeklyBestsellers() {
             <div className="max-w-md mx-auto">
 
               <Link
-                to="/shop"
+                to="/services"
                 // FIX: Added 'group' class to make the hover animation on the SVG work
                 className="group inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-[#FCD24C] to-[#FCD24C] text-white rounded-xl font-semibold  transition-all duration-300 text-sm shadow-lg hover:shadow-xl"
               >

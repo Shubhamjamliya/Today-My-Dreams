@@ -3,7 +3,9 @@ import './App.css';
 import './styles/blog.css';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import { Outlet } from 'react-router-dom';
 
 
 import Loader from './components/Loader';
@@ -28,6 +30,9 @@ const FloatingContactButton = lazy(() => import('./components/FloatingContactBut
 // Lazy load pages for code splitting
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const Shop = lazy(() => import('./pages/Shop'));
+const ShopCart = lazy(() => import('./pages/ShopCart'));
+const ShopCheckout = lazy(() => import('./pages/ShopCheckout'));
+const Service = lazy(() => import('./pages/Service'));
 const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
 const Account = lazy(() => import('./pages/Account'));
@@ -181,185 +186,7 @@ function AppContent() {
 
   const seoData = getSEOConfig();
 
-  // Helper for customer layout to avoid code duplication
-  const CustomerLayout = () => (
-    <div className="min-h-screen flex flex-col">
-      <PerformanceMonitor />
-      <SEO {...seoData} />
-      <Header />
-      <div className="flex-grow w-full">
-        <Routes>
-          <Route path="/" element={
-            <main>
-              <ErrorBoundary>
-                <Hero />
-              </ErrorBoundary>
-              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-                <ErrorBoundary>
-                  <Categories />
-                </ErrorBoundary>
-              </Suspense>
-              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-                <BirthdaySubcategories />
-              </Suspense>
-              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-                <CatCard />
-              </Suspense>
-              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-                <ErrorBoundary>
-                  <VideoGallery />
-                </ErrorBoundary>
-              </Suspense>
-              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-                <ErrorBoundary>
-                  <Testimonials />
-                </ErrorBoundary>
-              </Suspense>
-              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-                <ErrorBoundary>
-                  <MissionVision />
-                </ErrorBoundary>
-              </Suspense>
-              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-                <Offerpage />
-              </Suspense>
-              <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-                <ErrorBoundary>
-                  <InfoSection />
-                </ErrorBoundary>
-              </Suspense>
-            </main>
-          } />
 
-          <Route path="/about" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <AboutUs />
-            </Suspense>
-          } />
-          <Route path="/contact" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <ContactPage />
-            </Suspense>
-          } />
-          <Route path="/shop" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Shop />
-            </Suspense>
-          } />
-          <Route path="/subcategory" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <SubCategoryPage />
-            </Suspense>
-          } />
-          <Route path="/login" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Login />
-            </Suspense>
-          } />
-          <Route path="/signup" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Signup />
-            </Suspense>
-          } />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/account" element={
-            <ProtectedRoute>
-              <Suspense fallback={<Loader size="md" text="Loading..." />}>
-                <Account />
-              </Suspense>
-            </ProtectedRoute>
-          } />
-          <Route path="/wishlist" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Wishlist />
-            </Suspense>
-          } />
-
-          <Route path="/checkout" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Checkout />
-            </Suspense>
-          } />
-          <Route path="/order-confirmation/:id" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <OrderConfirmation />
-            </Suspense>
-          } />
-          <Route path="/product/:id" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <ProductView />
-            </Suspense>
-          } />
-          <Route path="/forgot-password" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <ForgotPassword />
-            </Suspense>
-          } />
-          <Route path="/policies" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Policies />
-            </Suspense>
-          } />
-          <Route path="/venues" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <VenuePage />
-            </Suspense>
-          } />
-          <Route path="/venues/:venueId" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <ViewVenue />
-            </Suspense>
-          } />
-          <Route path="/payment/status" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <PaymentStatus />
-            </Suspense>
-          } />
-          <Route path="/blog" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Blog />
-            </Suspense>
-          } />
-          <Route path="/blog/:slug" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <BlogPost />
-            </Suspense>
-          } />
-          <Route path="/videos" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <Videos />
-            </Suspense>
-          } />
-          <Route path="/app" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <AppDownload />
-            </Suspense>
-          } />
-          <Route path="*" element={
-            <Suspense fallback={<Loader size="md" text="Loading..." />}>
-              <NotFound />
-            </Suspense>
-          } />
-        </Routes>
-      </div>
-
-      <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-        <Footer />
-      </Suspense>
-      <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-        <ScrollToTop />
-      </Suspense>
-      {/* Show FloatingContactButton on all pages except ProductView and Admin */}
-      {!location.pathname.startsWith('/product/') && !location.pathname.startsWith('/admin') && (
-        <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-          <FloatingContactButton />
-        </Suspense>
-      )}
-      <Toaster position="top-right" />
-    </div>
-  );
-
-  // Main Route Structure
   return (
     <Routes>
       {/* Admin Section */}
@@ -369,20 +196,210 @@ function AppContent() {
         </Suspense>
       } />
 
-      {/* Customer Section - Matches everything else */}
-      <Route path="/*" element={<CustomerLayout />} />
+      {/* Customer Section */}
+      <Route element={<CustomerLayout seoData={seoData} />}>
+        <Route path="/" element={
+          <main>
+            <ErrorBoundary>
+              <Hero />
+            </ErrorBoundary>
+            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+              <ErrorBoundary>
+                <Categories />
+              </ErrorBoundary>
+            </Suspense>
+            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+              <BirthdaySubcategories />
+            </Suspense>
+            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+              <CatCard />
+            </Suspense>
+            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+              <ErrorBoundary>
+                <VideoGallery />
+              </ErrorBoundary>
+            </Suspense>
+            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+              <ErrorBoundary>
+                <Testimonials />
+              </ErrorBoundary>
+            </Suspense>
+            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+              <ErrorBoundary>
+                <MissionVision />
+              </ErrorBoundary>
+            </Suspense>
+            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+              <Offerpage />
+            </Suspense>
+            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+              <ErrorBoundary>
+                <InfoSection />
+              </ErrorBoundary>
+            </Suspense>
+          </main>
+        } />
+
+        <Route path="/about" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <AboutUs />
+          </Suspense>
+        } />
+        <Route path="/contact" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <ContactPage />
+          </Suspense>
+        } />
+        <Route path="/shop" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <Shop />
+          </Suspense>
+        } />
+        <Route path="/shop/cart" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <ShopCart />
+          </Suspense>
+        } />
+        <Route path="/shop/checkout" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <ShopCheckout />
+          </Suspense>
+        } />
+        <Route path="/services" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <Service />
+          </Suspense>
+        } />
+        <Route path="/subcategory" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <SubCategoryPage />
+          </Suspense>
+        } />
+        <Route path="/login" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <Login />
+          </Suspense>
+        } />
+        <Route path="/signup" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <Signup />
+          </Suspense>
+        } />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/account" element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Account />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/wishlist" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <Wishlist />
+          </Suspense>
+        } />
+
+        <Route path="/checkout" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <Checkout />
+          </Suspense>
+        } />
+        <Route path="/order-confirmation/:id" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <OrderConfirmation />
+          </Suspense>
+        } />
+        <Route path="/product/:id" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <ProductView />
+          </Suspense>
+        } />
+        <Route path="/forgot-password" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <ForgotPassword />
+          </Suspense>
+        } />
+        <Route path="/policies" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <Policies />
+          </Suspense>
+        } />
+        <Route path="/venues" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <VenuePage />
+          </Suspense>
+        } />
+        <Route path="/venues/:venueId" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <ViewVenue />
+          </Suspense>
+        } />
+        <Route path="/payment/status" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <PaymentStatus />
+          </Suspense>
+        } />
+        <Route path="/blog" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <Blog />
+          </Suspense>
+        } />
+        <Route path="/blog/:slug" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <BlogPost />
+          </Suspense>
+        } />
+        <Route path="/videos" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <Videos />
+          </Suspense>
+        } />
+        <Route path="/app" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <AppDownload />
+          </Suspense>
+        } />
+        <Route path="*" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <NotFound />
+          </Suspense>
+        } />
+      </Route>
     </Routes>
   );
 }
 
+// ---------------------------------------------------------
+// Helper for customer layout to avoid code duplication
+// ---------------------------------------------------------
+const CustomerLayout = ({ seoData }) => (
+  <div className="min-h-screen flex flex-col font-inter">
+    <PerformanceMonitor />
+    <SEO {...seoData} />
+    <Header />
+    <div className="flex-grow w-full">
+      <Outlet />
+    </div>
+
+    <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+      <Footer />
+    </Suspense>
+    <Suspense fallback={<Loader size="sm" text="Loading..." />}>
+      <ScrollToTop />
+    </Suspense>
+    <Toaster position="top-right" />
+  </div>
+);
+
+
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
+      <CartProvider>
         <Router>
           <AppContent />
         </Router>
-      </AuthProvider>
+      </CartProvider>
     </ErrorBoundary>
   );
 }

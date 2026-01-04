@@ -55,7 +55,7 @@ const Categories = () => {
   }, [selectedCity]);
 
   const handleCategoryClick = (categoryName) => {
-    navigate(`/shop?category=${encodeURIComponent(categoryName)}`);
+    navigate(`/services?category=${encodeURIComponent(categoryName)}`);
   };
 
   const handleBackToCategories = () => {

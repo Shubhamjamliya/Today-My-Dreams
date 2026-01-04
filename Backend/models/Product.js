@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
   },
   // ... other fields like material, description, etc. are unchanged
   material: { type: String, required: true, trim: true },
-    
+
   size: { type: String, required: true, trim: true },
   colour: { type: String, required: true, trim: true },
 
@@ -26,7 +26,7 @@ const productSchema = new mongoose.Schema({
     required: false
   },
 
-  
+
   utility: { type: String, required: true, trim: true },
   care: { type: String, required: true, trim: true },
   included: [{ type: String, trim: true }],

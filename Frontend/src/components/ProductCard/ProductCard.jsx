@@ -2,16 +2,32 @@ import { Link } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import config from '../../config/config.js';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, TrendingUp, Heart, Award } from 'lucide-react';
+import { Star, TrendingUp, Heart, Award, ShoppingCart, Calendar } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
+import { toast } from 'react-hot-toast';
 
 const ProductCard = ({ product }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
+  const { addToCart } = useCart();
+  const [adding, setAdding] = useState(false);
+
   if (!product) return null;
 
   const productId = product._id || product.id;
   if (!productId) return null;
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setAdding(true);
+    addToCart(product, 1);
+    setTimeout(() => {
+      setAdding(false);
+      toast.success('Added to cart!');
+    }, 500);
+  };
 
   const { regularPrice, currentPrice, discountPercentage, rating } = useMemo(() => {
     const reg = typeof product.regularPrice === 'number' ? product.regularPrice : 0;
@@ -48,11 +64,11 @@ const ProductCard = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
     setCurrentImageIndex(index);
-    setIsImageLoaded(false); // Reset load state for fade effect on change
+    setIsImageLoaded(false);
   };
 
   return (
-    <Link to={`/product/${productId}`} className="block h-full">
+    <Link to={`/product/${productId}${product.module ? `?module=${product.module}` : ''}`} className="block h-full">
       <div
         className="bg-white rounded-2xl overflow-hidden group border border-slate-100 transition-all duration-300 
                    hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1 relative h-full flex flex-col"
@@ -122,19 +138,53 @@ const ProductCard = ({ product }) => {
             {product.name || 'Unnamed Product'}
           </h3>
 
-          <div className="mt-4 flex items-end gap-2">
-            <p className="text-lg font-black text-slate-900">
-              ₹{currentPrice.toFixed(0)}
-            </p>
-            {discountPercentage > 0 && regularPrice > 0 && (
-              <div className="flex flex-col items-start leading-none mb-0.5">
-                <p className="text-xs text-slate-400 line-through decoration-slate-400/50">
-                  ₹{regularPrice.toFixed(0)}
-                </p>
-                <p className="text-[10px] font-bold text-green-600">
-                  {discountPercentage}% OFF
-                </p>
-              </div>
+          <div className="mt-4 flex items-center justify-between gap-2 overflow-hidden">
+            <div className="flex items-end gap-2">
+              <p className="text-lg font-black text-slate-900">
+                ₹{currentPrice.toFixed(0)}
+              </p>
+              {discountPercentage > 0 && regularPrice > 0 && (
+                <div className="flex flex-col items-start leading-none mb-0.5">
+                  <p className="text-xs text-slate-400 line-through decoration-slate-400/50">
+                    ₹{regularPrice.toFixed(0)}
+                  </p>
+                  <p className="text-[10px] font-bold text-green-600">
+                    {discountPercentage}% OFF
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {product.module === 'shop' && (
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={handleAddToCart}
+                disabled={adding}
+                className="p-2 bg-slate-900 text-white rounded-xl shadow-lg shadow-slate-200 hover:bg-slate-800 transition-colors"
+                aria-label="Add to cart"
+              >
+                {adding ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <ShoppingCart className="w-5 h-5" />
+                )}
+              </motion.button>
+            )}
+
+            {/* Book Now button for services */}
+            {product.module !== 'shop' && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-[#FCD24C] to-[#F5A623] 
+                           text-slate-900 rounded-xl shadow-md shadow-[#FCD24C]/20
+                           hover:shadow-lg hover:shadow-[#FCD24C]/30 transition-all duration-300
+                           text-xs font-bold"
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Book</span>
+              </motion.div>
             )}
           </div>
         </div>

@@ -4,6 +4,7 @@ import { Plus, Search, Grid, List, Image as ImageIcon, AlertCircle, ChevronLeft,
 import apiService from "../services/api";
 import Loader from "../components/Loader";
 import { CardGridSkeleton } from "../components/Skeleton";
+import ShopProductModal from "../components/ShopProductModal";
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return '';
@@ -11,7 +12,7 @@ const getImageUrl = (imgPath) => {
   return `https://pawnbackend-xmqa.onrender.com${imgPath}`;
 };
 
-const Products = () => {
+const Products = ({ module }) => {
   const [products, setProducts] = useState([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState({});
   const [viewMode, setViewMode] = useState('grid');
@@ -20,6 +21,7 @@ const Products = () => {
   const [imageErrors, setImageErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
 
   const sections = [
     { id: 'all', label: 'All Products' },
@@ -34,11 +36,14 @@ const Products = () => {
       setError(null);
       let response;
       if (selectedSection === 'all') {
-        response = await apiService.getProducts();
+        response = await apiService.getProducts({ module });
       } else {
-        response = await apiService.getProductsBySection(selectedSection);
+        response = await apiService.getProductsBySection(selectedSection, { module });
       }
-      setProducts(response.data.products || response.data || []);
+
+      let allProducts = response.data.products || response.data || [];
+
+      setProducts(allProducts);
     } catch (error) {
       console.error("Failed to fetch products", error);
       setError("Failed to load products. Please try again later.");
@@ -49,13 +54,13 @@ const Products = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [selectedSection]);
+  }, [selectedSection, module]);
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         setLoading(true);
-        await apiService.deleteProduct(id);
+        await apiService.deleteProduct(id, { module });
         await fetchProducts();
       } catch (error) {
         console.error("Failed to delete product", error);
@@ -221,14 +226,30 @@ const Products = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
-        <h1 className="text-2xl font-semibold text-gray-900">Products</h1>
-        <Link to="/admin/products/edit/new" className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-          <Plus className="w-5 h-5 mr-2" />
-          Add New Product
-        </Link>
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">{module === 'shop' ? 'Shop Products' : 'Products'}</h1>
+        {module === 'shop' ? (
+          <button
+            onClick={() => setIsProductModalOpen(true)}
+            className="inline-flex items-center bg-custom-dark-blue hover:bg-opacity-90 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Add New Shop Product
+          </button>
+        ) : (
+          <Link to={`/admin/products/edit/new${module ? `?module=${module}` : ''}`} className="inline-flex items-center bg-custom-dark-blue hover:bg-opacity-90 text-white px-4 py-2 rounded-lg transition-colors">
+            <Plus className="w-5 h-5 mr-2" />
+            Add New Product
+          </Link>
+        )}
       </div>
+
+      <ShopProductModal
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
+        onProductAdded={fetchProducts}
+      />
 
       <div className="mb-6 space-y-4">
         <div className="flex flex-wrap gap-2">
@@ -239,7 +260,7 @@ const Products = () => {
           ))}
         </div>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-          <div className="relative flex-1 max-w-md">
+          <div className="space-y-6">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"

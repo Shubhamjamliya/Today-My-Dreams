@@ -120,6 +120,13 @@ const AdminRoutes = () => {
 
       <Route path="cities" element={<ProtectedRoute><Cities /></ProtectedRoute>} />
 
+      {/* Shop Specific Routes */}
+      <Route path="shop/categories" element={<ProtectedRoute><Categories module="shop" /></ProtectedRoute>} />
+      <Route path="shop/subcategories" element={<ProtectedRoute><Categories module="shop" showSubcategoriesOnly={true} /></ProtectedRoute>} />
+      <Route path="shop/products" element={<ProtectedRoute><Products module="shop" /></ProtectedRoute>} />
+      <Route path="shop/products/edit/:id" element={<ProtectedRoute><EditProduct /></ProtectedRoute>} />
+      <Route path="shop/orders" element={<ProtectedRoute><Orders module="shop" /></ProtectedRoute>} />
+
       <Route path="addons" element={<ProtectedRoute><Addons /></ProtectedRoute>} />
       <Route path="addons/create" element={<ProtectedRoute><CreateAddon /></ProtectedRoute>} />
       <Route path="addons/edit/:id" element={<ProtectedRoute><EditAddon /></ProtectedRoute>} />
