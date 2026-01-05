@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, ChevronLeft, ChevronRight, X, Star, Award, MessageCircle, Lightbulb } from 'lucide-react';
 import VideoCard from './VideoCard';
 import config from '../../config/config';
-import Loader from '../Loader';
 import { VideoSkeleton } from '../Loader/Skeleton';
 
-const VideoGallery = ({ 
-  title = "Our Videos", 
-  subtitle = "Explore our work and customer reviews",
+const VideoGallery = ({
+  title = "Our Gallery",
+  subtitle = "Moments captured in time",
   className = ""
 }) => {
   const [activeTab, setActiveTab] = useState('all');
@@ -16,13 +15,14 @@ const VideoGallery = ({
   const [loading, setLoading] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollContainerRef = useRef(null);
 
   const categories = [
-    { id: 'all', label: 'All Videos', icon: <Play className="w-4 h-4" />, color: 'from-yellow-500 to-orange-500' },
-    { id: 'review', label: 'Customer Reviews', icon: <Star className="w-4 h-4" />, color: 'from-yellow-500 to-orange-500' },
-    { id: 'work', label: 'Our Work', icon: <Award className="w-4 h-4" />, color: 'from-yellow-500 to-orange-500' },
-    { id: 'testimonial', label: 'Testimonials', icon: <MessageCircle className="w-4 h-4" />, color: 'from-yellow-500 to-orange-500' },
-    { id: 'demo', label: 'Demo/How-to', icon: <Lightbulb className="w-4 h-4" />, color: 'from-yellow-500 to-orange-500' }
+    { id: 'all', label: 'All', icon: <Play className="w-3 h-3" /> },
+    { id: 'review', label: 'Reviews', icon: <Star className="w-3 h-3" /> },
+    { id: 'work', label: 'Highlights', icon: <Award className="w-3 h-3" /> },
+    { id: 'testimonial', label: 'Stories', icon: <MessageCircle className="w-3 h-3" /> },
+    { id: 'demo', label: 'Guides', icon: <Lightbulb className="w-3 h-3" /> }
   ];
 
   useEffect(() => {
@@ -33,19 +33,13 @@ const VideoGallery = ({
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      
-      if (activeTab !== 'all') {
-        params.append('category', activeTab);
-      }
-      params.append('limit', '20'); // Get more videos for the gallery
-      
+      if (activeTab !== 'all') params.append('category', activeTab);
+      params.append('limit', '20');
+
       const response = await fetch(`${config.API_URLS.VIDEOS}?${params}`);
-      
       if (response.ok) {
         const data = await response.json();
         setVideos(data.videos || []);
-      } else {
-        console.error('Failed to fetch videos');
       }
     } catch (error) {
       console.error('Error fetching videos:', error);
@@ -54,14 +48,20 @@ const VideoGallery = ({
     }
   };
 
+  const scroll = (direction) => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollAmount = direction === 'left' ? -340 : 340;
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   const handleVideoSelect = (video, index) => {
     setSelectedVideo(video);
     setCurrentIndex(index);
   };
 
-  const handleCloseModal = () => {
-    setSelectedVideo(null);
-  };
+  const handleCloseModal = () => setSelectedVideo(null);
 
   const nextVideo = () => {
     const nextIndex = (currentIndex + 1) % videos.length;
@@ -77,12 +77,10 @@ const VideoGallery = ({
 
   if (loading) {
     return (
-      <section className={`pt-2 sm:pt-4 lg:pt-6 ${className}`}>
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
-              <VideoSkeleton key={i} />
-            ))}
+      <section className={`py-12 bg-slate-900 ${className}`}>
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => <VideoSkeleton key={i} />)}
           </div>
         </div>
       </section>
@@ -90,252 +88,163 @@ const VideoGallery = ({
   }
 
   return (
-    <section className={`pt-2 sm:pt-4 lg:pt-6 ${className}`}>
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6">
-        {/* Premium Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-6 sm:mb-8 lg:mb-10"
-        >
-          <div className="relative">
-            {/* Background decoration */}
-            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full blur-3xl"></div>
-            
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="relative text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-yellow-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent mb-3 sm:mb-4 px-2"
-            >
-              {title}
-            </motion.h2>
-            
-           
-          </div>
-        </motion.div>
-
-        {/* Premium Category Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="mb-6 sm:mb-8 lg:mb-10"
-        >
-          {/* Mobile: Horizontal scroll, Desktop: Flex wrap */}
-          <div className="flex overflow-x-auto scrollbar-hide gap-2 sm:gap-3 sm:flex-wrap sm:justify-center pb-2 sm:pb-0">
-            {categories.map((category) => (
-              <motion.button
-                key={category.id}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveTab(category.id)}
-                className={`group relative px-3 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-300 overflow-hidden flex-shrink-0 ${
-                  activeTab === category.id
-                    ? `bg-gradient-to-r ${category.color} text-white shadow-xl shadow-yellow-500/25`
-                    : 'bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-lg border border-gray-200'
-                }`}
-              >
-                {/* Active tab glow effect */}
-                {activeTab === category.id && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
-                )}
-                
-                <div className="relative flex items-center gap-1 sm:gap-2 lg:gap-3">
-                  <div className={`transition-transform duration-300 ${activeTab === category.id ? 'scale-110' : 'group-hover:scale-110'}`}>
-                    {category.icon}
-                  </div>
-                  <span className="whitespace-nowrap text-xs sm:text-sm">{category.label}</span>
-                </div>
-                
-                {/* Hover effect */}
-                <div className={`absolute inset-0 bg-gradient-to-r ${category.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-xl sm:rounded-2xl`}></div>
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Premium Videos Grid */}
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
-        >
-          <AnimatePresence mode="wait">
-            {videos.map((video, index) => (
-              <motion.div
-                key={video._id}
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -30, scale: 0.9 }}
-                transition={{ 
-                  delay: index * 0.1,
-                  duration: 0.5,
-                  type: "spring",
-                  stiffness: 100
-                }}
-                className="group"
-              >
-                <VideoCard
-                  video={video}
-                  className="cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20"
-                  onClick={() => handleVideoSelect(video, index)}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* Premium No Videos Message */}
-        {videos.length === 0 && !loading && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center py-16"
-          >
-            <div className="relative">
-              {/* Background decoration */}
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 rounded-full blur-2xl"></div>
-              
-              <motion.div 
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="relative text-gray-400 mb-6"
-              >
-                <Play size={64} className="mx-auto" />
-              </motion.div>
-              
-              <motion.h3 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-3"
-              >
-                No videos found
-              </motion.h3>
-              
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="text-gray-600 text-lg"
-              >
-                {activeTab === 'all' 
-                  ? 'No videos available at the moment.' 
-                  : `No ${categories.find(c => c.id === activeTab)?.label.toLowerCase()} available.`}
-              </motion.p>
-            </div>
-          </motion.div>
-        )}
-
-      
+    <section className={`py-16 bg-slate-900 relative overflow-hidden ${className}`}>
+      {/* Cinematic Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px]"></div>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
       </div>
 
-      {/* Premium Video Modal */}
-      {selectedVideo && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 z-50"
-          onClick={handleCloseModal}
-        >
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+
+        {/* Header & Tabs Row */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
           <motion.div
-            initial={{ scale: 0.6, opacity: 0, y: 50 }}
-            animate={{ scale: 0.7, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: 50 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] mx-2 sm:mx-0"
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            className="text-left"
           >
-            {/* Premium Close Button */}
-            <motion.button
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={handleCloseModal}
-              className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full flex items-center justify-center hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 z-10"
-            >
-              <X size={16} className="sm:w-6 sm:h-6" />
-            </motion.button>
+            <span className="text-amber-500 font-bold tracking-widest uppercase text-xs mb-2 block">Watch & Explore</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-white font-serif">{title}</h2>
+          </motion.div>
 
-            {/* Premium Navigation Buttons */}
-            {videos.length > 1 && (
-              <>
-                <motion.button
-                  whileHover={{ scale: 1.1, x: -5 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={prevVideo}
-                  className="absolute left-2 sm:left-6 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-14 sm:h-14 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/80 hover:shadow-xl transition-all duration-300 z-10"
-                >
-                  <ChevronLeft size={20} className="sm:w-7 sm:h-7" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.1, x: 5 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={nextVideo}
-                  className="absolute right-2 sm:right-6 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-14 sm:h-14 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/80 hover:shadow-xl transition-all duration-300 z-10"
-                >
-                  <ChevronRight size={20} className="sm:w-7 sm:h-7" />
-                </motion.button>
-              </>
-            )}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            className="flex flex-wrap gap-2 justify-center md:justify-end"
+          >
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setActiveTab(category.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${activeTab === category.id
+                  ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/20'
+                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700'
+                  }`}
+              >
+                {category.icon}
+                {category.label}
+              </button>
+            ))}
+          </motion.div>
+        </div>
 
-            {/* Premium Video Player Container */}
-            <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-black/20 border border-white/20">
-              <div className="aspect-video relative">
-                <video
-                  src={selectedVideo.video}
-                  className="w-full h-full object-cover"
-                  controls
-                  autoPlay
-                />
-                {/* Video overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
-              </div>
-              
-              <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-r from-white to-gray-50">
-                <motion.h3 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-3 sm:mb-4"
+        {/* Carousel Container */}
+        <div className="relative group/carousel">
+          {/* Nav Buttons - Always Visible & Styled */}
+          <button
+            onClick={() => scroll('left')}
+            className="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 bg-white text-slate-900 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-110 hover:bg-amber-500 transition-all duration-300 border-4 border-slate-900"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft size={28} />
+          </button>
+
+          <button
+            onClick={() => scroll('right')}
+            className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 bg-white text-slate-900 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-110 hover:bg-amber-500 transition-all duration-300 border-4 border-slate-900"
+            aria-label="Scroll right"
+          >
+            <ChevronRight size={28} />
+          </button>
+
+          {/* Scrollable List */}
+          <div
+            ref={scrollContainerRef}
+            className="flex overflow-x-auto gap-5 pb-8 snap-x snap-mandatory scrollbar-hide px-2 scroll-smooth min-h-[400px]"
+          >
+            <AnimatePresence mode="wait">
+              {videos.map((video, index) => (
+                <motion.div
+                  key={video._id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  className="group relative min-w-[260px] md:min-w-[320px] snap-center"
                 >
-                  {selectedVideo.title}
-                </motion.h3>
-                
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6"
-                >
-                  <span className={`px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold shadow-lg ${
-                    selectedVideo.category === 'review' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' :
-                    selectedVideo.category === 'work' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' :
-                    selectedVideo.category === 'testimonial' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' :
-                    'bg-gradient-to-r from-yellow-400 to-orange-500 text-white'
-                  }`}>
-                    {categories.find(c => c.id === selectedVideo.category)?.label}
-                  </span>
-                  
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Play size={14} className="sm:w-4 sm:h-4" />
-                    <span className="font-medium text-sm sm:text-base">{currentIndex + 1} of {videos.length}</span>
+                  {/* Card Wrapper for Styling */}
+                  <div className="bg-slate-800 rounded-2xl p-2 h-full border border-slate-700 hover:border-amber-500/50 transition-colors shadow-lg">
+                    <VideoCard
+                      video={video}
+                      className="cursor-pointer transform transition-all duration-300 hover:brightness-110 h-full rounded-xl overflow-hidden bg-slate-900"
+                      onClick={() => handleVideoSelect(video, index)}
+                    />
+                    {/* Optional Overlay info if VideoCard doesn't have it, but VideoCard usually does. 
+                                    If VideoCard titles are dark, they might be invisible on dark bg. 
+                                    Assuming VideoCard handles its own internal layout. If it's transparent, the bg-slate-800 helps.
+                                */}
                   </div>
                 </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {videos.length === 0 && !loading && (
+              <div className="w-full text-center py-20">
+                <div className="text-6xl mb-4 opacity-20">🎬</div>
+                <p className="text-slate-500 text-xl font-medium">No videos found in this category.</p>
               </div>
-            </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Full Screen Cinema Modal */}
+      <AnimatePresence>
+        {selectedVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 backdrop-blur-xl flex items-center justify-center z-50 p-4 lg:p-10"
+            onClick={handleCloseModal}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-6xl flex flex-col items-center justify-center relative"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Close Btn */}
+              <button
+                onClick={handleCloseModal}
+                className="absolute -top-12 right-0 md:right-0 z-50 text-white/50 hover:text-white transition-colors flex items-center gap-2"
+              >
+                <span className="uppercase text-sm tracking-widest font-bold">Close</span>
+                <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center">
+                  <X size={20} />
+                </div>
+              </button>
+
+              {/* Modal Nav */}
+              {videos.length > 1 && (
+                <>
+                  <button onClick={prevVideo} className="absolute -left-4 md:-left-16 top-1/2 -translate-y-1/2 w-12 h-12 text-white hover:text-amber-500 transition-colors"><ChevronLeft size={48} /></button>
+                  <button onClick={nextVideo} className="absolute -right-4 md:-right-16 top-1/2 -translate-y-1/2 w-12 h-12 text-white hover:text-amber-500 transition-colors"><ChevronRight size={48} /></button>
+                </>
+              )}
+
+              {/* Video Player */}
+              <div className="w-full aspect-video bg-black rounded-lg shadow-2xl overflow-hidden ring-1 ring-white/10">
+                <video src={selectedVideo.video} controls autoPlay className="w-full h-full object-contain" />
+              </div>
+
+              {/* Info */}
+              <div className="w-full mt-6 flex justify-between items-start text-left">
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 font-serif">{selectedVideo.title}</h3>
+                  <p className="text-slate-400 max-w-2xl">{selectedVideo.description}</p>
+                </div>
+                <span className="px-4 py-2 bg-amber-500 text-slate-900 rounded-full text-sm font-bold uppercase tracking-wide">
+                  {categories.find(c => c.id === selectedVideo.category)?.label}
+                </span>
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
     </section>
   );
 };

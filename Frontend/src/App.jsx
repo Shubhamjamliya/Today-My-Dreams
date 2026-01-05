@@ -42,6 +42,7 @@ const Checkout = lazy(() => import('./pages/Checkout'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
 const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'));
+const Home = lazy(() => import('./pages/Home'));
 
 const Policies = lazy(() => import('./pages/Policies'));
 const PaymentStatus = lazy(() => import('./pages/PaymentStatus'));
@@ -188,51 +189,15 @@ function AppContent() {
           <VendorRoutes />
         </Suspense>
       } />
-
       {/* Customer Section */}
       <Route element={<CustomerLayout seoData={seoData} />}>
         <Route path="/" element={
-          <main>
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
             <ErrorBoundary>
-              <Hero />
+              <Home />
             </ErrorBoundary>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <ErrorBoundary>
-                <Categories />
-              </ErrorBoundary>
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <BirthdaySubcategories />
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <CatCard />
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <ErrorBoundary>
-                <VideoGallery />
-              </ErrorBoundary>
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <ErrorBoundary>
-                <Testimonials />
-              </ErrorBoundary>
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <ErrorBoundary>
-                <MissionVision />
-              </ErrorBoundary>
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <Offerpage />
-            </Suspense>
-            <Suspense fallback={<Loader size="sm" text="Loading..." />}>
-              <ErrorBoundary>
-                <InfoSection />
-              </ErrorBoundary>
-            </Suspense>
-          </main>
+          </Suspense>
         } />
-
         <Route path="/about" element={
           <Suspense fallback={<Loader size="md" text="Loading..." />}>
             <AboutUs />
@@ -358,7 +323,7 @@ function AppContent() {
           </Suspense>
         } />
       </Route>
-    </Routes>
+    </Routes >
   );
 }
 
