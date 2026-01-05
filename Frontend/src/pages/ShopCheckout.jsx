@@ -27,7 +27,7 @@ const ShopCheckout = () => {
   const navigate = useNavigate();
   const { cartItems, getCartTotal, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
-  const { selectedCity } = useCity();
+  const { selectedCity, selectedCityId } = useCity();
 
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState('shipping'); // shipping, payment
@@ -181,6 +181,7 @@ const ShopCheckout = () => {
         customerName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
+        cityId: selectedCityId,
         address: {
           street: formData.address,
           city: formData.city,
@@ -198,6 +199,7 @@ const ShopCheckout = () => {
         shippingCost: shipping,
         finalTotal: total,
         paymentMethod: formData.paymentMethod,
+        paymentStatus: 'pending',
         module: 'shop'
       };
 

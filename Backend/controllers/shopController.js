@@ -35,8 +35,8 @@ const getNestedShopCategories = async (req, res) => {
 const createShopCategory = async (req, res) => {
   try {
     const { name, description, sortOrder } = req.body;
-    const image = req.files?.image?.[0]?.path ? `${baseUrl}/todaymydream/data/categories/${req.files.image[0].filename}` : '';
-    const video = req.files?.video?.[0]?.path ? `${baseUrl}/todaymydream/data/videos/${req.files.video[0].filename}` : '';
+    const image = req.files?.image?.[0]?.path || '';
+    const video = req.files?.video?.[0]?.path || '';
 
     const category = new ShopCategory({ name, description, sortOrder, image, video });
     await category.save();
@@ -51,10 +51,10 @@ const updateShopCategory = async (req, res) => {
     const { id } = req.params;
     const updates = { ...req.body };
     if (req.files?.image?.[0]) {
-      updates.image = `${baseUrl}/todaymydream/data/categories/${req.files.image[0].filename}`;
+      updates.image = req.files.image[0].path;
     }
     if (req.files?.video?.[0]) {
-      updates.video = `${baseUrl}/todaymydream/data/videos/${req.files.video[0].filename}`;
+      updates.video = req.files.video[0].path;
     }
     const category = await ShopCategory.findByIdAndUpdate(id, updates, { new: true });
     res.json({ message: "Shop category updated", category });
@@ -165,23 +165,7 @@ const updateShopProduct = async (req, res) => {
     const updates = { ...req.body };
 
     // Handle Images
-    const imagePaths = [];
-    // If new files are uploaded, use them. 
-    // This logic might need refinement: 
-    // - If mainImage is uploaded, replace index 0.
-    // - If imageN is uploaded, replace index N.
-    // However, for simplicity and common usage, if files are sent, we might be appending or replacing.
-    // Ideally, we'd merge with existing images or replace specific indices.
-
-    // Fetch existing product to merge images if needed, or just handle what's sent.
-    // For now, let's assume if mainImage is present, we update it.
-
-    // Better strategy for update:
-    // If 'image' field is present in body (as string), it might be existing URL.
-    // If files are present, they are new uploads.
-
-    // Existing implementation of createShopProduct puts all paths in 'images' array.
-    // Let's grab the existing product first.
+    // Fetch existing product to merge images if needed
     const product = await ShopProduct.findById(id);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
@@ -191,9 +175,6 @@ const updateShopProduct = async (req, res) => {
     for (let i = 1; i <= 9; i++) {
       if (req.files[`image${i}`]?.[0]) currentImages[i] = req.files[`image${i}`][0].path;
     }
-
-    // Filter out nulls/undefined if array was sparse (though it init to empty)
-    // Actually, we want to keep positions consistent? Usually yes.
 
     updates.images = currentImages;
     // Main image is usually the first one
@@ -246,6 +227,19 @@ const getShopOrders = async (req, res) => {
   }
 };
 
+const deleteShopProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedProduct = await ShopProduct.findByIdAndDelete(id);
+    if (!deletedProduct) {
+      return res.status(404).json({ message: "Shop product not found" });
+    }
+    res.json({ message: "Shop product deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting shop product", error: error.message });
+  }
+};
+
 module.exports = {
   getShopCategories,
   createShopCategory,
@@ -259,6 +253,7 @@ module.exports = {
   getShopProduct,
   createShopProduct,
   updateShopProduct,
+  deleteShopProduct,
   getShopOrders,
   getNestedShopCategories
 };

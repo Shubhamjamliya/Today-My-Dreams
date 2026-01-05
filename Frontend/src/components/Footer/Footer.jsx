@@ -133,15 +133,13 @@ const Footer = () => {
   };
 
   const whyChooseUsPoints = [
-    { icon: <Award size={20} />, text: "Curated & Professional Venues" },
+    { icon: <Award size={20} />, text: "Professional Services" },
     { icon: <Sparkles size={20} />, text: "Bespoke & Creative Decorations" },
     { icon: <ThumbsUp size={20} />, text: "Seamless Booking Experience" },
   ];
 
   const usefulLinks = [
     { label: "About Us", link: "/about" },
-    { label: "Find a Venue", link: "/venues" },
-    { label: "List Your Venue", link: "/dashboard" },
     { label: "Contact Us", link: "/contact" },
     { label: "Blog", link: "/blog" },
     { label: "Policies", link: "/policies" },
@@ -198,7 +196,7 @@ const Footer = () => {
             {/* Socials Inline */}
             <div className="flex items-center gap-3">
               <a
-                href="https://www.facebook.com/profile.php?id=61580103717383"
+                href="https://www.facebook.com/profile.php?id=61586200673210#"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"
@@ -206,7 +204,7 @@ const Footer = () => {
                 <Facebook size={14} />
               </a>
               <a
-                href="https://www.instagram.com/todaymydream.official?igsh=MXBuaGhyenhqbHBmYw=="
+                href="https://www.instagram.com/today_my_dream"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"

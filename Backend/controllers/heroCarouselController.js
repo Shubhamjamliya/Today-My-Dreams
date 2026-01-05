@@ -1,29 +1,9 @@
 const HeroCarousel = require('../models/heroCarousel');
-const fsPromises = require('fs').promises;
-const fs = require('fs');
-const path = require('path');
 const multer = require('multer');
+const { getStorage } = require('../config/cloudinary');
 
-// Path to JSON file where carousel items are stored
-const dataFilePath = path.join(__dirname, '../data/hero-carousel.json');
-
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../data/hero-carousel');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, 'carousel-' + uniqueSuffix + ext);
-  }
-});
+// Configure storage for hero carousel
+const storage = getStorage('hero-carousel');
 
 // Configure multer
 const upload = multer({
@@ -40,28 +20,6 @@ const upload = multer({
     }
   }
 });
-
-// Helper function to read carousel data
-const readCarouselData = async () => {
-  try {
-    const data = await fsPromises.readFile(dataFilePath, 'utf8');
-    return JSON.parse(data).carousel || [];
-  } catch (error) {
-    console.error('Error reading carousel data:', error);
-    return [];
-  }
-};
-
-// Helper function to write carousel data
-const writeCarouselData = async (data) => {
-  try {
-    await fsPromises.writeFile(dataFilePath, JSON.stringify({ carousel: data }, null, 2));
-    return true;
-  } catch (error) {
-    console.error('Error writing carousel data:', error);
-    return false;
-  }
-};
 
 // Get all carousel items
 const getAllCarouselItems = async (req, res) => {
@@ -112,7 +70,6 @@ const getActiveCarouselItems = async (req, res) => {
 
       if (cityId) {
         // Find ONLY carousel items that have this city in their cities array
-        // No backward compatibility - only show explicitly assigned carousel items
         query.cities = cityId;
       }
     }
@@ -130,14 +87,12 @@ const createCarouselItemWithFiles = async (req, res) => {
   const startTime = Date.now();
   try {
     console.log('=== Starting Hero Carousel Item Creation ===');
-    console.log('Headers:', req.headers);
     console.log('File received:', req.file ? {
       originalname: req.file.originalname,
       mimetype: req.file.mimetype,
       size: req.file.size,
       path: req.file.path
     } : 'No file');
-    console.log('Body data:', req.body);
 
     // Require image
     if (!req.file) {
@@ -148,10 +103,9 @@ const createCarouselItemWithFiles = async (req, res) => {
     const file = req.file;
     const itemData = req.body;
 
-    // Log file processing time
     const fileProcessingTime = Date.now() - startTime;
     console.log(`File processing took: ${fileProcessingTime}ms`);
-    // Validate required fields
+
     const requiredFields = ["title"];
     const missingFields = [];
     for (const field of requiredFields) {
@@ -163,16 +117,14 @@ const createCarouselItemWithFiles = async (req, res) => {
       return res.status(400).json({ error: `Missing required fields: ${missingFields.join(', ')}` });
     }
 
-    // Process uploaded file: construct local URL
-    const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
-    const imageUrl = (file && `${baseUrl}/todaymydream/data/hero-carousel/${file.filename}`) || '';
+    // Process uploaded file: Cloudinary URL
+    const imageUrl = file.path;
 
     // Get current max order
     const maxOrderItem = await HeroCarousel.findOne().sort('-order');
     const newOrder = maxOrderItem ? maxOrderItem.order + 1 : 0;
     const newItem = new HeroCarousel({
       title: itemData.title.trim(),
-
       buttonText: (itemData.buttonText || 'Shop Now').trim(),
       buttonLink: (itemData.buttonLink || '/shop').trim(),
       image: imageUrl,
@@ -182,33 +134,19 @@ const createCarouselItemWithFiles = async (req, res) => {
     });
 
     console.log('Saving carousel item to database...');
-    const dbStartTime = Date.now();
     const savedItem = await newItem.save();
-    const dbTime = Date.now() - dbStartTime;
-    console.log(`Database save took: ${dbTime}ms`);
     console.log('Carousel item saved successfully:', savedItem);
-
-    const totalTime = Date.now() - startTime;
-    console.log(`Total creation time: ${totalTime}ms`);
 
     res.status(201).json({
       message: "Carousel item created successfully",
       item: savedItem,
-      uploadedFile: file,
-      performance: {
-        totalTime: `${totalTime}ms`,
-        fileProcessing: `${fileProcessingTime}ms`,
-        databaseSave: `${dbTime}ms`
-      }
+      uploadedFile: file
     });
   } catch (error) {
     console.error('=== Error creating carousel item ===');
-    console.error('Error details:', error);
-    console.error('Stack trace:', error.stack);
     res.status(500).json({
       message: "Error creating carousel item",
-      error: error.message,
-      details: error.stack
+      error: error.message
     });
   }
 };
@@ -216,9 +154,6 @@ const createCarouselItemWithFiles = async (req, res) => {
 // Update carousel item with file upload
 const updateCarouselItemWithFiles = async (req, res) => {
   try {
-    console.log('Updating carousel item with file:', req.file);
-    console.log('Update data:', req.body);
-
     const id = req.params.id;
     if (!id) {
       return res.status(400).json({ message: "Carousel item ID is required" });
@@ -235,8 +170,7 @@ const updateCarouselItemWithFiles = async (req, res) => {
     // Update logic
     let imageUrl = existingItem.image;
     if (file) {
-      const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
-      imageUrl = `${baseUrl}/todaymydream/data/hero-carousel/${file.filename}`;
+      imageUrl = file.path; // Cloudinary URL
     }
     const updatedItem = {
       title: (itemData.title || existingItem.title).trim(),
@@ -247,13 +181,6 @@ const updateCarouselItemWithFiles = async (req, res) => {
       isActive: typeof itemData.isActive !== 'undefined' ? (itemData.isActive === 'true' || itemData.isActive === true) : existingItem.isActive,
       order: typeof itemData.order !== 'undefined' ? itemData.order : existingItem.order
     };
-
-    // Log the update operation
-    console.log('Updating carousel item with data:', {
-      id,
-      imageUrl: imageUrl,
-      fileReceived: file ? file.originalname : 'none'
-    });
 
     const savedItem = await HeroCarousel.findByIdAndUpdate(id, updatedItem, { new: true });
 
@@ -330,4 +257,4 @@ module.exports = {
   deleteCarouselItem,
   toggleCarouselActive,
   updateCarouselOrder
-}; 
+};

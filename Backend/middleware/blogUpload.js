@@ -1,31 +1,12 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../data/blog-images');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, 'blog-' + uniqueSuffix + ext);
-  }
-});
+const { blogStorage } = require('../config/cloudinary');
 
 // Multer configuration for blog featured image
 const uploadFeaturedImage = multer({
-  storage: storage,
+  storage: blogStorage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
-    files: 1 // Only one featured image
+    files: 1
   },
   fileFilter: (req, file, cb) => {
     // Check file type
@@ -54,12 +35,7 @@ const handleBlogImageUpload = (req, res, next) => {
       });
     }
 
-    // Transform path to URL if file exists
-    if (req.file) {
-      const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com/api';
-      req.file.path = `${baseUrl}/todaymydream/data/blog-images/${req.file.filename}`;
-    }
-
+    // Cloudinary URL is already in file.path, no transformation needed
     next();
   });
 };

@@ -2,9 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { isAdmin, authenticateToken } = require('../middleware/auth');
+const { getStorage } = require('../config/cloudinary');
 const {
   getAllProducts,
   getSearchSuggestions,
@@ -16,24 +15,8 @@ const {
   getProductsBySection
 } = require('../controllers/productController');
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../data/products');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    // Clean filename and add timestamp
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, 'product-' + uniqueSuffix + ext);
-  }
-});
+// Configure storage for products
+const storage = getStorage('products');
 
 // Configure multer
 const upload = multer({
@@ -76,23 +59,6 @@ const handleUpload = (req, res, next) => {
   });
 };
 
-// Middleware to transform local paths to URLs
-const transformPathsToUrls = (req, res, next) => {
-  if (req.files) {
-    const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
-
-    Object.keys(req.files).forEach(key => {
-      req.files[key].forEach(file => {
-        // Convert absolute path to URL
-        // The file is saved in data/products, which is served at /pawnbackend/data/products
-        const filename = file.filename;
-        file.path = `${baseUrl}/todaymydream/data/products/${filename}`;
-      });
-    });
-  }
-  next();
-};
-
 // Public routes
 router.get("/", getAllProducts);
 router.get("/search/suggestions", getSearchSuggestions);
@@ -100,8 +66,9 @@ router.get("/section/:section", getProductsBySection);
 router.get("/:id", getProduct);
 
 // Admin routes
-router.post("/", authenticateToken, isAdmin, handleUpload, transformPathsToUrls, createProductWithFiles);
-router.put("/:id", authenticateToken, isAdmin, handleUpload, transformPathsToUrls, updateProductWithFiles);
+// Removed transformPathsToUrls middleware as Cloudinary handles it
+router.post("/", authenticateToken, isAdmin, handleUpload, createProductWithFiles);
+router.put("/:id", authenticateToken, isAdmin, handleUpload, updateProductWithFiles);
 router.patch("/:id/sections", authenticateToken, isAdmin, updateProductSections);
 router.delete("/:id", authenticateToken, isAdmin, deleteProduct);
 

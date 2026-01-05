@@ -15,11 +15,13 @@ const shopOrderSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   address: {
     street: { type: String, required: true },
+    city: { type: String, required: false },
     pincode: { type: String, required: true },
     country: { type: String, required: true },
   },
   items: [shopOrderItemSchema],
   totalAmount: { type: Number, required: true },
+  shippingCost: { type: Number, default: 0 },
   paymentMethod: { type: String, required: true },
   orderStatus: {
     type: String,

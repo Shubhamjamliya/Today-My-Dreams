@@ -40,17 +40,17 @@ const writeOrders = (orders) => {
 // Admin: Get all orders from MongoDB (not orders.json) - PROTECTED
 router.get('/json', authenticateToken, isAdmin, async (req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 });
-    
+    const orders = await Order.find().populate('assignedVendorId', 'name email phone').sort({ createdAt: -1 });
+
     // Import the formatting function from orderController
     const { formatScheduledDelivery } = require('../controllers/orderController');
-    
+
     // Format orders with scheduled delivery information
     const formattedOrders = orders.map(order => ({
       ...order.toObject(),
       scheduledDeliveryFormatted: formatScheduledDelivery(order.scheduledDelivery)
     }));
-    
+
     res.json({ success: true, orders: formattedOrders });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch orders from MongoDB', error: error.message });
@@ -103,10 +103,10 @@ router.put("/:id/status", authenticateToken, isAdmin, async (req, res) => {
         errors: Object.values(error.errors).map(err => err.message)
       });
     }
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Failed to update order status',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -156,10 +156,10 @@ router.put("/:id", authenticateToken, isAdmin, async (req, res) => {
         errors: Object.values(error.errors).map(err => err.message)
       });
     }
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Failed to update order',
-      error: error.message 
+      error: error.message
     });
   }
 });

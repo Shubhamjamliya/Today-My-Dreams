@@ -630,12 +630,15 @@ const Header = () => {
                 <div className="md:hidden bg-slate-900 border-b border-white/10">
                     {/* Top bar: Menu, Logo, Cart */}
                     <div className="relative px-4 flex items-center justify-between h-16">
-                        <button onClick={() => setIsMobileMenuOpen(true)} className="text-white p-2 -ml-2">
-                            <FiMenu size={24} />
-                        </button>
-                        <Link to="/" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <img src={logo} alt="Logo" className="h-16 w-auto object-contain" />
-                        </Link>
+                        <div className="flex items-center gap-3">
+                            <button onClick={() => setIsMobileMenuOpen(true)} className="text-white p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors">
+                                <FiMenu size={24} />
+                            </button>
+                            <Link to="/" className="flex items-center gap-2">
+                                <img src={logo} alt="Logo" className="h-8 w-auto object-contain" />
+                                <span className="text-lg font-bold text-white leading-none">Today My Dream</span>
+                            </Link>
+                        </div>
                         <div className="flex items-center gap-4">
                             <Link to="/shop/cart" className="relative text-white hover:text-[#FCD24C] transition-colors">
                                 <FaShoppingCart size={22} />

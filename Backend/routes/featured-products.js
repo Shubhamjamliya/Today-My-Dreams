@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { isAdmin, authenticateToken } = require('../middleware/auth');
+const { getStorage } = require('../config/cloudinary');
 const {
   getAllFeaturedProducts,
   getFeaturedProduct,
@@ -12,23 +11,8 @@ const {
   deleteFeaturedProduct
 } = require('../controllers/featuredProductController');
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../data/featured-products');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, 'featured-' + uniqueSuffix + ext);
-  }
-});
+// Configure storage for featured products
+const storage = getStorage('featured-products');
 
 // Configure multer
 const upload = multer({
@@ -71,29 +55,14 @@ const handleUpload = (req, res, next) => {
   });
 };
 
-// Middleware to transform local paths to URLs
-const transformPathsToUrls = (req, res, next) => {
-  if (req.files) {
-    const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
-
-    Object.keys(req.files).forEach(key => {
-      req.files[key].forEach(file => {
-        // Convert absolute path to URL
-        const filename = file.filename;
-        file.path = `${baseUrl}/todaymydream/data/featured-products/${filename}`;
-      });
-    });
-  }
-  next();
-};
-
 // Public routes
 router.get("/", getAllFeaturedProducts);
 router.get("/:id", getFeaturedProduct);
 
 // Admin routes
-router.post("/", authenticateToken, isAdmin, handleUpload, transformPathsToUrls, createFeaturedProductWithFiles);
-router.put("/:id", authenticateToken, isAdmin, handleUpload, transformPathsToUrls, updateFeaturedProductWithFiles);
+// Removed transformPathsToUrls middleware
+router.post("/", authenticateToken, isAdmin, handleUpload, createFeaturedProductWithFiles);
+router.put("/:id", authenticateToken, isAdmin, handleUpload, updateFeaturedProductWithFiles);
 router.delete("/:id", authenticateToken, isAdmin, deleteFeaturedProduct);
 
-module.exports = router; 
+module.exports = router;

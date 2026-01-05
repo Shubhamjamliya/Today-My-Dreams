@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Users, Tag, DollarSign, TrendingUp, ShoppingCart, Star, Eye, LayoutGrid, ChevronDown, ChevronRight, Edit } from 'lucide-react';
+import { Package, Users, Tag, DollarSign, TrendingUp, ShoppingCart, Star, Eye, LayoutGrid, ChevronDown, ChevronRight, Edit, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import apiService from '../services/api';
 
@@ -12,7 +12,8 @@ const Dashboard = () => {
     categories: 0,
     revenue: 0,
     sellers: 0,
-    featured: 0
+    featured: 0,
+    cities: 0
   });
   const [categoryData, setCategoryData] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
@@ -32,12 +33,13 @@ const Dashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const [productsRes, ordersRes, categoriesRes, featuredRes, sellersRes] = await Promise.all([
+      const [productsRes, ordersRes, categoriesRes, featuredRes, sellersRes, citiesRes] = await Promise.all([
         apiService.getProducts(),
         apiService.getOrders(),
         apiService.getCategories(),
         apiService.getFeaturedProducts(),
-        apiService.getSellers()
+        apiService.getSellers(),
+        apiService.getCities()
       ]);
 
       console.log('Dashboard API Responses:', {
@@ -45,7 +47,8 @@ const Dashboard = () => {
         ordersRes: ordersRes.data,
         categoriesRes: categoriesRes.data,
         featuredRes: featuredRes.data,
-        sellersRes: sellersRes.data
+        sellersRes: sellersRes.data,
+        citiesRes: citiesRes.data
       });
 
       // Extract data from responses, handling both array and object formats
@@ -69,6 +72,10 @@ const Dashboard = () => {
       const sellers = Array.isArray(sellersRes.data) ? sellersRes.data :
         (sellersRes.data.sellers || []);
 
+      // /api/cities returns { cities: [...] }
+      const cities = Array.isArray(citiesRes.data) ? citiesRes.data :
+        (citiesRes.data.cities || []);
+
       // Calculate totals
       const totalRevenue = orders.reduce((sum, order) => sum + (Number(order.totalAmount) || 0), 0);
 
@@ -78,6 +85,7 @@ const Dashboard = () => {
         categoriesCount: categories.length,
         featuredCount: featured.length,
         sellersCount: sellers.length,
+        citiesCount: cities.length,
         totalRevenue
       });
 
@@ -87,7 +95,8 @@ const Dashboard = () => {
         categories: categories.length,
         revenue: totalRevenue,
         sellers: sellers.length,
-        featured: featured.length
+        featured: featured.length,
+        cities: cities.length
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -99,7 +108,8 @@ const Dashboard = () => {
         categories: 0,
         revenue: 0,
         sellers: 0,
-        featured: 0
+        featured: 0,
+        cities: 0
       });
     }
   };
@@ -248,9 +258,9 @@ const Dashboard = () => {
       textColor: 'text-gray-900'
     },
     {
-      title: 'Total Venue',
-      value: stats.sellers,
-      icon: <Users className="w-6 h-6" />,
+      title: 'Total Cities',
+      value: stats.cities,
+      icon: <MapPin className="w-6 h-6" />,
       color: 'from-slate-700 to-slate-900',
       bgColor: 'bg-slate-50',
       textColor: 'text-slate-900'

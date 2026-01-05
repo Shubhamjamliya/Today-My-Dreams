@@ -87,7 +87,7 @@ const Checkout = () => {
   const routeLocation = useLocation();
   const { product, quantity, addons: initialAddons = [] } = routeLocation.state || {};
   const { user, isAuthenticated } = useAuth();
-  const { selectedCity } = useCity();
+  const { selectedCity, selectedCityId } = useCity();
   const [searchParams] = useSearchParams();
 
   // Add-ons state
@@ -398,7 +398,8 @@ const Checkout = () => {
     setPinCodeServiceFeeChecked(false);
 
     try {
-      // 1. Validate Pin Code against City
+      // 1. Skip Validation against external API for now to ensure backend logic works
+      /*
       const pinCodeResponse = await fetch(`https://api.postalpincode.in/pincode/${pinCode}`);
       const pinCodeData = await pinCodeResponse.json();
 
@@ -433,6 +434,7 @@ const Checkout = () => {
         setPinCodeServiceFeeLoading(false);
         return;
       }
+      */
 
       // 2. If valid, check service fee (Existing logic)
       const response = await pinCodeServiceFeeAPI.checkPinCodeServiceFee(pinCode);
@@ -515,6 +517,7 @@ const Checkout = () => {
       customerName: formData.fullName,
       email: formData.email,
       phone: formData.phone,
+      cityId: selectedCityId,
       address: addressPayload, // Use the new structured address payload
       items: cartItems.map(item => ({
         productId: item.product?._id || item.id,
@@ -531,6 +534,7 @@ const Checkout = () => {
       totalAmount: getFinalTotal(),
       shippingCost: calculateShippingCost(),
       codExtraCharge: getCodExtraCharge(),
+      serviceFee: pinCodeServiceFee, // Add service fee to order data
       finalTotal: getFinalTotal(),
       paymentMethod: formData.paymentMethod,
       sellerToken: sellerToken || '',
@@ -1687,7 +1691,7 @@ const Checkout = () => {
                           ? '📦 Place Order (Pay on Delivery)'
                           : formData.paymentMethod === 'cod'
                             ? `💳 Pay ₹${codUpfrontAmount} Now + Rest on Delivery`
-                            : '💳 Pay with PhonePe'}
+                            : '💳 Pay'}
                       </span>
                     </>
                   )}

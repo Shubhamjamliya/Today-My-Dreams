@@ -1,30 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { isAdmin, authenticateToken } = require('../middleware/auth');
 const categoryController = require('../controllers/categoryController');
+const { getStorage } = require('../config/cloudinary');
 
 const SubCategory = require('../models/SubCategory');
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../data/categories');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, 'category-' + uniqueSuffix + ext);
-  }
-});
+// Configure storage for categories
+const storage = getStorage('categories');
 
 const upload = multer({
   storage: storage,
@@ -59,22 +43,6 @@ const handleUpload = (req, res, next) => {
   });
 };
 
-// Middleware to transform local paths to URLs
-const transformPathsToUrls = (req, res, next) => {
-  if (req.files) {
-    const baseUrl = `${req.protocol}://${req.get('host')}/todaymydream/data/`;
-
-    Object.keys(req.files).forEach(key => {
-      req.files[key].forEach(file => {
-        // Convert absolute path to URL
-        const filename = file.filename;
-        file.path = `${baseUrl}categories/${filename}`;
-      });
-    });
-  }
-  next();
-};
-
 // Public routes
 router.get('/', categoryController.getAllCategories);
 router.get('/nested', categoryController.getNestedCategories);
@@ -84,11 +52,12 @@ router.get('/:id', categoryController.getCategory);
 router.get('/admin/all', authenticateToken, isAdmin, categoryController.getAllCategoriesAdmin);
 
 // Protected admin routes with file upload
-router.post('/', authenticateToken, isAdmin, handleUpload, transformPathsToUrls, categoryController.createCategory);
-router.post('/upload', authenticateToken, isAdmin, handleUpload, transformPathsToUrls, categoryController.createCategory);
+// Removed transformPathsToUrls middleware as Cloudinary returns URL in path
+router.post('/', authenticateToken, isAdmin, handleUpload, categoryController.createCategory);
+router.post('/upload', authenticateToken, isAdmin, handleUpload, categoryController.createCategory);
 router.post('/update-order', authenticateToken, isAdmin, categoryController.updateCategoryOrder);
-router.put('/:id', authenticateToken, isAdmin, handleUpload, transformPathsToUrls, categoryController.updateCategory);
-router.put('/:id/upload', authenticateToken, isAdmin, handleUpload, transformPathsToUrls, categoryController.updateCategory);
+router.put('/:id', authenticateToken, isAdmin, handleUpload, categoryController.updateCategory);
+router.put('/:id/upload', authenticateToken, isAdmin, handleUpload, categoryController.updateCategory);
 router.delete('/:id', authenticateToken, isAdmin, categoryController.deleteCategory);
 
-module.exports = router; 
+module.exports = router;

@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const path = require('path');
-const fs = require('fs');
+const { storage } = require('../config/cloudinary');
 const {
   getShopCategories,
   createShopCategory,
@@ -16,32 +15,10 @@ const {
   getShopProduct,
   createShopProduct,
   updateShopProduct,
+  deleteShopProduct,
   getShopOrders,
   getNestedShopCategories
 } = require('../controllers/shopController');
-
-// Ensure upload directories exist
-const uploadDir = path.join(__dirname, '../data/products');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-const categoryDir = path.join(__dirname, '../data/categories');
-if (!fs.existsSync(categoryDir)) fs.mkdirSync(categoryDir, { recursive: true });
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    if (file.fieldname === 'image' || file.fieldname === 'video') {
-      cb(null, categoryDir);
-    } else {
-      cb(null, uploadDir);
-    }
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-  }
-});
 
 const upload = multer({
   storage: storage,
@@ -71,39 +48,26 @@ const handleUpload = (req, res, next) => {
   });
 };
 
-const transformPathsToUrls = (req, res, next) => {
-  if (req.files) {
-    const baseUrl = process.env.BACKEND_URL || 'https://api.todaymydream.com';
-    Object.keys(req.files).forEach(key => {
-      req.files[key].forEach(file => {
-        const filename = file.filename;
-        const subDir = (key === 'image' || key === 'video') ? 'categories' : 'products';
-        file.path = `${baseUrl}/todaymydream/data/${subDir}/${filename}`;
-      });
-    });
-  }
-  next();
-};
-
 // --- Shop Categories Routes ---
 router.get("/categories", getShopCategories);
 router.get("/categories/nested", getNestedShopCategories);
-router.post("/categories", handleUpload, transformPathsToUrls, createShopCategory);
-router.put("/categories/:id", handleUpload, transformPathsToUrls, updateShopCategory);
+router.post("/categories", handleUpload, createShopCategory);
+router.put("/categories/:id", handleUpload, updateShopCategory);
 router.delete("/categories/:id", deleteShopCategory);
 
 // --- Shop Subcategories Routes ---
 router.get("/categories/:categoryId/subcategories", getShopSubCategories);
-router.post("/categories/:categoryId/subcategories", handleUpload, transformPathsToUrls, createShopSubCategory);
-router.put("/subcategories/:id", handleUpload, transformPathsToUrls, updateShopSubCategory);
+router.post("/categories/:categoryId/subcategories", handleUpload, createShopSubCategory);
+router.put("/subcategories/:id", handleUpload, updateShopSubCategory);
 router.delete("/subcategories/:id", deleteShopSubCategory);
 
 // --- Shop Products Routes ---
 router.get("/", getShopProducts);
 router.get("/products", getShopProducts);
 router.get("/products/:id", getShopProduct); // get single product
-router.post("/products/upload", handleUpload, transformPathsToUrls, createShopProduct);
-router.put("/products/:id", handleUpload, transformPathsToUrls, updateShopProduct); // update product
+router.post("/products/upload", handleUpload, createShopProduct);
+router.put("/products/:id", handleUpload, updateShopProduct); // update product
+router.delete("/products/:id", deleteShopProduct);
 
 // --- Shop Orders Routes ---
 router.get("/orders", getShopOrders);

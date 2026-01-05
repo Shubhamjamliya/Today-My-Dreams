@@ -184,6 +184,29 @@ const apiService = {
     console.log('API getFeaturedProducts response:', response.data);
     return response;
   },
+  createFeaturedProduct: async (formData) => {
+    return uploadWithFiles('/api/featured-products', formData);
+  },
+  updateFeaturedProduct: async (id, formData) => {
+    return updateWithFiles(`/api/featured-products/${id}`, formData);
+  },
+  deleteFeaturedProduct: async (id) => {
+    return api.delete(`/api/featured-products/${id}`);
+  },
+  getLovedProducts: async () => {
+    const response = await api.get('/api/loved');
+    console.log('API getLovedProducts response:', response.data);
+    return response;
+  },
+  createLovedProduct: async (formData) => {
+    return uploadWithFiles('/api/loved', formData);
+  },
+  updateLovedProduct: async (id, formData) => {
+    return updateWithFiles(`/api/loved/${id}`, formData);
+  },
+  deleteLovedProduct: async (id) => {
+    return api.delete(`/api/loved/${id}`);
+  },
   getBestSellerProducts: async () => {
     const response = await api.get('/api/shop/section/bestsellers');
     console.log('API getBestSellerProducts response:', response.data);
@@ -304,16 +327,16 @@ const apiService = {
   },
 
 
-  // Sellers endpoints
-  getSellers: () => api.get('/api/seller/all'),
-  getSeller: (id) => api.get(`/api/seller/${id}`),
-  createSeller: (formData) => uploadWithFiles('/api/seller/register', formData),
-  updateSeller: (id, formData) => updateWithFiles(`/api/seller/${id}`, formData),
-  deleteSeller: (id) => api.delete(`/api/seller/${id}`),
-  deleteSellerImage: (sellerId, imageId) => api.delete(`/api/seller/${sellerId}/image/${imageId}`),
-  deleteSellerProfileImage: (sellerId) => api.delete(`/api/seller/${sellerId}/profile-image`),
-  updateSellerApproval: (id, approved) => api.patch(`/api/seller/${id}/approve`, { approved }),
-  updateSellerBlock: (id, blocked) => api.patch(`/api/seller/${id}/block`, { blocked }),
+  // Sellers endpoints (Migrated to Vendors)
+  getSellers: () => api.get('/api/admin/vendors'),
+  getSeller: (id) => api.get(`/api/admin/vendors/${id}`),
+  createSeller: (formData) => uploadWithFiles('/api/vendor/auth/register', formData),
+  updateSeller: (id, formData) => updateWithFiles(`/api/admin/vendors/${id}`, formData),
+  deleteSeller: (id) => api.delete(`/api/admin/vendors/${id}`),
+  deleteSellerImage: (sellerId, imageId) => api.delete(`/api/admin/vendors/${sellerId}/image/${imageId}`),
+  deleteSellerProfileImage: (sellerId) => api.delete(`/api/admin/vendors/${sellerId}/profile-image`),
+  updateSellerApproval: (id, approved) => api.patch(`/api/admin/vendors/${id}/approve`, { approved }),
+  updateSellerBlock: (id, blocked) => api.patch(`/api/admin/vendors/${id}/block`, { blocked }),
 
   // Hero Carousel endpoints
   ...heroCarouselEndpoints,
@@ -327,6 +350,13 @@ const apiService = {
   updateSetting: (key, data) => api.put(`/api/settings/${key}`, data),
   createSetting: (data) => api.post('/api/settings', data),
   deleteSetting: (key) => api.delete(`/api/settings/${key}`),
+
+  // Contact Settings endpoints
+  getContactNumbers: () => api.get('/api/admin/settings/contacts'),
+  updateContactNumber: (data) => api.put('/api/admin/settings/contacts', data),
+
+  // City endpoints
+  getCities: () => api.get('/api/cities?showAll=true'),
 
   // Pin Code Service Fee endpoints
   getPinCodeServiceFees: () => api.get('/api/pin-code-service-fees/admin'),

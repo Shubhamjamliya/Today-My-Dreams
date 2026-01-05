@@ -1,24 +1,8 @@
+import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Mail, Clock, Award, Users, Smile, Star, Palette, Handshake, ShieldCheck, Sparkles } from 'lucide-react';
+import { MapPin, Mail, Award, Users, Smile, Star, Palette, Handshake, ShieldCheck, Sparkles, ArrowRight, Heart, CheckCircle2 } from 'lucide-react';
 import SEO from '../components/SEO/SEO';
-
-// --- Helper Component for Background Shapes ---
-const BackgroundShapes = () => (
-    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <motion.div
-            initial={{ opacity: 0, y: 100, x: -100, rotate: -45 }}
-            animate={{ opacity: 0.05, y: -100, x: 50, rotate: 15 }}
-            transition={{ duration: 60, repeat: Infinity, repeatType: 'reverse' }}
-            className="absolute -bottom-40 -left-40 w-96 h-96 bg-amber-300 rounded-full"
-        />
-        <motion.div
-            initial={{ opacity: 0, y: -100, x: 100, rotate: 45 }}
-            animate={{ opacity: 0.05, y: 100, x: -50, rotate: -15 }}
-            transition={{ duration: 70, repeat: Infinity, repeatType: 'reverse' }}
-            className="absolute -top-40 -right-40 w-96 h-96 bg-amber-300 rounded-full"
-        />
-    </div>
-);
+import { Link } from 'react-router-dom';
 
 const AboutUs = () => {
     const stats = [
@@ -29,14 +13,49 @@ const AboutUs = () => {
     ];
 
     const values = [
-        { title: "Bespoke Creativity", description: "Personalized designs that reflect your individual style and create unforgettable atmospheres.", icon: Palette },
-        { title: "Curated Excellence", description: "We partner with talented decorators, ensuring every detail is executed to perfection.", icon: ShieldCheck },
-        { title: "Seamless Experience", description: "From browsing to booking, we make the entire process effortless, transparent, and joyful for you.", icon: Smile },
-        { title: "Passionate Partnership", description: "We work as dedicated partners with clients and vendors to achieve stunning results.", icon: Handshake }
+        {
+            title: "Bespoke Creativity",
+            description: "Personalized designs that reflect your individual style.",
+            icon: Palette,
+            color: "bg-purple-50 text-purple-600"
+        },
+        {
+            title: "Curated Excellence",
+            description: "We partner with only the most talented professionals.",
+            icon: ShieldCheck,
+            color: "bg-blue-50 text-blue-600"
+        },
+        {
+            title: "Seamless Experience",
+            description: "Effortless process from browsing to booking.",
+            icon: Smile,
+            color: "bg-green-50 text-green-600"
+        },
+        {
+            title: "Passionate Partnership",
+            description: "Dedicated to achieving stunning results together.",
+            icon: Handshake,
+            color: "bg-amber-50 text-amber-600"
+        }
     ];
 
+    const fadeInUp = {
+        hidden: { opacity: 0, y: 30 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+    };
+
+    const staggerContainer = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2
+            }
+        }
+    };
+
     return (
-        <div className="w-full bg-amber-50/50 font-sans" style={{ backgroundImage: `url("data:image/svg+xml,...")` }}>
+        <div className="bg-white min-h-screen font-sans text-slate-900 selection:bg-amber-100 selection:text-amber-900">
             <SEO
                 title="About Today My Dream - Our Story & Mission"
                 description="Learn about Today My Dream's journey in transforming celebrations with premium decoration services."
@@ -44,157 +63,221 @@ const AboutUs = () => {
                 url="https://todaymydream.com/about"
                 image="/beautiful-wedding-decor.jpg"
             />
-            <BackgroundShapes />
 
-            <section className="relative py-16 sm:py-20 md:py-32 overflow-hidden text-white bg-slate-800">
-                <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/last.png')" }}></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent"></div>
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center max-w-4xl mx-auto">
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-white mb-4">
-                            Designing Moments, Creating Memories
-                        </h1>
-                        <p className="text-base sm:text-lg md:text-xl text-slate-300 mb-8 leading-relaxed">
-                            From intimate birthdays to grand wedding celebrations, we are your partners in crafting beautiful, unforgettable events.
-                        </p>
-                        <div className="w-20 h-1 bg-amber-500 mx-auto rounded-full"></div>
-                    </motion.div>
+            {/* Hero Section */}
+            <section className="relative h-[70vh] min-h-[500px] flex items-center bg-slate-900 overflow-hidden">
+                {/* Background Decoration */}
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute top-0 right-0 w-[60%] h-full bg-gradient-to-l from-slate-800 to-transparent opacity-40"></div>
+                    <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl rounded-full"></div>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-slate-800/20 rounded-full blur-3xl"></div>
                 </div>
-            </section>
 
-            <section className="py-12 sm:py-16">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                        {stats.map((stat, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="bg-white p-4 rounded-xl shadow-lg shadow-amber-200/30 border border-amber-200/50"
-                            >
-                                <stat.icon className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-                                <p className="text-2xl font-bold font-serif text-slate-900">{stat.number}</p>
-                                <p className="text-xs text-slate-600 mt-1">{stat.label}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            <section className="py-12 sm:py-20">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-                        <motion.div
-                            initial={{ opacity: 0, x: -50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true, amount: 0.3 }}
-                            transition={{ duration: 0.8 }}
-                        >
-                            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 mb-4">
-                                Our Story of Passion
-                            </h2>
-                            <div className="space-y-4 text-base text-slate-600 leading-relaxed">
-                                <p>Our journey began with a simple belief: every milestone deserves to be beautiful. We saw families struggling to find creative, reliable partners to bring their decorative visions to life.</p>
-                                <p>We wanted to replace that stress with joy, leading to a curated platform where you can connect with the best, pre-vetted decor artists and venues.</p>
-                            </div>
-                        </motion.div>
-                        <motion.div
-                            initial={{ opacity: 0, x: 50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true, amount: 0.3 }}
-                            transition={{ duration: 0.8 }}
-                            className="w-full h-80 md:h-full rounded-2xl shadow-2xl shadow-amber-200/50 overflow-hidden border-4 border-white"
-                        >
-                            <img src="/left.png" alt="A beautifully decorated anniversary dinner table" className="w-full h-full object-cover" />
-                        </motion.div>
-                    </div>
-                </div>
-            </section>
-
-            <section className="py-12 sm:py-20 bg-white/50 backdrop-blur-sm border-y border-amber-200/60">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="container mx-auto px-6 lg:px-12 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.5 }}
-                        transition={{ duration: 0.8 }}
-                        className="text-center mb-10 md:mb-16"
+                        initial="hidden"
+                        animate="visible"
+                        variants={fadeInUp}
+                        className="lg:col-span-7"
                     >
-                        <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 mb-4">Our Core Values</h2>
-                        <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
-                            The principles that guide us in making every celebration perfect.
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-amber-500 text-sm font-medium mb-6">
+                            <Sparkles size={16} />
+                            <span>Redefining Celebrations</span>
+                        </div>
+                        <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight tracking-tight">
+                            We Craft <span className="font-serif italic text-amber-500">Memories</span>, <br /> Not Just Events.
+                        </h1>
+                        <p className="text-lg lg:text-xl text-slate-400 max-w-xl leading-relaxed mb-8">
+                            TodayMyDream connects you with the finest decoration artists and event planners to turn your special moments into timeless experiences.
                         </p>
+                        <div className="flex flex-wrap gap-4">
+                            <Link to="/contact" className="px-8 py-3 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-full transition-all flex items-center gap-2">
+                                Start Planning <ArrowRight size={20} />
+                            </Link>
+                            <Link to="/services" className="px-8 py-3 bg-transparent border border-slate-600 hover:bg-slate-800 text-white font-medium rounded-full transition-all">
+                                Explore Services
+                            </Link>
+                        </div>
                     </motion.div>
-
-                    {/* Changed: grid-cols-2 is now the default for mobile */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                        {values.map((value, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, amount: 0.5 }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                // Changed: Made card more compact with p-4
-                                className="bg-white p-4 text-center rounded-xl shadow-lg shadow-amber-200/30 border border-amber-200/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
-                            >
-                                <div className="inline-block p-3 bg-amber-100 rounded-full mb-3">
-                                    <value.icon className="w-6 h-6 text-amber-600" />
-                                </div>
-                                <h3 className="text-base font-semibold text-slate-900 mb-1">{value.title}</h3>
-                            </motion.div>
-                        ))}
-                    </div>
                 </div>
             </section>
 
-            <section className="py-12 sm:py-20">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Stats Section - Floating */}
+            <section className="relative z-20 -mt-16 px-6 lg:px-12 mb-20">
+                <div className="container mx-auto">
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 0, y: 50 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
-                        className="text-center mb-10"
+                        className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 lg:p-12 border border-slate-100"
                     >
-                        <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 mb-4">Let's Plan Your Celebration</h2>
-                        <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
-                            Ready to start planning? Get in touch with our team of celebration specialists.
-                        </p>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 divide-x divide-slate-100">
+                            {stats.map((stat, index) => (
+                                <div key={index} className="px-4 text-center group">
+                                    <div className="w-12 h-12 mx-auto bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                        <stat.icon size={24} />
+                                    </div>
+                                    <h3 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-1 font-serif">{stat.number}</h3>
+                                    <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">{stat.label}</p>
+                                </div>
+                            ))}
+                        </div>
                     </motion.div>
+                </div>
+            </section>
 
-                    {/* Changed: grid-cols-2 on mobile, with the last item wrapping */}
-                    <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        <ContactCard icon={MapPin} title="Our Office" lines={["Arrah, Bihar, India"]} />
-                        <ContactCard icon={Mail} title="Email Us" lines={["support@todaymydream.com"]} isLink href="mailto:support@todaymydream.com" />
+            {/* Story Section */}
+            <section className="py-20 lg:py-32 overflow-hidden">
+                <div className="container mx-auto px-6 lg:px-12">
+                    <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                            className="w-full lg:w-1/2 relative"
+                        >
+                            <div className="relative rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl shadow-slate-200">
+                                <img src="/left.png" alt="Our Story" className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
+                            </div>
+                            {/* Decorative Elements */}
+                            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#FCD24C] rounded-full blur-3xl opacity-20 z-[-1]"></div>
+                            <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-500 rounded-full blur-3xl opacity-10 z-[-1]"></div>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, x: 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                            className="w-full lg:w-1/2"
+                        >
+                            <h2 className="text-amber-500 font-bold uppercase tracking-widest text-sm mb-4">Our Journey</h2>
+                            <h3 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-8 font-serif leading-tight">
+                                From a Spark to a <br /><span className="text-amber-500 relative inline-block"> Celebration
+                                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-amber-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5 L 100 0 Q 50 5 0 0 Z" fill="currentColor" /></svg>
+                                </span>.
+                            </h3>
+                            <div className="space-y-6 text-lg text-slate-600 leading-relaxed">
+                                <p>
+                                    Our journey began with a simple belief: every milestone deserves to be bold, beautiful, and effortless. We saw families struggling to find creative, reliable partners to bring their decorative visions to life, often lost in a sea of uncertain options.
+                                </p>
+                                <p>
+                                    TodayMyDream was born to bridge that gap. We replaced stress with joy, creating a curated ecosystem where you can connect with vetted decor artists who treat your event as their masterpiece.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
+                                <div className="flex items-start gap-4">
+                                    <CheckCircle2 className="text-amber-500 mt-1 flex-shrink-0" />
+                                    <div>
+                                        <h4 className="font-bold text-slate-900">Vetted Professionals</h4>
+                                        <p className="text-sm text-slate-500">Quality you can trust.</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-4">
+                                    <CheckCircle2 className="text-amber-500 mt-1 flex-shrink-0" />
+                                    <div>
+                                        <h4 className="font-bold text-slate-900">Transparent Pricing</h4>
+                                        <p className="text-sm text-slate-500">No hidden surprises.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Values Section */}
+            <section className="py-20 lg:py-32 bg-slate-50 relative">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#64748b 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+
+                <div className="container mx-auto px-6 lg:px-12 relative z-10">
+                    <div className="text-center max-w-3xl mx-auto mb-16">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4 font-serif">Why Choose Us?</h2>
+                        <p className="text-xl text-slate-600">Our core values drive every decision we make, ensuring your experience is nothing short of exceptional.</p>
+                    </div>
+
+                    <motion.div
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+                    >
+                        {values.map((value, index) => (
+                            <motion.div
+                                key={index}
+                                variants={fadeInUp}
+                                className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group"
+                            >
+                                <div className={`w-14 h-14 ${value.color} bg-opacity-10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                                    <value.icon className={value.color.split(' ')[1]} size={28} />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">{value.title}</h3>
+                                <p className="text-slate-600 leading-relaxed text-sm">
+                                    {value.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* Contact / Location Strip */}
+            <section className="py-20 bg-white border-t border-slate-100">
+                <div className="container mx-auto px-6 lg:px-12">
+                    <div className="bg-slate-900 rounded-3xl p-8 lg:p-16 text-white overflow-hidden relative">
+                        {/* Abstract Shapes */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500 rounded-full filter blur-3xl opacity-20 -mr-20 -mt-20"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 rounded-full filter blur-3xl opacity-20 -ml-20 -mb-20"></div>
+
+                        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+                            <div className="lg:w-1/2">
+                                <h2 className="text-3xl lg:text-5xl font-bold mb-6 font-serif">Let's create something <br /> beautiful together.</h2>
+                                <p className="text-slate-300 text-lg mb-8">
+                                    Our team is ready to help you plan the perfect event. Reach out to us for a consultation or visit our office.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-6">
+                                    <div className="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+                                        <div className="bg-amber-500 p-3 rounded-full text-slate-900">
+                                            <MapPin size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-slate-400 uppercase tracking-widest font-bold">Visit Us</p>
+                                            <p className="font-medium">Prayagraj , Uttar Pradesh ,India</p>
+                                        </div>
+                                    </div>
+                                    <Link to="mailto:support@todaymydream.com" className="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-colors">
+                                        <div className="bg-slate-800 p-3 rounded-full text-white border border-slate-600">
+                                            <Mail size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-slate-400 uppercase tracking-widest font-bold">Email Us</p>
+                                            <p className="font-medium">support@todaymydream.com</p>
+                                        </div>
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="lg:w-1/3 flex justify-center lg:justify-end">
+                                <Link to="/contact" className="group relative px-8 py-20 bg-amber-500 rounded-full flex items-center justify-center hover:bg-amber-400 transition-all shadow-lg hover:shadow-amber-500/50">
+                                    <div className="text-center">
+                                        <span className="block text-slate-900 font-bold text-xl mb-2">Get in Touch</span>
+                                        <div className="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                                            <ArrowRight size={20} />
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
         </div>
     );
 };
-
-// Helper for Contact Cards - Made more compact for mobile
-const ContactCard = ({ icon: Icon, title, lines, isLink = false, href = "#" }) => (
-    <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-    >
-        <a
-            href={isLink ? href : undefined}
-            // Changed: Reduced padding and text sizes
-            className={`block bg-white p-4 text-center rounded-xl shadow-lg shadow-amber-200/30 border border-amber-200/50 h-full ${isLink ? 'transition-all duration-300 hover:shadow-2xl hover:-translate-y-1' : ''}`}
-        >
-            <Icon className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-            <h3 className="text-sm font-semibold text-slate-800 mb-1">{title}</h3>
-            <div className="text-xs text-slate-600">
-                {lines.map((line, i) => <p key={i}>{line}</p>)}
-            </div>
-        </a>
-    </motion.div>
-);
 
 export default AboutUs;

@@ -3,8 +3,7 @@ const router = express.Router();
 const phonepeController = require('../controllers/phonepeController');
 const razorpayController = require('../controllers/razorpayController');
 
-// Debugging
-console.log('Controller keys:', Object.keys(phonepeController)); // should include 'createPhonePeOrder'
+
 
 // PhonePe Payment Routes
 router.post('/phonepe', phonepeController.createPhonePeOrder);

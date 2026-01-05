@@ -1,4 +1,5 @@
 // File: admin/backend/server.js
+
 require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -17,20 +18,24 @@ const bestSellerRoutes = require('./routes/bestSeller');
 const cartRoutes = require('./routes/cart');
 const fs = require('fs');
 const heroCarouselRoutes = require('./routes/heroCarousel');
-const sellerRoutes = require('./routes/seller');
+
 const couponRoutes = require('./routes/coupon');
 const crypto = require('crypto');
 const settingsController = require('./controllers/settingsController');
+const vendorAuthRoutes = require('./routes/vendorAuth');
+const vendorAdminRoutes = require('./routes/vendor');
+const vendorOrderRoutes = require('./routes/vendorOrders');
+const vendorCategoryRoutes = require('./routes/vendorCategories');
 const app = express();
 const subCategoryRoutes = require('./routes/subCategoryRoutes'); // Adjust path if needed
 const blogRoutes = require('./routes/blog');
 const videoRoutes = require('./routes/video');
 
 
-// Generate a random JWT secret for seller authentication if not provided
-if (!process.env.JWT_SECRET_SELLER) {
-  process.env.JWT_SECRET_SELLER = crypto.randomBytes(64).toString('hex');
-  console.log('Generated random JWT_SECRET_SELLER');
+
+if (!process.env.JWT_SECRET_VENDOR) {
+  // Use a fixed persistent key instead of random to prevent logout on restart
+  process.env.JWT_SECRET_VENDOR = 'fallback_persistent_secret_key_vendor_auth_2024';
 }
 
 // CORS configuration - Allow specific origins from ENV and defaults
@@ -150,14 +155,17 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/featured-products', featuredProductRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/hero-carousel', heroCarouselRoutes);
-app.use('/api/seller', sellerRoutes);
+
+app.use('/api/vendor/auth', vendorAuthRoutes);
+app.use('/api/vendor/orders', vendorOrderRoutes);
+app.use('/api/vendor/categories', vendorCategoryRoutes);
+app.use('/api/admin/vendors', vendorAdminRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/data-page', require('./routes/dataPage'));
 // Register city routes
 app.use('/api/cities', require('./routes/city'));
 app.use('/api/payment', require('./routes/payment'));
-app.use('/api/withdrawal', require('./routes/withdrawal'));
-app.use('/api/commission', require('./routes/commission'));
+
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/msg91', require('./routes/msg91'));
@@ -167,6 +175,7 @@ app.use('/api/addons', require('./routes/addon'));
 app.use('/api/videos', require('./routes/video'));
 // This handles requests like GET /api/categories/:id/subcategories
 app.use('/api/categories', subCategoryRoutes);
+app.use('/api/admin/settings', require('./routes/adminSettings'));
 
 // This handles requests like PUT /api/subcategories/:id
 app.use('/api', subCategoryRoutes); // A bit broad, but will work.
@@ -239,7 +248,6 @@ async function startServer() {
 
 // Start the server
 startServer();
-
 
 
 

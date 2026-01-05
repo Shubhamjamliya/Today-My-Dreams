@@ -92,7 +92,24 @@ const Orders = ({ module }) => {
     }
   };
 
-  const statusColors = { processing: 'bg-yellow-100 text-yellow-800', confirmed: 'bg-blue-100 text-blue-800', manufacturing: 'bg-purple-100 text-purple-800', shipped: 'bg-indigo-100 text-indigo-800', delivered: 'bg-green-100 text-green-800' };
+
+  const statusColors = {
+    processing: 'bg-yellow-100 text-yellow-800',
+    confirmed: 'bg-blue-100 text-blue-800',
+    service_scheduled: 'bg-indigo-100 text-indigo-800',
+    service_in_progress: 'bg-purple-100 text-purple-800',
+    service_completed: 'bg-green-100 text-green-800',
+    cancelled: 'bg-red-100 text-red-800',
+    // Fallback support for old orders or shop orders if they share this component
+    shipping: 'bg-indigo-100 text-indigo-800',
+    shipped: 'bg-indigo-100 text-indigo-800',
+    delivered: 'bg-green-100 text-green-800'
+  };
+
+  const serviceStatuses = ['processing', 'confirmed', 'service_scheduled', 'service_in_progress', 'service_completed', 'cancelled'];
+  const shopStatuses = ['processing', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+  const availableStatuses = module === 'shop' ? shopStatuses : serviceStatuses;
+
   const paymentStatusColors = { pending: 'bg-yellow-100 text-yellow-800', pending_upfront: 'bg-blue-100 text-blue-800', completed: 'bg-green-100 text-green-800', failed: 'bg-red-100 text-red-800' };
 
   if (loading) return (
@@ -114,7 +131,7 @@ const Orders = ({ module }) => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6">{module === 'shop' ? 'Shop Orders' : 'Orders Management'}</h1>
+      <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6">{module === 'shop' ? 'Shop Orders' : 'Service Orders'}</h1>
       {success && <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">{success}</div>}
       {error && <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{error}</div>}
 
@@ -129,15 +146,14 @@ const Orders = ({ module }) => {
           <table className="w-full min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order Name</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                {/* NEW: Schedule Column */}
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Schedule</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order Name</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned Vendor</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment</th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -146,39 +162,39 @@ const Orders = ({ module }) => {
                 const orderName = firstItem?.name || 'Order';
                 return (
                   <tr key={order._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4 whitespace-nowrap">
+                    <td className="px-2 py-4 whitespace-nowrap">
                       <div className="text-sm font-bold text-gray-900">{orderName}</div>
                       <div className="text-xs text-indigo-600 font-semibold">{order.customOrderId || order._id}</div>
                       {order.customOrderId && (
                         <div className="text-xs text-gray-400">DB: {order._id}</div>
                       )}
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div>{order.customerName}</div>
                       <div className="text-xs text-gray-400">{order.email}</div>
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{toIST(order.createdAt)}</td>
+                    <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">{toIST(order.createdAt)}</td>
                     {/* NEW: Schedule Data */}
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {order.scheduledDelivery ? (
-                        <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          <Clock size={14} className="mr-1" />
-                          {format(new Date(order.scheduledDelivery), "MMM d, h:mm a")}
+                    <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {order.assignedVendorId ? (
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-gray-900">{order.assignedVendorId.name}</span>
+                          <span className="text-xs text-gray-400">{order.assignedVendorId.phone}</span>
                         </div>
                       ) : (
-                        <span>N/A</span>
+                        <span className="text-gray-400 italic">Unassigned</span>
                       )}
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">₹{order.totalAmount}</td>
-                    <td className="px-4 py-4 whitespace-nowrap">
+                    <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-900">₹{order.totalAmount}</td>
+                    <td className="px-2 py-4 whitespace-nowrap">
                       <select value={order.orderStatus} onChange={(e) => updateOrderStatus(order._id, e.target.value)} disabled={updatingOrder === order._id} className={`text-sm rounded-full px-3 py-1 font-semibold ${statusColors[order.orderStatus]} ${updatingOrder === order._id ? 'opacity-50' : ''}`}>
-                        {Object.keys(statusColors).map((status) => (<option key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</option>))}
+                        {availableStatuses.map((status) => (<option key={status} value={status}>{status.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</option>))}
                       </select>
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
+                    <td className="px-2 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${paymentStatusColors[order.paymentStatus]}`}>{order.paymentStatus === 'pending_upfront' ? 'Upfront Paid' : order.paymentStatus}</span>
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
                       <button onClick={() => setSelectedOrder(order)} className="text-indigo-600 hover:text-indigo-900">View Details</button>
                     </td>
                   </tr>

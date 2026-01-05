@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, FileText, RefreshCw, Lock, ChevronDown } from 'lucide-react';
+import config from '../config/config';
 import { toast } from 'react-hot-toast';
 
 // A new, subtle SVG background component for a premium feel
@@ -33,7 +34,7 @@ const Policies = () => {
 
   const fetchPolicies = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/data-page`);
+      const response = await fetch(config.API_URLS.DATA);
       if (response.ok) {
         const data = await response.json();
         const policiesMap = data.reduce((acc, policy) => {

@@ -38,10 +38,15 @@ const Settings = () => {
   });
   const [pinCodeLoading, setPinCodeLoading] = useState(false);
 
+  // Contact Numbers state
+  const [contacts, setContacts] = useState({ service: '', shop: '' });
+  const [updatingContacts, setUpdatingContacts] = useState(false);
+
   useEffect(() => {
     fetchSettings();
     fetchAdminInfo();
     fetchPinCodeFees();
+    fetchContacts();
   }, []);
 
   const fetchSettings = async () => {
@@ -295,6 +300,33 @@ const Settings = () => {
       console.error('Error deleting pin code fee:', err);
       const errorMessage = err.response?.data?.message || 'Failed to delete pin code service fee';
       toast.error(errorMessage);
+    }
+  };
+
+  // Contact Numbers functions
+  const fetchContacts = async () => {
+    try {
+      const response = await apiService.getContactNumbers();
+      setContacts(response.data);
+    } catch (err) {
+      console.error('Error fetching contacts:', err);
+      toast.error('Failed to load contact numbers');
+    }
+  };
+
+  const handleUpdateContact = async (type) => {
+    try {
+      setUpdatingContacts(true);
+      await apiService.updateContactNumber({
+        type,
+        phoneNumber: contacts[type]
+      });
+      toast.success(`${type === 'service' ? 'Service' : 'Shop'} contact number updated`);
+    } catch (err) {
+      console.error('Error updating contact:', err);
+      toast.error('Failed to update contact number');
+    } finally {
+      setUpdatingContacts(false);
     }
   };
 
@@ -649,6 +681,68 @@ const Settings = () => {
               >
                 {saving ? 'Saving...' : 'Save Default Fee'}
               </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Numbers Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">Call Buttons Contact Numbers</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Service Contact */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Service Call Number
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={contacts.service}
+                    onChange={(e) => setContacts(prev => ({ ...prev, service: e.target.value }))}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter phone number"
+                  />
+                  <button
+                    onClick={() => handleUpdateContact('service')}
+                    disabled={updatingContacts}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    Save
+                  </button>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">
+                  Used for "Call Now" button on Service products
+                </p>
+              </div>
+            </div>
+
+            {/* Shop Contact */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Shop Call Number
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={contacts.shop}
+                    onChange={(e) => setContacts(prev => ({ ...prev, shop: e.target.value }))}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter phone number"
+                  />
+                  <button
+                    onClick={() => handleUpdateContact('shop')}
+                    disabled={updatingContacts}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    Save
+                  </button>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">
+                  Used for "Call Now" button on Shop products
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -62,6 +62,22 @@ const ProductView = () => {
     const [addonsLoading, setAddonsLoading] = useState(false);
     const [addingToCart, setAddingToCart] = useState(false);
     const { addToCart } = useCart();
+    const [adminContacts, setAdminContacts] = useState({ service: '', shop: '' });
+
+    useEffect(() => {
+        const fetchContacts = async () => {
+            try {
+                const response = await fetch(`${config.API_BASE_URL}/api/admin/settings/contacts`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setAdminContacts(data);
+                }
+            } catch (error) {
+                console.error('Error fetching contacts:', error);
+            }
+        };
+        fetchContacts();
+    }, []);
 
     const tabs = [
         { id: 'details', label: 'Overview', icon: SparklesIcon },
@@ -457,6 +473,9 @@ const ProductView = () => {
     const whatsappPhoneNumber = selectedCityData?.contactNumber || '+917739873442';
     const whatsappMessage = `Hello! I'm interested in the "${product.name}" product and have a question. Product Link: ${window.location.href}`;
     const whatsappUrl = `https://wa.me/${whatsappPhoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
+    const contactNumber = isShop ? adminContacts.shop : adminContacts.service;
+    const callUrl = `tel:${contactNumber || '+917739873442'}`;
 
     return (
         <motion.div
@@ -1033,20 +1052,30 @@ const ProductView = () => {
                         {/* Action Buttons */}
                         <div className="space-y-4">
                             {/* Primary CTA */}
-                            <button
-                                onClick={handleBookNow}
-                                disabled={isOutOfStock || addingToCart}
-                                className={`relative w-full py-4 px-6 rounded-2xl font-bold text-base uppercase tracking-wider shadow-lg transform transition-all duration-300 overflow-hidden group ${isOutOfStock
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleBookNow}
+                                    disabled={isOutOfStock || addingToCart}
+                                    className={`relative flex-1 py-4 px-6 rounded-2xl font-bold text-base uppercase tracking-wider shadow-lg transform transition-all duration-300 overflow-hidden group ${isOutOfStock
                                         ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                                         : 'bg-gradient-to-r from-[#FCD24C] to-[#F5A623] text-slate-900 hover:shadow-xl hover:shadow-amber-300/40 hover:scale-[1.02] active:scale-[0.98]'
-                                    }`}
-                            >
-                                {/* Shine Effect */}
-                                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                                <span className="relative">
-                                    {isOutOfStock ? 'Out of Stock' : (addingToCart ? 'Adding...' : (isShop ? '🛒 Add to Cart' : '📅 Book Now'))}
-                                </span>
-                            </button>
+                                        }`}
+                                >
+                                    {/* Shine Effect */}
+                                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                                    <span className="relative">
+                                        {isOutOfStock ? 'Out of Stock' : (addingToCart ? 'Adding...' : (isShop ? '🛒 Add to Cart' : '📅 Book Now'))}
+                                    </span>
+                                </button>
+
+                                <a
+                                    href={callUrl}
+                                    className="flex items-center justify-center px-6 py-4 rounded-2xl font-bold text-base uppercase tracking-wider shadow-lg bg-black text-white hover:bg-gray-800 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                                >
+                                    <PhoneIcon className="w-5 h-5 mr-2" />
+                                    <span>Call Now</span>
+                                </a>
+                            </div>
 
                             {/* Secondary Actions */}
                             <div className="flex gap-3">
@@ -1100,7 +1129,6 @@ const ProductView = () => {
                         </div>
                     </div>
                 </div >
-
 
                 <div>
                     {/* Why Image Section */}
@@ -1365,7 +1393,7 @@ const ProductView = () => {
                         </a>
 
                         <a
-                            href={`tel:${selectedCityData?.contactNumber || '+917739873442'}`}
+                            href={callUrl}
                             className="flex items-center justify-center p-3.5 rounded-full bg-gray-100 text-gray-900 border border-gray-200"
                         >
                             <PhoneIcon className="h-6 w-6" />
@@ -1376,8 +1404,6 @@ const ProductView = () => {
 
             {/* Add bottom padding to prevent content from being hidden behind sticky buttons - Mobile Only */}
             <div className="h-16 md:hidden"></div>
-
-            {/* Add-ons Selection Modal */}
             <AnimatePresence>
                 {showAddonsModal && (
                     <motion.div

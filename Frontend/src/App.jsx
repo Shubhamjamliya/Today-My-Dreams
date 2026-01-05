@@ -121,6 +121,7 @@ class ErrorBoundary extends React.Component {
 
 // Import Admin Routes
 import AdminRoutes from './admin/AdminRoutes';
+import VendorRoutes from './vendor/VendorRoutes';
 
 function AppContent() {
   useScrollToTop();
@@ -141,20 +142,6 @@ function AppContent() {
     };
 
     handlePageLoad();
-    // Only handle visibility change for title, removed window focus listener to avoid scroll jumping
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        window.previousTitle = document.title;
-        document.title = "Come back! 😢";
-      } else if (window.previousTitle) {
-        document.title = window.previousTitle;
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
   }, []);
 
   // SEO configuration based on current route
@@ -193,6 +180,12 @@ function AppContent() {
       <Route path="/admin/*" element={
         <Suspense fallback={<Loader size="md" text="Loading Admin..." />}>
           <AdminRoutes />
+        </Suspense>
+      } />
+      {/* Vendor Section */}
+      <Route path="/vendor/*" element={
+        <Suspense fallback={<Loader size="md" text="Loading Vendor..." />}>
+          <VendorRoutes />
         </Suspense>
       } />
 

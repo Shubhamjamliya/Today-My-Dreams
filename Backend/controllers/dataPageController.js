@@ -3,9 +3,7 @@ const DataPage = require('../models/DataPage');
 // Get all data pages
 const dataPageController = async (req, res) => {
   try {
-    console.log('Fetching all data pages...');
     const pages = await DataPage.find();
-    console.log('Found pages:', pages);
     res.json(pages);
   } catch (err) {
     console.error('Error fetching data pages:', err);
@@ -63,7 +61,7 @@ exports.getAllDataPages = dataPageController;
 exports.initializePolicies = async (req, res) => {
   try {
     console.log('Initializing default policies...');
-    
+
     const defaultPolicies = [
       {
         type: 'terms',
@@ -182,11 +180,11 @@ We may update this privacy policy from time to time.`
     // Add default policies
     const result = await DataPage.insertMany(defaultPolicies);
     console.log('Initialized policies:', result.length);
-    
-    res.status(201).json({ 
-      message: 'Policies initialized successfully', 
+
+    res.status(201).json({
+      message: 'Policies initialized successfully',
       count: result.length,
-      policies: result 
+      policies: result
     });
   } catch (err) {
     console.error('Error initializing policies:', err);

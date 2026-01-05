@@ -5,6 +5,7 @@ import {
   ShoppingBag,
   Package,
   Users,
+  User,
   LogOut,
   Tag,
   Store,
@@ -15,7 +16,12 @@ import {
   Settings,
   BookOpen,
   Gift,
-  Video
+  Video,
+  Star,
+  Heart,
+  MapPin,
+  Ticket,
+  ClipboardList
 } from 'lucide-react';
 
 const SidebarLayout = ({ children }) => {
@@ -24,8 +30,8 @@ const SidebarLayout = ({ children }) => {
   const [openMenus, setOpenMenus] = useState(['shop']); // Shop open by default
 
   const isActive = (path) => {
-    if (path === '/admin') return location.pathname === '/admin';
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+    if (path === '/admin') return location.pathname === '/admin' || location.pathname === '/admin/dashboard';
+    return location.pathname === path || (path !== '/admin' && location.pathname.startsWith(path + '/'));
   };
 
   const toggleMenu = (label) => {
@@ -47,15 +53,19 @@ const SidebarLayout = ({ children }) => {
       ]
     },
     { path: '/admin/products', icon: <Package size={20} />, label: 'Products' },
-    { path: '/admin/addons', icon: <Gift size={20} />, label: 'Add-ons' },
-    { path: '/admin/hero-carousel', icon: <Presentation size={20} />, label: 'all slider' },
     { path: '/admin/categories', icon: <Tag size={20} />, label: 'Categories' },
+    { path: '/admin/featured-products', icon: <Star size={20} />, label: 'Featured Products' },
+    { path: '/admin/loved', icon: <Heart size={20} />, label: 'Loved Products' },
+    { path: '/admin/addons', icon: <Gift size={20} />, label: 'Add-ons' },
+    { path: '/admin/hero-carousel', icon: <Presentation size={20} />, label: 'Hero Carousel' },
     { path: '/admin/videos', icon: <Video size={20} />, label: 'Videos' },
-    { path: '/admin/orders', icon: <Users size={20} />, label: 'Orders' },
+    { path: '/admin/orders', icon: <ClipboardList size={20} />, label: 'Service Orders' },
+    { path: '/admin/shop/orders', icon: <ShoppingBag size={20} />, label: 'Shop Orders' },
     { path: '/admin/data', icon: <File size={20} />, label: 'Data' },
-    { path: '/admin/coupons', icon: <Users size={20} />, label: 'Coupons' },
-    { path: '/admin/cities', icon: <Users size={20} />, label: 'City' },
+    { path: '/admin/coupons', icon: <Ticket size={20} />, label: 'Coupons' },
+    { path: '/admin/cities', icon: <MapPin size={20} />, label: 'City' },
     { path: '/admin/blog', icon: <BookOpen size={20} />, label: 'Blog' },
+    { path: '/admin/vendors', icon: <Users size={20} />, label: 'Vendors' },
     { path: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];
 
@@ -227,23 +237,29 @@ const SidebarLayout = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header */}
-        <div className="lg:hidden bg-slate-900 shadow-sm border-b border-slate-800 px-4 py-3">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
-            >
-              <Menu size={20} className="text-white" />
+        {/* Mobile Header (Dark Theme - Vendor Match) */}
+        <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-md">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setIsMobileMenuOpen(true)} className="text-white hover:bg-slate-800 p-1.5 rounded-lg active:scale-95 transition-transform">
+              <Menu size={24} />
             </button>
-            <Link to="/admin">
-              <div className="flex items-center space-x-2">
-
-                <img src="/TodayMyDream.png" alt="Today My Dream Logo" className="w-10 h-10 object-contain" />
-                <span className="text-lg font-bold text-white">Today My Dream</span>
-
+            <Link to="/admin" className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <img src="/TodayMyDream.png" className="w-6 h-6 object-contain" alt="Logo" />
+                <h1 className="text-lg font-bold text-white leading-none">Today My Dream</h1>
               </div>
+              <span className="text-[10px] font-bold text-[#FCD24C] tracking-widest uppercase ml-8 leading-none mt-0.5">ADMIN PORTAL</span>
             </Link>
           </div>
+          <Link to="/admin/settings" className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+            <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-slate-700 z-10"></div>
+              <User size={14} className="text-slate-300" />
+            </div>
+            <span className="text-xs font-medium text-slate-300">
+              Admin
+            </span>
+          </Link>
         </div>
 
         {/* Content Area */}

@@ -1,11 +1,14 @@
 const Order = require('../models/Order');
 const Counter = require('../models/Counter');
-const Seller = require('../models/Seller');
+
 const fs = require('fs').promises;
 const path = require('path');
 const ordersJsonPath = path.join(__dirname, '../data/orders.json');
 const Product = require('../models/Product');
-const commissionController = require('./commissionController');
+const ShopOrder = require('../models/ShopOrder');
+const ShopProduct = require('../models/ShopProduct');
+const Vendor = require('../models/Vendor');
+
 const nodemailer = require('nodemailer');
 
 // Utility function to format scheduled delivery time
@@ -49,6 +52,7 @@ const createOrder = async (req, res) => {
       customerName,
       email,
       phone,
+      cityId,
       address, // Expects the full address object, including optional location
       items,
       totalAmount,
@@ -61,7 +65,71 @@ const createOrder = async (req, res) => {
       couponCode,
       scheduledDelivery, // NEW: Get scheduled delivery date/time
       addOns,           // NEW: Get optional add-ons
+      shippingCost,     // NEW
+      codExtraCharge,   // NEW
+      serviceFee,       // NEW
+      module,           // NEW: Check if it is a shop order
     } = req.body;
+
+    // --- HANDLE SHOP ORDERS ---
+    if (module === 'shop') {
+      const shopOrderItems = items.map(item => ({
+        productId: item.productId,
+        name: item.name,
+        price: Number(item.price),
+        quantity: Number(item.quantity),
+        image: item.image
+      }));
+
+      // Generate custom order ID for shop
+      const orderNumber = await Counter.getNextSequence('shopOrder');
+      const customOrderId = `shop${orderNumber}`;
+
+      const newShopOrder = new ShopOrder({
+        customOrderId,
+        customerName,
+        email,
+        phone,
+        address, // Should contain street, city, pincode, country
+        items: shopOrderItems,
+        totalAmount,
+        paymentMethod,
+        paymentStatus: paymentStatus || 'pending',
+        transactionId,
+        couponCode,
+        shippingCost
+      });
+
+      const savedShopOrder = await newShopOrder.save();
+
+      // Update ShopProduct stock
+      for (const item of shopOrderItems) {
+        if (item.productId) {
+          try {
+            // Try fetching as ShopProduct
+            const product = await ShopProduct.findById(item.productId);
+            if (product) {
+              product.stock = Math.max(0, (product.stock || 0) - (item.quantity || 1));
+              await product.save();
+            }
+          } catch (err) {
+            console.error(`Error updating shop product stock: ${err.message}`);
+          }
+        }
+      }
+
+      // Send confirmation email (using same helper or a new one if needed)
+      // For now, reusing sendOrderConfirmationEmail but adapting the object if necessary
+      // sending notification is good practice
+      sendOrderConfirmationEmail(savedShopOrder);
+
+      return res.status(201).json({
+        success: true,
+        message: 'Shop Order created successfully!',
+        order: savedShopOrder
+      });
+    }
+    // --- END SHOP ORDER HANDLING ---
 
     // Comprehensive validation
     const requiredFields = ['customerName', 'email', 'phone', 'address', 'items', 'totalAmount', 'paymentMethod', 'paymentStatus'];
@@ -153,11 +221,27 @@ const createOrder = async (req, res) => {
     const orderNumber = await Counter.getNextSequence('order');
     const customOrderId = `decorationcelebration${orderNumber}`;
 
+    // Auto-assign to a vendor in the city if available (Simple First-Found Strategy)
+    let assignedVendorId = null;
+    if (cityId) {
+      try {
+        const vendor = await Vendor.findOne({ cityId }); // Finds the first vendor in this city
+        if (vendor) {
+          assignedVendorId = vendor._id;
+          console.log(`Auto-assigned order to vendor: ${vendor.name} (${vendor._id})`);
+        }
+      } catch (err) {
+        console.warn("Failed to auto-assign vendor:", err.message);
+      }
+    }
+
     const newOrder = new Order({
       customOrderId,
       customerName,
       email,
       phone,
+      cityId,
+      assignedVendorId, // NEW: Auto-assigned vendor
       address, // Use the address object directly
       items,
       totalAmount,
@@ -170,26 +254,15 @@ const createOrder = async (req, res) => {
       couponCode,
       scheduledDelivery: processedScheduledDelivery, // Processed scheduled delivery
       addOns,           // NEW: Save add-ons
+      shippingCost: shippingCost || 0,
+      codExtraCharge: codExtraCharge || 0,
+      serviceFee: serviceFee || 0,
     });
 
     const savedOrder = await newOrder.save();
 
     // --- Commission and Stock Logic (unchanged) ---
-    let commission = 0;
-    let seller = null;
 
-    if (sellerToken) {
-      seller = await Seller.findOne({ sellerToken });
-      if (seller) {
-        commission = totalAmount * 0.30;
-        try {
-          await commissionController.createCommissionEntry(savedOrder._id, seller._id, totalAmount, 0.30);
-          console.log(`Commission entry created for seller ${seller.businessName}: ₹${commission}`);
-        } catch (commissionError) {
-          console.error('Failed to create commission entry:', commissionError);
-        }
-      }
-    }
 
     for (const item of items) {
       if (item.productId) {
@@ -225,7 +298,8 @@ const createOrder = async (req, res) => {
       success: true,
       message: 'Order created successfully!',
       order: orderResponse,
-      commission: seller ? { amount: commission, sellerName: seller.businessName } : null
+      order: orderResponse,
+      commission: null
     });
   } catch (error) {
     console.error('Error creating order:', error);

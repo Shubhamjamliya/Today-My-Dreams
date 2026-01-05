@@ -21,6 +21,11 @@ import Addons from './pages/Addons';
 import CreateAddon from './pages/CreateAddon';
 import EditAddon from './pages/EditAddon';
 import Videos from './pages/Videos';
+import VendorManagement from './pages/VendorManagement';
+import FeaturedProducts from './pages/FeaturedProducts';
+import EditFeaturedProducts from './pages/EditFeaturedProducts';
+import Loved from './pages/Loved';
+import EditLoved from './pages/EditLoved';
 
 const isAuthenticated = () => {
   const token = localStorage.getItem("admin_token");
@@ -101,7 +106,7 @@ const AdminRoutes = () => {
       <Route path="products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
       <Route path="products/edit/:id" element={<ProtectedRoute><EditProduct /></ProtectedRoute>} />
 
-      <Route path="orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+      <Route path="orders" element={<ProtectedRoute><Orders module="service" /></ProtectedRoute>} />
 
       <Route path="categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
       <Route path="categories/edit/:id" element={<ProtectedRoute><EditCategories /></ProtectedRoute>} />
@@ -132,6 +137,15 @@ const AdminRoutes = () => {
       <Route path="addons/edit/:id" element={<ProtectedRoute><EditAddon /></ProtectedRoute>} />
 
       <Route path="videos" element={<ProtectedRoute><Videos /></ProtectedRoute>} />
+      <Route path="vendors" element={<ProtectedRoute><VendorManagement /></ProtectedRoute>} />
+
+      <Route path="featured-products" element={<ProtectedRoute><FeaturedProducts /></ProtectedRoute>} />
+      <Route path="featured-products/edit/:id" element={<ProtectedRoute><EditFeaturedProducts /></ProtectedRoute>} />
+      <Route path="featured-products/new" element={<ProtectedRoute><EditFeaturedProducts /></ProtectedRoute>} />
+
+      <Route path="loved" element={<ProtectedRoute><Loved /></ProtectedRoute>} />
+      <Route path="loved/edit/:id" element={<ProtectedRoute><EditLoved /></ProtectedRoute>} />
+      <Route path="loved/new" element={<ProtectedRoute><EditLoved /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/admin" replace />} />
     </Routes>

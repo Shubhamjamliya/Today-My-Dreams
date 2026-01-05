@@ -19,10 +19,12 @@ const addOnSchema = new mongoose.Schema({
 
 // Main schema for an order
 const orderSchema = new mongoose.Schema({
-  customOrderId: { type: String, unique: true, index: true }, // Custom order ID like decorationcelebration1
+  customOrderId: { type: String, unique: true, index: true, sparse: true }, // Custom order ID like decorationcelebration1
   customerName: { type: String, required: true },
   email: { type: String, required: true, index: true }, // Index for fast lookups
   phone: { type: String, required: true },
+  cityId: { type: mongoose.Schema.Types.ObjectId, ref: 'City', required: false },
+  assignedVendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor', required: false },
   address: {
     street: { type: String, required: true },
     pincode: { type: String, required: true },
@@ -54,7 +56,7 @@ const orderSchema = new mongoose.Schema({
   orderStatus: {
     type: String,
     default: 'processing',
-    enum: ['processing', 'confirmed', 'manufacturing', 'shipped', 'delivered']
+    enum: ['processing', 'confirmed', 'service_scheduled', 'service_in_progress', 'service_completed', 'cancelled']
   },
   paymentStatus: {
     type: String,
@@ -65,6 +67,9 @@ const orderSchema = new mongoose.Schema({
   remainingAmount: { type: Number, default: 0 }, // Remaining amount to be paid on delivery
   sellerToken: { type: String, required: false }, // Track which seller referred this order
   commission: { type: Number, default: 0 }, // Commission amount for this order
+  shippingCost: { type: Number, default: 0 },
+  codExtraCharge: { type: Number, default: 0 },
+  serviceFee: { type: Number, default: 0 },
   transactionId: { type: String, required: false }, // PhonePe transaction ID
   couponCode: { type: String, required: false }, // Coupon code if applied
 }, { timestamps: true });
