@@ -24,76 +24,36 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Keep React and MUI together to ensure React is available for MUI
+          // Core React and UI dependencies - keeping these together prevents resolution issues
           if (id.includes('node_modules/react/') ||
             id.includes('node_modules/react-dom/') ||
-            id.includes('node_modules/@mui/') ||
-            id.includes('node_modules/@emotion/')) {
-            return 'react-ui';
+            id.includes('node_modules/react-router/') ||
+            id.includes('node_modules/react-router-dom/') ||
+            id.includes('framer-motion') ||
+            id.includes('lucide-react') ||
+            id.includes('@mui/') ||
+            id.includes('@emotion/')) {
+            return 'vendor-core';
           }
 
-          // Keep React Router separate
-          if (id.includes('node_modules/react-router')) {
-            return 'react-router';
-          }
-
-          // Animation libraries
-          if (id.includes('framer-motion')) {
-            return 'animation';
-          }
-
-          // Icon libraries
-          if (id.includes('react-icons') || id.includes('@heroicons') || id.includes('lucide-react')) {
-            return 'icons';
-          }
-
-          // Utility libraries - split large utils
-          if (id.includes('axios')) {
-            return 'axios';
-          }
-          if (id.includes('date-fns')) {
-            return 'date-utils';
-          }
-          if (id.includes('html2canvas') || id.includes('jspdf')) {
+          // Heavy Utilities and static libraries
+          if (id.includes('html2canvas') || id.includes('jspdf') || id.includes('pdf-lib') || id.includes('turndown')) {
             return 'pdf-utils';
           }
 
-          // Maps and location
           if (id.includes('leaflet') || id.includes('react-leaflet')) {
             return 'maps';
           }
 
-          // Carousel libraries
-          if (id.includes('react-slick') || id.includes('react-responsive-carousel')) {
-            return 'carousel';
+          if (id.includes('axios')) {
+            return 'network';
           }
 
-          // Authentication
-          if (id.includes('@react-oauth') || id.includes('google')) {
-            return 'auth';
+          if (id.includes('date-fns')) {
+            return 'date-utils';
           }
 
-          // Toast notifications
-          if (id.includes('react-hot-toast') || id.includes('react-toastify')) {
-            return 'toast';
-          }
-
-          // Cloudinary and file handling
-          if (id.includes('cloudinary') || id.includes('multer')) {
-            return 'cloudinary';
-          }
-
-          // Payment processing
-          if (id.includes('razorpay')) {
-            return 'payment';
-          }
-
-          // Email
-          if (id.includes('nodemailer')) {
-            return 'email';
-          }
-
-          // Large vendor libraries that should be separate
+          // Remaining node_modules go to vendor
           if (id.includes('node_modules')) {
             return 'vendor';
           }
