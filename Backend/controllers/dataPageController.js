@@ -67,7 +67,7 @@ exports.initializePolicies = async (req, res) => {
         type: 'terms',
         heading: 'Terms and Conditions',
         content: `Terms and Conditions:
-Welcome to RikoCraft. By accessing our website, you agree to these terms and conditions.
+Welcome to Today My Dream. By accessing our website, you agree to these terms and conditions.
 
 Acceptance of Terms:
 By using our services, you acknowledge that you have read, understood, and agree to be bound by these terms.
@@ -100,7 +100,7 @@ These terms are governed by the laws of India.`
         type: 'refund',
         heading: 'Refund Policy',
         content: `Refund Policy:
-We want you to be completely satisfied with your purchase from RikoCraft.
+We want you to be completely satisfied with your purchase from Today My Dream.
 
 Eligibility for Refunds:
 Items must be returned within 30 days of delivery in their original condition.
@@ -130,7 +130,7 @@ International Returns:
 International customers may be subject to additional shipping and customs fees.
 
 Contact Information:
-For return inquiries, email us at support@rikocraft.com or call our customer service.`
+For return inquiries, email us at support@todaymydream.com or call our customer service at +91 7860111185.`
       },
       {
         type: 'privacy',

@@ -144,6 +144,24 @@ const VendorManagement = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Documents Section */}
+                <div className="mt-4 pt-4 border-t border-gray-50">
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Documents (Verify before approving)</p>
+                  <div className="flex gap-4">
+                    {v.aadharCard ? (
+                      <button onClick={() => window.open(v.aadharCard, '_blank')} className="text-sm text-blue-600 hover:text-blue-800 font-medium underline flex items-center gap-1">
+                        View Aadhar Card
+                      </button>
+                    ) : <span className="text-sm text-gray-400 italic">No Aadhar uploaded</span>}
+
+                    {v.panCard ? (
+                      <button onClick={() => window.open(v.panCard, '_blank')} className="text-sm text-blue-600 hover:text-blue-800 font-medium underline flex items-center gap-1">
+                        View PAN Card
+                      </button>
+                    ) : <span className="text-sm text-gray-400 italic">No PAN uploaded</span>}
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-col gap-2 min-w-[200px]">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Plus, Search, Grid, List, FolderOpen, AlertCircle, GripVertical, ArrowUp, ArrowDown, Check, X, Filter } from 'lucide-react';
 import apiService from "../services/api";
 import Loader from "../components/Loader";
@@ -15,6 +15,7 @@ import ShopCategoryModal from "../components/ShopCategoryModal";
 import ShopSubCategoryModal from "../components/ShopSubCategoryModal";
 
 const Categories = ({ module, showSubcategoriesOnly }) => {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedParentCategory, setSelectedParentCategory] = useState('all');
@@ -191,16 +192,17 @@ const Categories = ({ module, showSubcategoriesOnly }) => {
 
   // Handler for adding new category or subcategory
   const handleAddAction = (e) => {
+    e.preventDefault();
     if (showSubcategoriesOnly) {
-      e.preventDefault();
       setEditingSubCategory(null);
       setIsSubCategoryModalOpen(true);
     } else if (module === 'shop') {
-      e.preventDefault();
       setEditingCategory(null);
       setIsModalOpen(true);
+    } else {
+      // Navigate to new category page for service categories
+      navigate('/admin/categories/edit/new');
     }
-    // Else let the Link handle navigation to the edit page
   };
 
   const handleEdit = (e, item) => {

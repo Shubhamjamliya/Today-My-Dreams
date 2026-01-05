@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -10,10 +10,6 @@ const Login = () => {
   const navigate = useNavigate();
   const { login, loginWithGoogle, error: contextError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  // isGoogleLoading will be managed either locally or passed down if needed, 
-  // but for simplicity, let the child component verify loading or just manage generic loading.
-  // Actually, keeping isGoogleLoading here is fine if I pass setter to child, 
-  // but better to keep google logic encapsulated.
   const [formData, setFormData] = useState({
     identifier: '',
     password: '',
@@ -34,7 +30,7 @@ const Login = () => {
     const loginData = { ...formData, identifier };
     try {
       await login(loginData);
-      toast.success('Welcome to your account!');
+      toast.success('Welcome back to TodayMyDream!');
       navigate('/');
       window.location.reload();
     } catch (err) {
@@ -52,11 +48,11 @@ const Login = () => {
     });
   };
 
-  // Separate component to safely use the hook
+  // Google Login Component
   const GoogleLoginButton = ({ onLoginSuccess, onError }) => {
     const [isLoading, setIsLoading] = useState(false);
 
-    const login = useGoogleLogin({
+    const loginHook = useGoogleLogin({
       onSuccess: async (tokenResponse) => {
         setIsLoading(true);
         try {
@@ -76,239 +72,188 @@ const Login = () => {
     return (
       <button
         type="button"
-        onClick={() => login()}
+        onClick={() => loginHook()}
         disabled={isLoading}
-        className="w-full flex justify-center items-center gap-3 py-3 px-4 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FCD24C] transition-all duration-200"
       >
         {isLoading ? (
-          <span className="flex items-center">
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Signing in...
-          </span>
+          <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
         ) : (
           <>
-            <GoogleIcon />
-            Sign in with Google
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+            <span className="text-gray-700 font-medium">Sign in with Google</span>
           </>
         )}
       </button>
     );
   };
 
-  const GoogleIcon = () => (
-    <svg className="w-5 h-5" viewBox="0 0 533.5 544.3">
-      <path
-        fill="#4285F4"
-        d="M533.5 278.4c0-17.4-1.6-34-4.6-50.1H272v95h147.5c-6.3 33.7-25 62.2-53.5 81.4l86.4 67.2c50.6-46.6 81.1-115.3 81.1-193.5z"
-      />
-      <path
-        fill="#34A853"
-        d="M272 544.3c72.6 0 133.6-24 178.1-65.2l-86.4-67.2c-24 16-54.7 25.4-91.7 25.4-70.6 0-130.5-47.7-151.9-111.8l-89.5 69c43.5 86.1 133.2 149.8 241.4 149.8z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M120.1 325.5c-11.4-33.7-11.4-69.7 0-103.4l-89.5-69C4.8 190.2 0 216.3 0 243.8c0 27.5 4.8 53.6 30.6 90.7l89.5-69z"
-      />
-      <path
-        fill="#EA4335"
-        d="M272 107.7c39.7 0 75.2 13.6 103.2 40.2l77.2-77.2C405.6 24 344.6 0 272 0 163.8 0 74.1 63.7 30.6 153.8l89.5 69c21.4-64.1 81.3-115.9 151.9-115.9z"
-      />
-    </svg>
-  );
-
-  const ArtisanCraftSVG = () => (
-    <motion.svg width="100%" viewBox="0 0 400 350" initial="hidden" animate="visible" className="max-w-md mx-auto drop-shadow-lg">
-      <defs>
-        <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FDE68A" />
-          <stop offset="100%" stopColor="#FCD24C" />
-        </linearGradient>
-        <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
-          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0" result="glow" />
-          <feComposite in="glow" in2="SourceGraphic" operator="over" />
-        </filter>
-      </defs>
-      {Array.from({ length: 12 }).map((_, i) => (<motion.path key={i} d="M 200 175 L 350 175" transform={`rotate(${i * 30}, 200, 175)`} stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1" variants={{ hidden: { pathLength: 0, opacity: 0 }, visible: { pathLength: 1, opacity: 1, transition: { duration: 1.5, delay: i * 0.1, ease: "easeInOut" } } }} />))}
-      <motion.path d="M 150 300 C 150 250, 120 220, 160 180 C 180 160, 220 160, 240 180 C 280 220, 250 250, 250 300 Z" fill="url(#goldGradient)" stroke="#FFF" strokeWidth="3" filter="url(#softGlow)" variants={{ hidden: { opacity: 0, scale: 0.5 }, visible: { opacity: 1, scale: 1, transition: { duration: 1, delay: 0.5, type: 'spring' } } }} />
-      <motion.circle cx="200" cy="120" r="15" fill="rgba(255,255,255,0.8)" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { delay: 1.5 } } }} />
-      <motion.path d="M 120 150 C 150 100, 250 100, 280 150" stroke="rgba(255,255,255,0.5)" fill="transparent" strokeWidth="2" variants={{ hidden: { pathLength: 0 }, visible: { pathLength: 1, transition: { duration: 1, delay: 1 } } }} />
-    </motion.svg>
-  );
-
-  // Check if Google Login is configured
   const isGoogleConfigured = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
-      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} className="w-full lg:w-1/2 flex items-start lg:items-center justify-start lg:justify-center px-4 sm:px-6 lg:px-8 pt-8 lg:pt-0">
-        <div className="max-w-md w-full space-y-6">
-          <div>
-            <h2 className="text-4xl font-light tracking-tight text-gray-900">
-              Welcome <span className="font-serif italic">Back</span>
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link to="/signup" className="font-medium text-primary hover:text-primary-dark">Sign up</Link>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 p-4 lg:p-8">
+      <div className="w-full max-w-6xl h-full min-h-[600px] bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row shadow-orange-100/50">
+
+        {/* Left Side - Brand (Visible on large screens) */}
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="hidden lg:flex w-1/2 relative bg-gradient-to-br from-[#FCD24C] to-[#F59E0B] p-16 flex-col justify-between text-white overflow-hidden"
+        >
+          {/* Abstract circles */}
+          <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+            <div className="absolute top-[-20%] left-[-20%] w-[600px] h-[600px] rounded-full border-[60px] border-white/20 blur-xl" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-white/20 blur-3xl opacity-50" />
+            <div className="absolute top-[40%] right-[20%] w-[100px] h-[100px] rounded-full bg-white/30 blur-2xl" />
+          </div>
+
+          <div className="relative z-10">
+            <div className="bg-white/20 w-fit p-4 rounded-2xl backdrop-blur-md mb-8">
+              {/* Increased Logo Size */}
+              <img src="/TodayMyDream.png" alt="TodayMyDream Logo" className="w-32 h-auto object-contain drop-shadow-md" />
+            </div>
+            <h1 className="text-5xl font-bold leading-tight mb-6 tracking-tight">
+              Turn Your <br />
+              <span className="text-white opacity-90 italic font-serif">Dream Events</span> <br />
+              Into Reality
+            </h1>
+            <p className="text-lg text-yellow-50 max-w-md leading-relaxed">
+              Join our community to discover the best decorations, plan unforgettable moments, and bring your vision to life.
             </p>
           </div>
 
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-              <span className="block sm:inline">{error}</span>
+          <div className="relative z-10 flex items-center gap-4 text-sm font-medium text-yellow-100/80">
+            <span>© 2024 TodayMyDream</span>
+            <span className="w-1 h-1 rounded-full bg-yellow-100/50" />
+            <span>Privacy Policy</span>
+            <span className="w-1 h-1 rounded-full bg-yellow-100/50" />
+            <span>Terms</span>
+          </div>
+        </motion.div>
+
+        {/* Right Side - Login Form */}
+        <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 sm:p-12 lg:p-16 bg-white relative">
+
+          <div className="max-w-md w-full mx-auto">
+            {/* Mobile Logo */}
+            <div className="lg:hidden flex justify-center mb-8">
+              <img src="/TodayMyDream.png" alt="TodayMyDream Logo" className="w-24 h-auto" />
             </div>
-          )}
 
-          {/* Google Login Button Section */}
-          {isGoogleConfigured && (
-            <>
-              <GoogleLoginButton
-                onLoginSuccess={async (tokenResponse) => {
-                  await loginWithGoogle(tokenResponse.access_token);
-                  toast.success('Successfully logged in with Google!');
-                  navigate('/');
-                  window.location.reload();
-                }}
-                onError={(err) => {
-                  setError(err.message || 'Google login failed');
-                  toast.error('Google login failed');
-                }}
-              />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+              <p className="text-gray-500 mb-8">Please enter your details to sign in.</p>
 
-              <div className="relative flex py-2 items-center">
-                <div className="flex-grow border-t border-gray-300"></div>
-                <span className="flex-shrink mx-4 text-gray-400 text-xs">OR</span>
-                <div className="flex-grow border-t border-gray-300"></div>
-              </div>
-            </>
-          )}
-
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="identifier" className="block text-sm font-medium text-gray-700">
-                  Email or Phone
-                </label>
-                <div className="mt-1 relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="identifier"
-                    name="identifier"
-                    type="text"
-                    autoComplete="username"
-                    required
-                    value={formData.identifier}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your email or phone number"
-                  />
+              {error && (
+                <div className="mb-6 bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+                  <div className="w-1 h-4 bg-red-500 rounded-full" />
+                  {error}
                 </div>
-              </div>
+              )}
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="mt-1 relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your password"
+              {isGoogleConfigured && (
+                <div className="mb-8">
+                  <GoogleLoginButton
+                    onLoginSuccess={async (tokenResponse) => {
+                      await loginWithGoogle(tokenResponse.access_token);
+                      toast.success('Successfully logged in with Google!');
+                      navigate('/');
+                      window.location.reload();
+                    }}
+                    onError={(err) => {
+                      setError(err.message || 'Google login failed');
+                      toast.error('Google login failed');
+                    }}
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-gray-400 hover:text-gray-500 focus:outline-none">
+                  <div className="relative flex py-4 items-center">
+                    <div className="flex-grow border-t border-gray-100"></div>
+                    <span className="flex-shrink mx-4 text-gray-400 text-xs font-medium uppercase tracking-wider">Or continue with</span>
+                    <div className="flex-grow border-t border-gray-100"></div>
+                  </div>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-gray-700 ml-1">Email or Phone</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                    <input
+                      name="identifier"
+                      type="text"
+                      required
+                      value={formData.identifier}
+                      onChange={handleChange}
+                      className="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FCD24C] focus:border-transparent focus:bg-white transition-all duration-200"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center ml-1">
+                    <label className="text-sm font-semibold text-gray-700">Password</label>
+                    <Link to="/forgot-password" className="text-sm font-medium text-[#F59E0B] hover:text-[#d97706] transition-colors">
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                      <Lock className="h-5 w-5" />
+                    </div>
+                    <input
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="block w-full pl-11 pr-11 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FCD24C] focus:border-transparent focus:bg-white transition-all duration-200"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <Link to="/forgot-password" className="font-medium text-primary hover:text-primary-dark">
-                  Forgot your password?
-                </Link>
-              </div>
-            </div>
-
-            <div>
-              <button type="submit" disabled={isLoading} className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-white overflow-hidden  disabled:cursor-not-allowed" style={{ backgroundColor: '#FCD24C', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-                <div className="absolute transition-colors duration-300"></div>
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3 z-10">
-                  <Lock className="h-5 w-5 text-white/80 group-hover:text-white" />
-                </span>
-                <span className="relative z-10">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-[#FCD24C] to-[#F59E0B] hover:from-[#facc15] hover:to-[#d97706] text-white font-bold rounded-xl shadow-lg shadow-orange-200 hover:shadow-xl transform transition-all duration-200 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed mt-4 text-lg"
+                >
                   {isLoading ? (
-                    <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Signing in...
-                    </span>
-                  ) : ('Sign in')}
-                </span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </motion.div>
+                    <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      Sign In <ArrowRight className="w-5 h-5" />
+                    </>
+                  )}
+                </button>
+              </form>
 
-      <div className="lg:hidden w-full bg-gray-50 py-12 px-4">
-        <div className="max-w-md mx-auto">
-          <h3 className="text-2xl font-semibold text-gray-900 text-center mb-8">
-            Why Choose Us?
-          </h3>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="mt-8 text-center">
+                <p className="text-gray-500">
+                  Don't have an account yet?{' '}
+                  <Link to="/signup" className="font-bold text-[#F59E0B] hover:text-[#d97706] transition-colors">
+                    Create free account
+                  </Link>
+                </p>
               </div>
-              <h4 className="font-medium text-gray-900 mb-1">Reliable</h4>
-              <p className="text-sm text-gray-600">Trusted service for years</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h4 className="font-medium text-gray-900 mb-1">Safe</h4>
-              <p className="text-sm text-gray-600">Secure transactions</p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, ease: 'easeInOut' }} className="hidden lg:flex w-1/2 bg-gradient-to-br from-[#FCD24C] to-[#FBBF24] relative items-center justify-center p-12 flex-col">
-        <div className="w-full max-w-lg text-center text-white">
-          <ArtisanCraftSVG />
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 1.5, ease: 'easeOut' }}>
-            <h2 className="font-display text-4xl font-extrabold mt-8 drop-shadow-md">
-              A Canvas of Culture & Craft
-            </h2>
-            <p className="mt-4 text-lg leading-relaxed opacity-90">
-              Log in to continue your journey through a curated world of Best Decoration.
-            </p>
-          </motion.div>
-        </div>
-      </motion.div>
     </div>
   );
 };

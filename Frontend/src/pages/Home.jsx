@@ -1,78 +1,85 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import Hero from '../components/Hero/Hero';
 import SectionBanner from '../components/SectionBanner';
 import Categories from '../components/Categories/Categories';
-import BirthdaySubcategories from '../components/BirthdaySubcategories';
-import CatCard from '../components/Catcard'; // Assuming index.js or default export
-import VideoGallery from '../components/Video/VideoGallery';
-import Testimonials from '../components/Testimonials/Testimonials';
-import MissionVision from '../components/MissionVision/MissionVision';
-import Offerpage from '../components/Hero/Offer';
-import InfoSection from '../components/Info';
 import Loader from '../components/Loader';
 
-// Wrapper for suspended components not strictly necessary if pure imports, 
-// but good if they are heavy internal renders.
-// For Home page, let's render them directly.
+// Lazy load heavy components below the fold
+import BirthdaySubcategories from '../components/BirthdaySubcategories';
+const CatCard = lazy(() => import('../components/Catcard'));
+const VideoGallery = lazy(() => import('../components/Video/VideoGallery'));
+const Testimonials = lazy(() => import('../components/Testimonials/Testimonials'));
+const MissionVision = lazy(() => import('../components/MissionVision/MissionVision'));
+const Offerpage = lazy(() => import('../components/Hero/Offer'));
+const InfoSection = lazy(() => import('../components/Info'));
+const VendorBanner = lazy(() => import('../components/VendorBanner'));
+const TrendingThemesBanner = lazy(() => import('../components/TrendingThemesBanner'));
+
+// Simple fallback loader for sections
+const SectionLoader = () => (
+  <div className="w-full h-96 flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
+  </div>
+);
 
 const Home = () => {
   return (
     <main className="bg-white min-h-screen">
-      {/* 1. Hero Full Width Carousel */}
+      {/* 1. Hero Full Width Carousel - Loaded Immediately */}
       <Hero />
 
-      {/* 2. Banner & Categories */}
-
+      {/* 2. Categories - Loaded Immediately for SEO/UX */}
       <Categories />
 
       {/* 3. Banner & Birthday Subcategories */}
-
       <BirthdaySubcategories />
 
-      {/* 4. Banner & CatCard (Featured/Special) */}
-      <SectionBanner
-        title="Trending Themes"
-        variant="light"
-      />
-      <CatCard />
+      {/* 4. Feature & Trending Group */}
+      <Suspense fallback={<SectionLoader />}>
+        <TrendingThemesBanner />
+        <CatCard />
+      </Suspense>
 
-      {/* 5. Banner & Video Gallery */}
-      <SectionBanner
-        title="Experience the Magic"
-        subtitle="Watch real celebrations come to life."
-        variant="primary"
-      />
-      <VideoGallery />
+      {/* 5. Experience & Social Proof Group */}
+      <Suspense fallback={<SectionLoader />}>
+        <SectionBanner
+          title="Experience the Magic"
+          subtitle="Watch real celebrations come to life."
+          variant="primary"
+        />
+        <VideoGallery />
 
-      {/* 6. Banner & Testimonials */}
-      <SectionBanner
-        title="Voices of Happiness"
-        subtitle="Real stories from our cherished celebrations."
-        variant="light"
-      />
-      <Testimonials />
+        <SectionBanner
+          title="Voices of Happiness"
+          subtitle="Real stories from our cherished celebrations."
+          variant="light"
+        />
+        <Testimonials />
 
-      {/* 7. Banner & Mission Vision */}
-      <SectionBanner
-        title="Our Promise"
-        variant="secondary"
-      />
-      <MissionVision />
+        <SectionBanner
+          title="Our Promise"
+          variant="secondary"
+        />
+        <MissionVision />
+      </Suspense>
 
-      {/* 8. Banner & Offerpage */}
-      <SectionBanner
-        title="Exclusive Offers"
-        subtitle="Grab the best deals for your upcoming events."
-        variant="primary"
-      />
-      <Offerpage />
+      {/* 6. Footer Content Group */}
+      <Suspense fallback={<SectionLoader />}>
+        <SectionBanner
+          title="Exclusive Offers"
+          subtitle="Grab the best deals for your upcoming events."
+          variant="primary"
+        />
+        <Offerpage />
 
-      {/* 9. Banner & Info Section */}
-      <SectionBanner
-        title="Did You Know?"
-        variant="light"
-      />
-      <InfoSection />
+        <VendorBanner />
+
+        <SectionBanner
+          title="Did You Know?"
+          variant="light"
+        />
+        <InfoSection />
+      </Suspense>
     </main>
   );
 };

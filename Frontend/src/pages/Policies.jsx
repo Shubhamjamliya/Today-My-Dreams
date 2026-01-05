@@ -65,6 +65,13 @@ const Policies = () => {
   const renderContent = (content) => {
     if (!content) return null;
 
+    // Replace placeholder/old brand names with current brand
+    content = content
+      .replace(/decoryy/gi, "Today My Dream")
+      .replace(/RikoCraft/gi, "Today My Dream")
+      .replace(/rikocraft\.com/gi, "todaymydream.com")
+      .replace(/call our customer service\./gi, "call our customer service at +91 7860111185.");
+
     const lines = content.split('\n');
     const sections = [];
     let currentSection = null;

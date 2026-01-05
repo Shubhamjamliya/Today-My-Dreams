@@ -17,6 +17,7 @@ import SEO from '../components/SEO/SEO';
 import { categoryAPI } from '../services/api';
 import { useCity } from '../context/CityContext';
 import { FaBirthdayCake } from 'react-icons/fa';
+import OptimizedImage from '../components/OptimizedImage';
 
 // --- Sub-Components ---
 
@@ -93,7 +94,12 @@ const CategorySidebar = memo(({
               >
                 <div className="flex items-center gap-3">
                   {cat.image ? (
-                    <img src={config.fixImageUrl(cat.image)} className={`w-9 h-9 rounded-full object-cover shadow-sm transition-all ${isActive ? 'ring-2 ring-white scale-110' : 'grayscale group-hover:grayscale-0'}`} loading="lazy" />
+                    <div className={`w-9 h-9 relative rounded-full overflow-hidden shadow-sm transition-all ${isActive ? 'ring-2 ring-white scale-110' : 'grayscale group-hover:grayscale-0'}`}>
+                      <OptimizedImage
+                        src={cat.image}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   ) : <FaBirthdayCake className="text-slate-400" />}
                   <span className={`text-sm ${isActive ? 'font-black' : 'font-bold'}`}>{cat.name}</span>
                 </div>

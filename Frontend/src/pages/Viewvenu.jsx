@@ -6,6 +6,7 @@ import { VenueDetailSkeleton } from '../components/Loader/Skeleton';
 import SEO from '../components/SEO/SEO';
 import config from '../config/config';
 import VenuePage from './Venupage';
+import OptimizedImage from '../components/OptimizedImage';
 
 const ViewVenue = () => {
     const { venueId } = useParams();
@@ -213,11 +214,11 @@ const ViewVenue = () => {
                         className="bg-white rounded-xl shadow-md overflow-hidden mb-4"
                     >
                         {/* Main Large Photo */}
-                        <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden">
-                            <img
+                        <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden bg-slate-100">
+                            <OptimizedImage
                                 src={selectedImage.url}
-
-                                className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+                                className="w-full h-full cursor-pointer transition-transform duration-300 hover:scale-105"
+                                objectFit="cover"
                                 onClick={() => setFullscreenImageIndex(selectedImageIndex)}
                             />
 
@@ -257,15 +258,15 @@ const ViewVenue = () => {
                                         <div
                                             key={index}
                                             className={`aspect-square rounded-md overflow-hidden cursor-pointer ring-2 ring-offset-1 transition-all ${selectedImageIndex === index
-                                                    ? "ring-amber-500"
-                                                    : "ring-transparent hover:ring-amber-300"
+                                                ? "ring-amber-500"
+                                                : "ring-transparent hover:ring-amber-300"
                                                 }`}
                                             onClick={() => setSelectedImageIndex(index)}
                                         >
-                                            <img
+                                            <OptimizedImage
                                                 src={image.url}
-
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full"
+                                                objectFit="cover"
                                             />
                                         </div>
                                     ))}
@@ -617,14 +618,14 @@ const ViewVenue = () => {
                                                 <button
                                                     onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
                                                     className={`w-full flex items-center justify-between p-4 lg:p-5 transition-all text-left ${openFaqIndex === index
-                                                            ? 'bg-gradient-to-r from-indigo-50 to-purple-50'
-                                                            : 'bg-white hover:bg-indigo-50/50'
+                                                        ? 'bg-gradient-to-r from-indigo-50 to-purple-50'
+                                                        : 'bg-white hover:bg-indigo-50/50'
                                                         }`}
                                                 >
                                                     <div className="flex items-start gap-3 flex-1">
                                                         <div className={`px-3 py-1 rounded-lg flex-shrink-0 font-bold text-sm ${openFaqIndex === index
-                                                                ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white'
-                                                                : 'bg-indigo-100 text-indigo-700'
+                                                            ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white'
+                                                            : 'bg-indigo-100 text-indigo-700'
                                                             }`}>
                                                             Q{index + 1}
                                                         </div>
@@ -636,8 +637,8 @@ const ViewVenue = () => {
                                                         className="flex-shrink-0 ml-3"
                                                     >
                                                         <div className={`p-1.5 rounded-full ${openFaqIndex === index
-                                                                ? 'bg-indigo-500 text-white'
-                                                                : 'bg-indigo-100 text-indigo-600'
+                                                            ? 'bg-indigo-500 text-white'
+                                                            : 'bg-indigo-100 text-indigo-600'
                                                             }`}>
                                                             <ChevronDown className="w-5 h-5" />
                                                         </div>
@@ -991,8 +992,8 @@ const ViewVenue = () => {
                                                     setFullscreenImageIndex(index);
                                                 }}
                                                 className={`w-12 h-12 rounded-md overflow-hidden transition-all ${fullscreenImageIndex === index
-                                                        ? 'ring-2 ring-white scale-110'
-                                                        : 'opacity-70 hover:opacity-100 hover:scale-105'
+                                                    ? 'ring-2 ring-white scale-110'
+                                                    : 'opacity-70 hover:opacity-100 hover:scale-105'
                                                     }`}
                                             >
                                                 <img

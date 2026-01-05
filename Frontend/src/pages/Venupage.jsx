@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { VenueSkeleton } from "../components/Loader/Skeleton";
 import config from '../config/config';
 import SEO from '../components/SEO/SEO';
+import OptimizedImage from '../components/OptimizedImage';
 
 // --- Background Shapes ---
 const BackgroundShapes = () => (
@@ -41,10 +42,11 @@ const VenueCard = ({ venue }) => {
     >
       {/* Image section with badges */}
       <div className="relative aspect-[16/10] md:aspect-[4/3] overflow-hidden bg-gradient-to-br from-amber-100 to-orange-100">
-        <img
+        <OptimizedImage
           src={venue.image}
           alt={venue.name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="w-full h-full transition-transform duration-700 group-hover:scale-110"
+          objectFit="cover"
         />
 
         {/* Location Badge */}

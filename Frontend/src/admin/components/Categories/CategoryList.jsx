@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import apiService from '../../services/api';
+import { categoryAPI } from '../../services/api';
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -93,7 +93,7 @@ const CategoryList = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await apiService.getCategories();
+      const response = await categoryAPI.getCategories();
       setCategories(response.data.categories || []);
       setError(null);
     } catch (error) {
@@ -109,10 +109,10 @@ const CategoryList = () => {
 
     try {
       if (editingCategory) {
-        await apiService.updateCategory(editingCategory.id, formData);
+        await categoryAPI.updateCategory(editingCategory.id, formData);
         setSuccess('Category updated successfully');
       } else {
-        await apiService.createCategory(formData);
+        await categoryAPI.createCategory(formData);
         setSuccess('Category added successfully');
       }
 
@@ -139,7 +139,7 @@ const CategoryList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this category?')) {
       try {
-        await apiService.deleteCategory(id);
+        await categoryAPI.deleteCategory(id);
         setSuccess('Category deleted successfully');
         fetchCategories();
       } catch (error) {

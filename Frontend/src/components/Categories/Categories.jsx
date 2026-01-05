@@ -8,6 +8,7 @@ import { categories as staticCategories } from '../../data/categories.js';
 import { Sparkles } from 'lucide-react'; // Added for a premium header icon
 import BirthdaySubcategories from '../BirthdaySubcategories';
 import { useCity } from '../../context/CityContext';
+import OptimizedImage from '../OptimizedImage';
 
 const containerVariants = {
   hidden: {},
@@ -86,12 +87,11 @@ const Categories = () => {
         sortOrder: category.sortOrder || 0
       }));
 
-      // Sort and then take only first 6
-      const limitedCategories = processedCategories
-        .sort((a, b) => a.sortOrder - b.sortOrder)
-        .slice(0, 6);
+      // Show all categories, no limit
+      const finalCategories = processedCategories
+        .sort((a, b) => a.sortOrder - b.sortOrder);
 
-      setCategories(limitedCategories);
+      setCategories(finalCategories);
       setLoading(false);
     } catch (error) {
       // Error fetching categories
@@ -103,8 +103,7 @@ const Categories = () => {
           name: category.name,
           image: categoryImages[category.name] || '/images/categories/default.jpg',
           isVideo: false
-        }))
-        .slice(0, 6); // also limit fallback to 6
+        }));
 
       setCategories(fallbackCategories);
       setLoading(false);
@@ -174,55 +173,52 @@ const Categories = () => {
     <section className="py-6 sm:py-12 md:py-16 font-sans">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
 
-        {/* Header Section - Premium styling with icon */}
+        {/* Header Section - Custom Title */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          className="text-center mb-6 md:mb-10"
+          className="text-center mb-10 md:mb-14"
         >
           <div className="max-w-xl mx-auto">
-
-            <h2 className="flex items-center justify-center text-lg md:text-2xl font-serif font-bold text-slate-900 mb-2">
-              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white mb-2 md:mb-3 items-center" />  Our Curated Categories
+            <h2 className="text-2xl md:text-4xl font-serif font-bold text-[#4A1D54] mb-2 tracking-wide">
+              Make Every Occasion Extra Special
             </h2>
-
+            {/* Optional subtitle if needed, or just spacers */}
           </div>
         </motion.div>
 
-        {/* Categories Grid - Tighter, app-like grid */}
+        {/* Categories Grid - Rounded Peach Cards */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          // Grid changed to 3 columns on mobile, maintaining aspect ratio for uniform cards
-          className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-4"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8"
         >
           {categories.map((category, index) => (
             <div
               key={category.id || index}
               onClick={() => handleCategoryClick(category.name)}
-              className="group block cursor-pointer" // Use 'block' to make the div wrap the entire card+text
+              className="group cursor-pointer flex flex-col items-center"
             >
               <motion.div
                 variants={itemVariants}
-                whileHover={{
-                  y: -5, // Subtle lift
-                  transition: { type: 'spring', stiffness: 300, damping: 20 }
-                }}
-                className="flex flex-col items-center text-center" // Center content
+                className="w-full"
               >
-                {/* Image/Video Container - Card maintains aspect-square */}
+                {/* Image Container - Peach Background & Rounded */}
                 <div
-                  className="relative w-full aspect-square bg-white rounded-lg overflow-hidden shadow-sm
-                             border border-amber-200/60 transition-all duration-300 group-hover:shadow-md group-hover:border-amber-200/50"
+                  className="w-full aspect-square bg-[#FFF5E6] rounded-[2.5rem] p-4 sm:p-6 
+                             flex items-center justify-center relative overflow-hidden 
+                             transition-transform duration-500 group-hover:-translate-y-2"
                 >
+                  {/* Doodles Background (Simulated with opacity if available, else just solid color) */}
+
                   {category.isVideo ? (
                     <video
                       src={config.fixImageUrl(category.image)}
                       alt={category.name}
-                      className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover rounded-2xl shadow-sm"
                       autoPlay
                       muted
                       loop
@@ -233,34 +229,20 @@ const Categories = () => {
                       }}
                     />
                   ) : (
-                    <img
-                      src={config.fixImageUrl(category.image)}
+                    <OptimizedImage
+                      src={category.image}
                       alt={category.name}
-                      className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
-                      onError={e => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://placehold.co/400x400/fffbeb/475569?text=' + encodeURIComponent(category.name.replace(/\s/g, '+'));
-                      }}
+                      className="w-full h-full rounded-2xl shadow-sm transform group-hover:scale-105 transition-transform duration-700"
+                      objectFit="cover"
                     />
                   )}
-                  {/* Overlay for "Explore" text on hover */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span className="text-white text-xs sm:text-sm font-semibold tracking-wide">Explore</span>
-                    <svg
-                      className="ml-1 w-3 h-3 sm:w-4 sm:h-4 text-white group-hover:translate-x-0.5 transition-transform duration-200"
-                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
                 </div>
 
-                {/* Category Name - Below the card, smaller font */}
-                <div className="mt-1.5 flex flex-col items-center">
-                  <h3 className="text-sm text-bold sm:text-lg font-bold text-slate-700 group-hover:text-amber-600 transition-colors line-clamp-2">
+                {/* Category Name - Below Card */}
+                <div className="mt-4 text-center">
+                  <h3 className="text-lg md:text-xl font-bold text-[#1e293b] group-hover:text-amber-600 transition-colors">
                     {category.name}
                   </h3>
-
                 </div>
               </motion.div>
             </div>

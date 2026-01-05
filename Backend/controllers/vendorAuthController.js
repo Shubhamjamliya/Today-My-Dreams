@@ -7,8 +7,31 @@ exports.register = async (req, res) => {
     const { name, email, phone, password, cityText, categoryText } = req.body;
     const exists = await Vendor.findOne({ email });
     if (exists) return res.status(400).json({ success: false, message: 'Email already registered' });
+
     const passwordHash = await bcrypt.hash(password, 10);
-    const v = await Vendor.create({ name, email, phone, passwordHash, cityText, categoryText });
+
+    let aadharCard = null;
+    let panCard = null;
+
+    if (req.files) {
+      if (req.files.aadharCard && req.files.aadharCard[0]) {
+        aadharCard = req.files.aadharCard[0].path;
+      }
+      if (req.files.panCard && req.files.panCard[0]) {
+        panCard = req.files.panCard[0].path;
+      }
+    }
+
+    const v = await Vendor.create({
+      name,
+      email,
+      phone,
+      passwordHash,
+      cityText,
+      categoryText,
+      aadharCard,
+      panCard
+    });
     res.json({ success: true, message: 'Registered. Await admin approval.', vendorId: v._id });
   } catch (e) {
     res.status(400).json({ success: false, message: e.message });

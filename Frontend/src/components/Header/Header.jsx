@@ -422,6 +422,7 @@ const Header = () => {
     const closeAllMenus = () => {
         setIsMobileMenuOpen(false);
         setIsMegaMenuOpen(false);
+        setIsShopMegaMenuOpen(false);
     };
 
     const menuLinks = [

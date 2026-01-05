@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Mail, Award, Users, Smile, Star, Palette, Handshake, ShieldCheck, Sparkles, ArrowRight, Heart, CheckCircle2 } from 'lucide-react';
 import SEO from '../components/SEO/SEO';
 import { Link } from 'react-router-dom';
+import OptimizedImage from '../components/OptimizedImage';
 
 const AboutUs = () => {
     const stats = [
@@ -139,7 +140,12 @@ const AboutUs = () => {
                             className="w-full lg:w-1/2 relative"
                         >
                             <div className="relative rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl shadow-slate-200">
-                                <img src="/left.png" alt="Our Story" className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" />
+                                <OptimizedImage
+                                    src="/left.png"
+                                    alt="Our Story"
+                                    className="w-full h-full transform hover:scale-105 transition-transform duration-700"
+                                    objectFit="cover"
+                                />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
                             </div>
                             {/* Decorative Elements */}

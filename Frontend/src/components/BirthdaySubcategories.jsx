@@ -197,27 +197,31 @@ const BirthdaySubcategories = () => {
   }
 
   return (
-    <section className="py-2 sm:py-2 md:py-2 font-sans">
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 flex flex-col items-center">
+    <section className="py-16 md:py-24 relative overflow-hidden bg-gradient-to-b from-slate-50 via-purple-50/30 to-slate-50">
+
+      {/* Decorative blobs */}
+      <div className="absolute top-20 left-10 w-64 h-64 bg-yellow-200/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-20 right-10 w-80 h-80 bg-pink-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+
+      <div className="container mx-auto px-4 relative z-10">
 
         {/* Header Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          className="text-center mb-6 md:mb-8 flex flex-col items-center w-full"
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12 md:mb-16"
         >
-          <div className="relative inline-block">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-              Kids Birthday Decorations
-            </h2>
-            {/* Decorative line like in the image */}
-            <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#FCD24C]"></div>
-          </div>
-          <p className="text-sm md:text-base text-gray-600 mt-2">
-            Fun-Filled Themes for Every Celebration!
+          <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-600 font-bold text-xs uppercase tracking-widest mb-4">
+            🎈 Party Time
+          </span>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">
+            Kids Birthday Themes
+          </h2>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            Discover magical worlds for your little one's special day. From superheroes to fairytales!
           </p>
-
         </motion.div>
 
         {/* Birthday Themes Grid */}
@@ -226,123 +230,80 @@ const BirthdaySubcategories = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="grid grid-cols-3 gap-4 sm:gap-6 w-full max-w-6xl mx-auto md:flex md:flex-wrap md:justify-center"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
         >
-          {birthdayThemes.map((theme, index) => (
-            <motion.div
-              key={theme.id}
-              variants={itemVariants}
-              whileHover={{
-                y: -8,
-                scale: 1.05,
-                transition: { type: 'spring', stiffness: 300, damping: 20 }
-              }}
-              className="flex flex-col items-center text-center group"
-            >
-              <Link
-                to="/services"
-                state={{
-                  selectedCategory: {
-                    main: birthdayCategoryName,
-                    sub: theme.name
-                  }
-                }}
-                className="flex flex-col items-center text-center group w-full "
+          {birthdayThemes.map((theme, index) => {
+            return (
+              <motion.div
+                key={theme.id}
+                variants={itemVariants}
+                whileHover={{ y: -10 }}
+                className="group"
               >
-                {/* Circular Theme Icon */}
-                <div
-                  className={`relative w-26 h-26 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-32 lg:h-32 
-                              rounded-full overflow-hidden 
-                             shadow-lg group-hover:shadow-xl transition-all duration-300 
-                             border-4  border-[#FCD24C]`}
+                <Link
+                  to="/services"
+                  state={{
+                    selectedCategory: {
+                      main: birthdayCategoryName,
+                      sub: theme.name
+                    }
+                  }}
+                  className="block relative aspect-[4/5] rounded-3xl overflow-hidden bg-white shadow-md hover:shadow-2xl transition-all duration-300"
                 >
-                  {/* Golden Shine Ring */}
-                  <div className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-yellow-400 to-transparent animate-spin-slow"></div>
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-yellow-300 to-transparent animate-spin-slow" style={{ animationDelay: '0.5s' }}></div>
-                  </div>
+                  {/* Image */}
                   {theme.isVideo ? (
                     <video
                       src={theme.image}
-                      alt={theme.name}
-                      className="w-full h-full object-cover object-center 
-                                 transform group-hover:scale-110 transition-transform duration-500"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      onError={e => {
-                        e.target.onerror = null;
-                        e.target.src = `https://placehold.co/300x300/FCD24C/ffffff?text=${encodeURIComponent(theme.name.split(' ')[0])}`;
-                      }}
+                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                      autoPlay muted loop playsInline
+                      onError={(e) => { e.target.style.display = 'none'; }}
                     />
                   ) : (
                     <img
                       src={theme.image}
                       alt={theme.name}
-                      className="w-full h-full object-cover object-center 
-                                 transform group-hover:scale-110 transition-transform duration-500"
-                      onError={e => {
+                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                      onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = `https://placehold.co/300x300/FCD24C/ffffff?text=${encodeURIComponent(theme.name.split(' ')[0])}`;
+                        e.target.src = `https://placehold.co/400x500/FCD24C/ffffff?text=${encodeURIComponent(theme.name)}`;
                       }}
                     />
                   )}
 
-                  {/* Overlay for hover effect */}
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 
-                                  transition-opacity duration-300 rounded-full flex items-center justify-center">
-                    <div className="text-white text-xs font-semibold bg-white/20 backdrop-blur-sm 
-                                    px-2 py-1 rounded-full">
-                      Explore
+                  {/* Content Overlay */}
+                  <div className="absolute inset-x-4 bottom-4">
+                    <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl text-center shadow-lg transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300 border border-white/50">
+                      <h3 className="font-bold text-slate-800 text-sm md:text-base truncate leading-tight">
+                        {theme.name}
+                      </h3>
+                      <p className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        View Theme
+                      </p>
                     </div>
                   </div>
-                </div>
-
-                {/* Theme Name */}
-                <div className="mt-2 flex flex-col items-center">
-                  <h3 className="font-bold text-lg md:text-xl lg:text-2xl text-gray-700 
-                                 group-hover:text-[#FCD24C] transition-colors  
-                                 leading-tight text-center">
-                    {theme.name}
-                  </h3>
-
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            )
+          })}
         </motion.div>
 
         {/* Bottom CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          className="text-center mt-6 md:mt-8 w-full flex justify-center"
+          viewport={{ once: true }}
+          className="text-center mt-12 md:mt-20"
         >
           <Link
             to="/services"
-            state={{
-              selectedCategory: {
-                main: birthdayCategoryName,
-                categoryId: birthdayCategoryId
-              }
-            }}
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#FCD24C] to-[#FDD14E] 
-                       text-white font-semibold rounded-full hover:from-[#FCD24C]/90 hover:to-[#FDD14E]/90 
-                       transition-all duration-300 group shadow-lg hover:shadow-xl 
-                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FCD24C] 
-                       text-sm md:text-base"
+            state={{ selectedCategory: { main: birthdayCategoryName, categoryId: birthdayCategoryId } }}
+            className="inline-flex items-center gap-3 px-8 py-4 bg-slate-900 text-white font-bold rounded-full hover:bg-slate-800 hover:scale-105 transition-all shadow-xl hover:shadow-2xl ring-4 ring-slate-100"
           >
-            View All Birthday Themes
-            <svg
-              className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
+            <span>Explore All Themes</span>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
           </Link>
         </motion.div>
+
       </div>
     </section>
   );

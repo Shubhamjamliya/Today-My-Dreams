@@ -6,6 +6,7 @@ import { MapPin, Phone, Mail, Star, IndianRupee, ExternalLink, X, Building2, Wif
 void motion;
 import config from '../../config/config';
 import { useNavigate } from 'react-router-dom';
+import OptimizedImage from '../OptimizedImage';
 
 const isVideo = (url) =>
   url && (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm'));
@@ -30,7 +31,7 @@ const variants = {
   }),
 };
 
-const swipeConfidenceThreshold = 10000;
+const swipeConfidenceThreshold = 1000;
 
 const Offerpage = () => {
   const [carouselData, setCarouselData] = useState([]);
@@ -47,10 +48,13 @@ const Offerpage = () => {
         if (!response.ok) throw new Error('Failed to fetch carousel data');
         const data = await response.json();
 
-        // Adjust filter key depending on backend field name
-        const filteredData = data.filter((item) => item.isMobile === true);
+        // 1. Try to find mobile-specific items
+        const mobileItems = data.filter((item) => item.isMobile === true);
 
-        setCarouselData(filteredData);
+        // 2. Fallback to all items if no mobile-specific ones found
+        const finalData = mobileItems.length > 0 ? mobileItems : data;
+
+        setCarouselData(finalData);
       } catch (err) {
         // Error fetching carousel data
         setError('Failed to load promotions');
@@ -90,7 +94,7 @@ const Offerpage = () => {
 
   if (loading || error || carouselData.length === 0) {
     return (
-      <div className="w-full mt-5 mh-5 h-[200px] md:h-[300px] rounded-2xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="w-full mt-5 mh-5 h-[250px] md:h-[500px] rounded-2xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         {loading ? (
           <div className="w-10 h-10 border-4 border-amber-100 border-t-amber-500 rounded-2xl animate-spin" />
         ) : (
@@ -112,10 +116,9 @@ const Offerpage = () => {
         </span>
         works               </h2>
 
-      {/* ✅ Card wrapper with hover border */}
+      {/* ✅ Card wrapper - Full Width */}
       <div
-        className="relative w-[99%] md:w-[85%] mx-auto h-[200px] md:h-[450px] overflow-hidden items-center m-auto cursor-pointer 
-                   border-2 border-transparent rounded-2xl group hover:border-[#FCD24C] shadow-2xl"
+        className="relative w-full h-[250px] md:h-[500px] overflow-hidden cursor-pointer group shadow-lg bg-slate-900"
         style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
         onClick={() => navigate(currentItem?.link || '/services')}
       >
@@ -138,16 +141,16 @@ const Offerpage = () => {
             dragElastic={1}
             onDragEnd={(e, { offset, velocity }) => {
               const swipe = Math.abs(offset.x) * velocity.x;
-              if (swipe < -swipeConfidenceThreshold) {
+              if (swipe < -swipeConfidenceThreshold || offset.x < -50) {
                 paginate(1);
-              } else if (swipe > swipeConfidenceThreshold) {
+              } else if (swipe > swipeConfidenceThreshold || offset.x > 50) {
                 paginate(-1);
               }
             }}
           >
             {isVideo(currentItem.image) ? (
               <video
-                className="w-full h-full object-cover rounded-2xl" // Changed from object-fill
+                className="w-full h-full object-contain bg-black"
                 autoPlay
                 loop
                 muted
@@ -156,11 +159,11 @@ const Offerpage = () => {
                 src={currentItem.image}
               />
             ) : (
-              <img
+              <OptimizedImage
                 src={currentItem.image}
                 alt={currentItem.title || 'Promotion'}
-                className="w-full h-full rounded-2xl object-fill" // Changed from object-fill
-                onError={handleMediaError}
+                className="w-full h-full"
+                objectFit="contain"
               />
             )}
           </motion.div>
@@ -183,7 +186,7 @@ const Offerpage = () => {
                   paginate(-1);
                 }
               }}
-              className="absolute left-3 top-1/2 -translate-y-1/2 z-[3] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 hover:bg-white shadow-md flex items-center justify-center"
+              className="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 z-[3] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 hover:bg-white shadow-md items-center justify-center"
             >
               <ChevronLeft />
             </button>
@@ -202,7 +205,7 @@ const Offerpage = () => {
                   paginate(1);
                 }
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 z-[3] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 hover:bg-white shadow-md flex items-center justify-center"
+              className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 z-[3] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 hover:bg-white shadow-md items-center justify-center"
             >
               <ChevronRight />
             </button>

@@ -5,6 +5,7 @@ import config from '../../config/config';
 import { useNavigate } from 'react-router-dom';
 import { useCity } from '../../context/CityContext';
 import { HeroSkeleton } from '../Loader/Skeleton';
+import OptimizedImage from '../OptimizedImage';
 
 const Hero = () => {
   const [carouselData, setCarouselData] = useState([]);
@@ -31,8 +32,22 @@ const Hero = () => {
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
 
-        const filtered = data.filter(item => item.isMobile === isMobile);
-        setCarouselData(filtered.length > 0 ? filtered : data);
+        // 1. Try to filter for mobile if on mobile device
+        const mobileSpecific = data.filter(item => item.isMobile === true);
+        const desktopSpecific = data.filter(item => item.isMobile === false);
+
+        let finalData = data;
+        if (isMobile) {
+          // On mobile: Show mobile images first, then desktop images to ensure we have a carousel
+          finalData = [...mobileSpecific, ...desktopSpecific];
+          // If we still have nothing (unlikely if data exists), fallback to original data
+          if (finalData.length === 0) finalData = data;
+        } else {
+          // Desktop logic: prefer desktop images, fallback to all
+          if (desktopSpecific.length > 0) finalData = desktopSpecific;
+        }
+
+        setCarouselData(finalData);
         setCurrentIndex(0);
       } catch (err) {
         console.error(err);
@@ -101,13 +116,19 @@ const Hero = () => {
     })
   };
 
+  // Swipe logic
+  const swipeConfidenceThreshold = 300;
+  const swipePower = (offset, velocity) => {
+    return Math.abs(offset) * velocity;
+  };
+
   if (loading) return <HeroSkeleton />;
   if (carouselData.length === 0) return null;
 
   const currentItem = carouselData[currentIndex];
 
   return (
-    <div className="relative w-full h-[50vh] md:h-[80vh] bg-slate-900 overflow-hidden group">
+    <div className="relative w-full h-[200px] md:h-[85vh] bg-slate-900 overflow-hidden group">
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.div
           key={currentIndex}
@@ -116,36 +137,55 @@ const Hero = () => {
           initial="enter"
           animate="center"
           exit="exit"
-          className="absolute inset-0 w-full h-full cursor-pointer"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={1}
+          dragMomentum={false}
+          onDragEnd={(e, { offset, velocity }) => {
+            const swipe = swipePower(offset.x, velocity.x);
+            if (swipe < -swipeConfidenceThreshold || offset.x < -50) {
+              navigateSlide('next');
+            } else if (swipe > swipeConfidenceThreshold || offset.x > 50) {
+              navigateSlide('prev');
+            }
+          }}
+          className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing touch-pan-y"
           onClick={() => currentItem.link && navigate(currentItem.link)}
         >
           {isVideo(currentItem.image) ? (
             <video
               src={currentItem.image}
               autoPlay muted loop playsInline
-              className="w-full h-full object-cover"
+              className={`w-full h-full ${isMobile ? 'object-contain' : 'object-cover'}`}
             />
           ) : (
-            <img
+            <OptimizedImage
               src={currentItem.image}
               alt={currentItem.title || "Banner"}
-              className="w-full h-full object-cover brightness-[0.85]"
+              className={`w-full h-full ${isMobile ? 'object-contain' : 'object-cover'}`}
+              objectFit={isMobile ? 'contain' : 'cover'}
+              priority={true}
             />
           )}
 
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent opacity-80"></div>
+          {/* Gradient Overlay - Desktop Only or Minimal on Mobile */}
+          <div className={`absolute inset-0 opacity-90 ${isMobile
+            ? 'bg-gradient-to-t from-black/80 via-transparent to-transparent'
+            : 'bg-gradient-to-r from-black/80 via-transparent to-transparent'
+            }`}></div>
 
           {/* Content Overlay */}
           {(currentItem.title || currentItem.description) && (
-            <div className="absolute inset-0 flex items-center px-8 md:px-24">
-              <div className="max-w-4xl pt-16 md:pt-0">
+            <div className={`absolute inset-0 flex px-6 md:px-24 ${isMobile ? 'items-end pb-8' : 'items-center'
+              }`}>
+              <div className={`max-w-4xl w-full ${isMobile ? 'text-center' : 'text-left'}`}>
                 <motion.h2
                   custom={0}
                   variants={textVariants}
                   initial="hidden"
                   animate="visible"
-                  className="text-4xl md:text-7xl lg:text-8xl font-bold text-white mb-6 font-serif leading-tight drop-shadow-2xl"
+                  className={`font-bold text-white mb-2 font-serif leading-tight drop-shadow-2xl ${isMobile ? 'text-xl line-clamp-1' : 'text-7xl lg:text-8xl'
+                    }`}
                 >
                   {currentItem.title}
                 </motion.h2>
@@ -154,30 +194,19 @@ const Hero = () => {
                   variants={textVariants}
                   initial="hidden"
                   animate="visible"
-                  className="text-white/90 text-lg md:text-2xl font-light tracking-wide mb-8 max-w-2xl drop-shadow-lg"
+                  className={`text-white/90 font-light tracking-wide mb-4 drop-shadow-lg ${isMobile ? 'text-xs line-clamp-2 px-2' : 'text-2xl max-w-2xl'
+                    }`}
                 >
                   {currentItem.description}
                 </motion.p>
-
-                {currentItem.link && (
-                  <motion.button
-                    custom={2}
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="px-10 py-4 bg-amber-500 text-slate-900 font-bold text-lg rounded-full hover:bg-white hover:text-slate-900 transition-all shadow-xl hover:shadow-amber-500/50 hover:scale-105 transform duration-300"
-                  >
-                    Explore Now
-                  </motion.button>
-                )}
               </div>
             </div>
           )}
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation Arrows */}
-      {carouselData.length > 1 && (
+      {/* Navigation Arrows - Desktop Only */}
+      {!isMobile && carouselData.length > 1 && (
         <>
           <button
             onClick={(e) => { e.stopPropagation(); navigateSlide('prev'); }}
@@ -196,12 +225,18 @@ const Hero = () => {
 
       {/* Indicators */}
       {carouselData.length > 1 && (
-        <div className="absolute bottom-10 left-12 flex gap-3 z-20">
+        <div className={`absolute z-20 flex gap-2 ${isMobile
+          ? 'bottom-8 left-1/2 -translate-x-1/2'
+          : 'bottom-10 left-12'
+          }`}>
           {carouselData.map((_, idx) => (
             <button
               key={idx}
               onClick={(e) => { e.stopPropagation(); setCurrentIndex(idx); }}
-              className={`h-1.5 transition-all duration-300 rounded-full ${idx === currentIndex ? 'w-16 bg-amber-500' : 'w-8 bg-white/40 hover:bg-white'}`}
+              className={`h-1.5 transition-all duration-300 rounded-full ${idx === currentIndex
+                ? 'w-12 bg-amber-500'
+                : 'w-2 bg-white/40 hover:bg-white'
+                }`}
             />
           ))}
         </div>

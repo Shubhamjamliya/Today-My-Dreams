@@ -59,7 +59,7 @@ export const VideoSkeleton = () => (
 );
 
 export const HeroSkeleton = ({ isMobile }) => (
-  <div className="w-full h-[200px] md:h-[250px] rounded-2xl overflow-hidden flex flex-col md:flex-row gap-4">
+  <div className="w-full h-[200px] md:h-[85vh] rounded-2xl overflow-hidden flex flex-col md:flex-row gap-4">
     <Skeleton variant="rect" className="w-full h-full rounded-2xl" />
     {!isMobile && <Skeleton variant="rect" className="w-full h-full rounded-2xl" />}
   </div>

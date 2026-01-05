@@ -29,7 +29,10 @@ export const categoryAPI = {
     return api.get(`/categories/nested${params}`);
   },
 
-  // Add create, update, delete for categories if needed
+  // Add create, update, delete for categories
+  createCategory: (categoryData) => api.post('/categories', categoryData),
+  updateCategory: (categoryId, categoryData) => api.put(`/categories/${categoryId}`, categoryData),
+  deleteCategory: (categoryId) => api.delete(`/categories/${categoryId}`),
 };
 export const subCategoryAPI = {
   /**

@@ -54,23 +54,26 @@ const config = {
   // Utility function to fix image URLs
   fixImageUrl: (imagePath) => {
     if (!imagePath) return '';
-
-    // If it's already a full URL, return as is
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://') || imagePath.startsWith('data:')) {
       return imagePath;
     }
-
-    // Remove any leading slashes and clean the path
     const cleanPath = imagePath.replace(/^\/+/, '').replace(/\/+/g, '/');
 
-    // If it's a path to a backend data file
-    if (cleanPath.includes('todaymydream.com') || !cleanPath.includes('/')) {
-      // Always use /pawnbackend/data/ prefix for backend files
+    // Known backend paths
+    if (cleanPath.startsWith('uploads/') || cleanPath.startsWith('images/') || cleanPath.includes('todaymydream/data/')) {
+      // Check if it's already a full relative path or needs 'todaymydream/data/'
+      if (cleanPath.includes('todaymydream/data/')) {
+        return `${config.API_BASE_URL}/${cleanPath}`;
+      }
+      return `${config.API_BASE_URL}/${cleanPath}`;
+    }
+
+    if (cleanPath.includes('todaymydream.com')) {
       const basePath = cleanPath.startsWith('todaymydream/data/') ? '' : 'todaymydream/data/';
       return `${config.API_BASE_URL}/${basePath}${cleanPath}`;
     }
 
-    // By default, assume it's a frontend public asset
+    // Default to frontend public assets for other paths (like 'left.png', 'logo.png')
     return `/${cleanPath}`;
   },
 

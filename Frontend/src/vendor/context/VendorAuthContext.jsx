@@ -62,11 +62,14 @@ export const VendorAuthProvider = ({ children }) => {
 
   const register = async (payload) => {
     try {
+      const isFormData = payload instanceof FormData;
+      const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
+
       const res = await fetch(`${config.API_BASE_URL}/api/vendor/auth/register`, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        headers,
+        body: isFormData ? payload : JSON.stringify(payload)
       });
       const data = await res.json();
       if (data.success) {

@@ -28,48 +28,40 @@ const faqData = [
 
 // --- Helper Component for Background Shapes ---
 const BackgroundShapes = () => (
-    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <motion.div 
-            initial={{ opacity: 0, y: 100, x: -100, rotate: -45 }}
-            animate={{ opacity: 0.05, y: -100, x: 50, rotate: 15 }}
-            transition={{ duration: 60, repeat: Infinity, repeatType: 'reverse' }}
-            className="absolute -bottom-40 -left-40 w-96 h-96  rounded-full"
-        />
-    </div>
+  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <motion.div
+      initial={{ opacity: 0, y: 100, x: -100, rotate: -45 }}
+      animate={{ opacity: 0.05, y: -100, x: 50, rotate: 15 }}
+      transition={{ duration: 60, repeat: Infinity, repeatType: 'reverse' }}
+      className="absolute -bottom-40 -left-40 w-96 h-96  rounded-full"
+    />
+  </div>
 );
 
 
 const AccordionItem = ({ question, answer, isOpen, onClick }) => {
   return (
-    // Changed: Softer border color and responsive padding
-    <div className="border-b border-slate-200/80 py-5 last:border-b-0">
+    <div className={`border-b border-slate-100 py-4 last:border-b-0 transition-all duration-300 ${isOpen ? 'bg-amber-50/30' : ''}`}>
       <button
-        className="flex justify-between items-center w-full text-left group"
+        className="flex justify-between items-center w-full text-left group px-4 py-2"
         onClick={onClick}
       >
-        <h3 className="text-md sm:text-lg font-semibold text-slate-800 group-hover:text-amber-600 transition-colors">
-            {question}
+        <h3 className={`text-base sm:text-lg font-semibold transition-colors duration-300 ${isOpen ? 'text-amber-600' : 'text-slate-700 group-hover:text-amber-600'}`}>
+          {question}
         </h3>
-        {/* Changed: Replaced icon with a more elegant chevron and wrapper */}
-        <div className="flex-shrink-0 ml-4 w-8 h-8 flex items-center justify-center bg-amber-50 rounded-full">
-            <motion.div
-              animate={{ rotate: isOpen ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ChevronDown className={`w-5 h-5 text-amber-600`} />
-            </motion.div>
+        <div className={`flex-shrink-0 ml-4 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 ${isOpen ? 'bg-amber-100 text-amber-600 rotate-180' : 'bg-slate-100 text-slate-500 group-hover:bg-amber-50 group-hover:text-amber-500'}`}>
+          <ChevronDown className="w-5 h-5" />
         </div>
       </button>
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginTop: '16px' }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
-            {/* Changed: Softer text color and responsive font size */}
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed pr-12">{answer}</p>
+            <p className="text-sm sm:text-base text-slate-500 leading-relaxed px-4 pb-4 pt-1">{answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -86,21 +78,17 @@ const FaqPage = () => {
   };
 
   return (
-    // Changed: Added themed background
-    <section className="  font-sans relative" >
+    <section className="font-sans relative py-8 md:py-16">
       <BackgroundShapes />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="max-w-3xl mx-auto text-center">
-         
-          {/* Changed: Restyled heading with serif font and new colors */}
-          <h1 className="text-2xl md:text-2xl font-serif font-bold text-slate-900">
+        <div className="max-w-3xl mx-auto text-center mb-10">
+          <h1 className="text-2xl md:text-4xl font-serif font-bold text-slate-900 mb-3">
             Frequently Asked Questions
           </h1>
-        
+          <p className="text-slate-500 text-sm md:text-base">Everything you need to know about our services.</p>
         </div>
 
-        {/* Changed: Restyled accordion container to be a premium card */}
-        <div className="max-w-3xl mx-auto mt-4 bg-white px-4 sm:px-8 py-2 rounded-2xl  border border-amber-200/60">
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
           {faqData.map((item, index) => (
             <AccordionItem
               key={index}
@@ -112,19 +100,17 @@ const FaqPage = () => {
           ))}
         </div>
 
-        <div className="text-center mt-6">
-            {/* Changed: Restyled text with serif font */}
-            <h3 className="text-2xl font-serif font-bold text-slate-800">Still have questions?</h3>
-            <p className="mt-2 text-slate-600">We're here to help! Contact our support team for any further inquiries.</p>
-            {/* Changed: Restyled button to match the primary CTA style */}
-            <motion.a 
-              href="/contact" 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="mt-6 inline-block bg-amber-500 text-white font-bold py-2 px-3 rounded-full text-lg "
-            >
-              Contact Us
-            </motion.a>
+        <div className="text-center mt-10">
+          <h3 className="text-xl font-serif font-bold text-slate-800">Still have questions?</h3>
+          <p className="mt-2 text-slate-500 text-sm">We're here to help! Contact our support team.</p>
+          <motion.a
+            href="/contact"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mt-6 inline-block bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-amber-500/30 hover:shadow-xl transition-all"
+          >
+            Contact Us
+          </motion.a>
         </div>
       </div>
     </section>

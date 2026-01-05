@@ -345,6 +345,9 @@ const CustomerLayout = ({ seoData }) => (
     <Suspense fallback={<Loader size="sm" text="Loading..." />}>
       <ScrollToTop />
     </Suspense>
+    <Suspense fallback={null}>
+      <FloatingContactButton />
+    </Suspense>
     <Toaster position="top-right" />
   </div>
 );

@@ -11,6 +11,9 @@ const VendorSchema = new mongoose.Schema({
   // Assigned by admin after acceptance
   cityId: { type: mongoose.Schema.Types.ObjectId, ref: 'City' },
   categoryIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
+  // Documents
+  aadharCard: { type: String },
+  panCard: { type: String },
   // Approval flow
   isApproved: { type: Boolean, default: false },
   vendorAccepted: { type: Boolean, default: false },

@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, TrendingUp, Heart, Award, ShoppingCart, Eye, Sparkles, Zap, Package } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { toast } from 'react-hot-toast';
+import OptimizedImage from '../OptimizedImage';
 
 const ShopProductCard = ({ product }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -73,7 +73,6 @@ const ShopProductCard = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
     setCurrentImageIndex(index);
-    setIsImageLoaded(false);
   };
 
   const renderStars = (rating) => {
@@ -121,27 +120,13 @@ const ShopProductCard = ({ product }) => {
       >
         {/* Image Container */}
         <div className="relative w-full aspect-[4/5] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
-          {/* Shimmer Loading */}
-          {!isImageLoaded && (
-            <div className="absolute inset-0 z-0">
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-pulse" />
-            </div>
-          )}
-
           {/* Main Image */}
-          <motion.img
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{
-              opacity: isImageLoaded ? 1 : 0,
-              scale: isHovered ? 1.08 : 1
-            }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="w-full h-full object-cover relative z-10"
+          <OptimizedImage
+            key={mainImage} // Force re-render on image change
             src={mainImage}
             alt={product.name}
-            loading="lazy"
-            onLoad={() => setIsImageLoaded(true)}
-            onError={(e) => { e.target.src = 'https://placehold.co/500x500/f1f5f9/475569?text=Image'; }}
+            className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 relative z-10"
+            objectFit="cover"
           />
 
           {/* Gradient Overlay on Hover */}

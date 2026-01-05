@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Premium Brand Loader
@@ -12,11 +12,33 @@ const Loader = ({ size = 'medium', text = 'Loading...', fullScreen = false, inli
     xlarge: { box: 100, logo: 50, stroke: 4 }
   };
 
+  const sizeClasses = {
+    tiny: 'w-4 h-4',
+    small: 'w-8 h-8',
+    medium: 'w-12 h-12',
+    large: 'w-16 h-16',
+    xlarge: 'w-20 h-20'
+  };
+
   const currentDim = dimensions[size] || dimensions.medium;
   const boxSize = currentDim.box;
 
   // Custom transition ease
   const easeInOutCubic = [0.65, 0, 0.35, 1];
+
+  // Prevent flicker on fast loads
+  const [shouldShow, setShouldShow] = useState(!fullScreen);
+
+  useEffect(() => {
+    if (fullScreen) {
+      setShouldShow(true);
+      return;
+    }
+    const timer = setTimeout(() => setShouldShow(true), 200);
+    return () => clearTimeout(timer);
+  }, [fullScreen]);
+
+  if (!shouldShow) return null;
 
   const LoaderContent = () => (
     <div className={`flex ${inline ? 'flex-row items-center gap-3' : 'flex-col items-center justify-center gap-6'} relative`}>
@@ -56,26 +78,32 @@ const Loader = ({ size = 'medium', text = 'Loading...', fullScreen = false, inli
           />
         )}
 
-        {/* 3. Central Brand Element (Pulsing Logo or Dot) */}
-        <motion.div
-          className="relative z-10 flex items-center justify-center bg-white rounded-full shadow-sm overflow-hidden"
-          style={{
-            width: inline ? '60%' : '65%',
-            height: inline ? '60%' : '65%'
-          }}
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          {showLogo ? (
-            <img
-              src="/TodayMyDream.png"
-              alt="Loading"
-              className="w-full h-full object-contain p-1"
-            />
-          ) : (
-            <div className="w-2 h-2 bg-[#FCD24C] rounded-full" />
-          )}
-        </motion.div>
+        {/* 3. Central Brand Element (Pulsing Logo or Dot) - Refactored */}
+        <div className="relative">
+          <motion.div
+            animate={{
+              scale: [1, 1.05, 1],
+              rotate: [0, 0, 0], // Reduced rotation for cleaner look
+              filter: ["drop-shadow(0 0 8px rgba(252, 210, 76, 0.3))", "drop-shadow(0 0 12px rgba(252, 210, 76, 0.5))", "drop-shadow(0 0 8px rgba(252, 210, 76, 0.3))"]
+            }}
+            transition={{
+              duration: 2, // Slower breath
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className={`${sizeClasses[size]} relative z-10 bg-white rounded-full flex items-center justify-center shadow-xl border border-slate-100/50`}
+          >
+            {showLogo ? (
+              <img
+                src="/TodayMyDream.png"
+                alt="Loading"
+                className="w-full h-full object-contain p-2" // Added padding
+              />
+            ) : (
+              <div className="w-2 h-2 bg-[#FCD24C] rounded-full" />
+            )}
+          </motion.div>
+        </div>
 
         {/* 4. Orbiting Particle (Optional Visual Interest) */}
         {!inline && (
