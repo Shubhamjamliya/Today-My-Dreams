@@ -9,7 +9,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     minify: 'terser',
     terserOptions: {
       compress: {
@@ -23,45 +23,44 @@ export default defineConfig({
     reportCompressedSize: false,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Core React and UI dependencies - keeping these together prevents resolution issues
-          if (id.includes('node_modules/react/') ||
-            id.includes('node_modules/react-dom/') ||
-            id.includes('node_modules/react-router/') ||
-            id.includes('node_modules/react-router-dom/') ||
-            id.includes('framer-motion') ||
-            id.includes('lucide-react') ||
-            id.includes('@mui/') ||
-            id.includes('@emotion/')) {
-            return 'vendor-core';
-          }
-
-          // Heavy Utilities and static libraries
-          if (id.includes('html2canvas') || id.includes('jspdf') || id.includes('pdf-lib') || id.includes('turndown')) {
-            return 'pdf-utils';
-          }
-
-          if (id.includes('leaflet') || id.includes('react-leaflet')) {
-            return 'maps';
-          }
-
-          if (id.includes('axios')) {
-            return 'network';
-          }
-
-          if (id.includes('date-fns')) {
-            return 'date-utils';
-          }
-
-          // Remaining node_modules go to vendor
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+        // Simplified chunking to prevent React initialization order issues
+        manualChunks: {
+          // Bundle ALL React-related code together to prevent "undefined" errors
+          'react-vendor': [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            'framer-motion',
+            'lucide-react',
+            'react-icons',
+            '@heroicons/react',
+            'react-hot-toast',
+            'react-toastify',
+            'react-slick',
+            'react-responsive-carousel',
+            '@react-oauth/google',
+            'recharts',
+            '@mui/material',
+            '@emotion/react',
+            '@emotion/styled',
+          ],
+          // Heavy utilities that don't depend on React initialization
+          'utils': [
+            'axios',
+            'date-fns',
+          ],
+          // PDF/Export utilities (lazy loaded anyway)
+          'pdf': [
+            'html2canvas',
+            'jspdf',
+          ],
+          // Map libraries
+          'maps': [
+            'leaflet',
+            'react-leaflet',
+          ],
         },
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop().replace('.jsx', '').replace('.js', '') : 'chunk';
-          return `js/[name]-[hash].js`;
-        },
+        chunkFileNames: 'js/[name]-[hash].js',
         entryFileNames: 'js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.');
@@ -93,6 +92,7 @@ export default defineConfig({
       '@mui/material',
       '@emotion/react',
       '@emotion/styled',
+      'lucide-react',
     ],
     exclude: [
       'html2canvas',
@@ -100,10 +100,8 @@ export default defineConfig({
       'leaflet',
       'react-leaflet',
     ],
-    force: true, // Force re-optimization
   },
   define: {
-    // Ensure React is available globally for MUI
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   },
 })
