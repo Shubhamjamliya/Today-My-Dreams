@@ -131,6 +131,7 @@ const applyCoupon = (data) => {
 // Settings API endpoints
 export const settingsAPI = {
   getCodUpfrontAmount: () => api.get('/settings/cod-upfront-amount'),
+  getPublicSettings: () => api.get('/settings/public'),
 };
 
 // Pin Code Service Fee API endpoints

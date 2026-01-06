@@ -4,8 +4,12 @@ import { MapPin, Mail, Award, Users, Smile, Star, Palette, Handshake, ShieldChec
 import SEO from '../components/SEO/SEO';
 import { Link } from 'react-router-dom';
 import OptimizedImage from '../components/OptimizedImage';
+import { useSettings } from '../context/SettingsContext';
 
 const AboutUs = () => {
+    const { getContactInfo } = useSettings();
+    const { email, address } = getContactInfo();
+
     const stats = [
         { icon: Sparkles, number: "1,000+", label: "Celebrations Hosted" },
         { icon: Award, number: "2+", label: "Years of Experience" },
@@ -254,16 +258,16 @@ const AboutUs = () => {
                                         </div>
                                         <div>
                                             <p className="text-xs text-slate-400 uppercase tracking-widest font-bold">Visit Us</p>
-                                            <p className="font-medium">Prayagraj , Uttar Pradesh ,India</p>
+                                            <p className="font-medium">{address || 'Prayagraj , Uttar Pradesh ,India'}</p>
                                         </div>
                                     </div>
-                                    <Link to="mailto:support@todaymydream.com" className="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-colors">
+                                    <Link to={`mailto:${email || 'support@todaymydream.com'}`} className="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-colors">
                                         <div className="bg-slate-800 p-3 rounded-full text-white border border-slate-600">
                                             <Mail size={20} />
                                         </div>
                                         <div>
                                             <p className="text-xs text-slate-400 uppercase tracking-widest font-bold">Email Us</p>
-                                            <p className="font-medium">support@todaymydream.com</p>
+                                            <p className="font-medium">{email || 'support@todaymydream.com'}</p>
                                         </div>
                                     </Link>
                                 </div>

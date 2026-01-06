@@ -12,6 +12,9 @@ router.post('/', authenticateToken, settingsController.upsertSetting);
 // Public endpoint to get COD upfront amount (must come before /:key route)
 router.get('/cod-upfront-amount', settingsController.getCodUpfrontAmount);
 
+// Public endpoint to get all public settings
+router.get('/public', settingsController.getPublicSettings);
+
 // Get a specific setting by key
 router.get('/:key', authenticateToken, settingsController.getSettingByKey);
 

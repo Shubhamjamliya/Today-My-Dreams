@@ -335,7 +335,7 @@ const CustomerLayout = ({ seoData }) => (
     <PerformanceMonitor />
     <SEO {...seoData} />
     <Header />
-    <div className="flex-grow w-full">
+    <div className="flex-grow w-full min-h-[60vh]">
       <Outlet />
     </div>
 
@@ -353,14 +353,18 @@ const CustomerLayout = ({ seoData }) => (
 );
 
 
+import { SettingsProvider } from './context/SettingsContext';
+
 function App() {
   return (
     <ErrorBoundary>
-      <CartProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </CartProvider>
+      <SettingsProvider>
+        <CartProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </CartProvider>
+      </SettingsProvider>
     </ErrorBoundary>
   );
 }

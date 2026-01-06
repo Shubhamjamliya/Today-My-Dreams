@@ -696,20 +696,20 @@ const ProductView = () => {
 
                         {/* Tabs Navigation - Modern Style */}
                         <div className="pt-6" id="reviews">
-                            <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100/80 rounded-2xl mb-6">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-1.5 bg-slate-100/80 rounded-2xl mb-6">
                                 {tabs.map((tab) => {
                                     const TabIcon = tab.icon;
                                     return (
                                         <button
                                             key={tab.id}
                                             onClick={() => setActiveTab(tab.id)}
-                                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 flex-1 justify-center min-w-[100px] ${activeTab === tab.id
-                                                ? 'bg-white text-slate-900 shadow-md shadow-slate-200/50'
-                                                : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
+                                            className={`flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all duration-300 ${activeTab === tab.id
+                                                ? 'bg-white text-slate-900 shadow-md shadow-slate-200/50 ring-1 ring-black/5'
+                                                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
                                                 }`}
                                         >
-                                            <TabIcon className={`w-4 h-4 ${activeTab === tab.id ? 'text-[#FCD24C]' : ''}`} />
-                                            <span className="hidden sm:inline">{tab.label}</span>
+                                            <TabIcon className={`w-4 h-4 flex-shrink-0 ${activeTab === tab.id ? 'text-[#FCD24C]' : 'opacity-70'}`} />
+                                            <span className="truncate">{tab.label}</span>
                                         </button>
                                     );
                                 })}
@@ -1377,7 +1377,7 @@ const ProductView = () => {
                                 : 'bg-black text-white hover:bg-gray-900'
                                 }`}
                         >
-                            <span>{isOutOfStock ? 'Out of Stock' : 'Book Now'}</span>
+                            <span>{isOutOfStock ? 'Out of Stock' : (isShop ? 'Shop Now' : 'Book Now')}</span>
                         </button>
 
                         {/* WhatsApp Button */}

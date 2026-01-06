@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { FaPhone, FaWhatsapp, FaTimes, FaComments } from 'react-icons/fa';
 import { useCity } from '../context/CityContext';
+import { useSettings } from '../context/SettingsContext';
 
 const FloatingContactButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { selectedCityData } = useCity();
+  const { getContactInfo } = useSettings();
+  const { phone, whatsapp } = getContactInfo();
 
-  // Get contact number from city data or use default
-  const phoneNumber = selectedCityData?.contactNumber || '+917739873442';
-  const whatsappNumber = selectedCityData?.contactNumber || '+917739873442';
+  // Get contact number from city data or use global settings
+  const phoneNumber = selectedCityData?.contactNumber || phone;
+  const whatsappNumber = selectedCityData?.contactNumber || whatsapp;
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -27,11 +30,10 @@ const FloatingContactButton = () => {
     <div className="fixed bottom-16 left-4 z-50 flex flex-col items-start gap-3">
       {/* Contact Options - Show when open */}
       <div
-        className={`flex flex-col gap-3 transition-all duration-300 ease-in-out ${
-          isOpen
+        className={`flex flex-col gap-3 transition-all duration-300 ease-in-out ${isOpen
             ? 'opacity-100 translate-y-0 pointer-events-auto'
             : 'opacity-0 translate-y-4 pointer-events-none'
-        }`}
+          }`}
       >
         {/* WhatsApp Button */}
         <button
@@ -51,7 +53,7 @@ const FloatingContactButton = () => {
           aria-label="Call us"
         >
           <div className="flex items-center gap-2 px-4 py-3">
-          <FaPhone className="w-5 h-5" />
+            <FaPhone className="w-5 h-5" />
           </div>
         </button>
       </div>
@@ -59,11 +61,10 @@ const FloatingContactButton = () => {
       {/* Main Toggle Button */}
       <button
         onClick={toggleMenu}
-        className={`w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 flex items-center justify-center ${
-          isOpen
+        className={`w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 flex items-center justify-center ${isOpen
             ? 'bg-red-500 hover:bg-red-600 rotate-90'
             : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700'
-        }`}
+          }`}
         aria-label={isOpen ? 'Close contact menu' : 'Open contact menu'}
       >
         {isOpen ? (

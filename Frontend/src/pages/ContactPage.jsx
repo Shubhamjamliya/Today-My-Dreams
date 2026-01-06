@@ -4,7 +4,12 @@ import { MapPin, Mail, Phone, Send, MessageSquare, Clock, ArrowRight } from 'luc
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO/SEO';
 
+import { useSettings } from '../context/SettingsContext';
+
 const ContactPage = () => {
+  const { getContactInfo } = useSettings();
+  const { email, phone, address } = getContactInfo();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,7 +26,7 @@ const ContactPage = () => {
     }));
   };
 
-  const recipientEmail = "support@todaymydream.com";
+  const recipientEmail = email || "support@todaymydream.com";
   const mailSubject = encodeURIComponent(formData.subject || `Inquiry from ${formData.name}`);
   const body = encodeURIComponent(
     `Hello,\n\n${formData.message}\n\n---\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}`
@@ -32,19 +37,19 @@ const ContactPage = () => {
     {
       icon: Phone,
       title: "Phone",
-      value: "+91 77398 73442",
-      link: "tel:+917739873442"
+      value: phone || "+91 9876543210",
+      link: `tel:${(phone || "").replace(/\s+/g, '')}`
     },
     {
       icon: Mail,
       title: "Email",
-      value: "support@todaymydream.com",
-      link: "mailto:support@todaymydream.com"
+      value: email || "support@todaymydream.com",
+      link: `mailto:${email || "support@todaymydream.com"}`
     },
     {
       icon: MapPin,
       title: "Office",
-      value: "Prayagraj , Uttar Pradesh ,India",
+      value: address || "New Delhi, India",
       link: "#"
     }
   ];

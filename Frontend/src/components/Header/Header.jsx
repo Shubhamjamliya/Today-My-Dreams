@@ -283,10 +283,20 @@ const Header = () => {
 
     // Show city modal on first load if no city is selected
     useEffect(() => {
-        if (shouldShowCityModal) {
+        if (!selectedCity) {
             setIsLocationModalOpen(true);
         }
-    }, [shouldShowCityModal]);
+    }, [selectedCity]);
+
+    // Close modal when city is selected
+    useEffect(() => {
+        if (selectedCity && isLocationModalOpen) {
+            // Check if we are in the "forcing" mode (shouldShowCityModal is true)
+            // If so, we can now turn it off and close the modal
+            setShouldShowCityModal(false);
+            setIsLocationModalOpen(false);
+        }
+    }, [selectedCity]);
 
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchOpen, setIsSearchOpen] = useState(false);

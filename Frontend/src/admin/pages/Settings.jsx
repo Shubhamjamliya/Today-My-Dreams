@@ -747,6 +747,93 @@ const Settings = () => {
           </div>
         </div>
 
+        {/* Company Information Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">Company Information (Global)</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { key: 'company_email', label: 'Company Email', desc: 'Main support email' },
+              { key: 'company_phone', label: 'Company Phone', desc: 'Main support phone' },
+              { key: 'company_phone_2', label: 'Company Phone 2', desc: 'Alternate phone (optional)' },
+              { key: 'company_whatsapp', label: 'WhatsApp Number', desc: 'WhatsApp contact number' },
+              { key: 'company_address', label: 'Company Address', desc: 'Full physical address' },
+            ].map((field) => {
+              const setting = settings.find(s => s.key === field.key) || { key: field.key, value: '', description: field.desc };
+              return (
+                <div key={field.key} className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">{field.label}</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={setting.value || ''}
+                      onChange={(e) => {
+                        // Update state even if key didn't exist
+                        const exists = settings.find(s => s.key === field.key);
+                        if (exists) {
+                          handleSettingChange(field.key, e.target.value);
+                        } else {
+                          setSettings(prev => [...prev, { ...setting, value: e.target.value }]);
+                        }
+                      }}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder={`Enter ${field.label}`}
+                    />
+                    <button
+                      onClick={() => handleSaveSetting(settings.find(s => s.key === field.key) || { ...setting })}
+                      disabled={saving}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      Save
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500">{field.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Social Media Links Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">Social Media Links</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { key: 'social_facebook', label: 'Facebook URL' },
+              { key: 'social_instagram', label: 'Instagram URL' },
+            ].map((field) => {
+              const setting = settings.find(s => s.key === field.key) || { key: field.key, value: '', description: `${field.label} for footer` };
+              return (
+                <div key={field.key} className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">{field.label}</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={setting.value || ''}
+                      onChange={(e) => {
+                        const exists = settings.find(s => s.key === field.key);
+                        if (exists) {
+                          handleSettingChange(field.key, e.target.value);
+                        } else {
+                          setSettings(prev => [...prev, { ...setting, value: e.target.value }]);
+                        }
+                      }}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="https://..."
+                    />
+                    <button
+                      onClick={() => handleSaveSetting(settings.find(s => s.key === field.key) || { ...setting })}
+                      disabled={saving}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
 
       </div>
     );

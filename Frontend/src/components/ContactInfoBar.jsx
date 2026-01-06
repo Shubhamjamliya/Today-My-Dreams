@@ -1,12 +1,15 @@
 import React from 'react';
 import { FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
+import { useSettings } from '../context/SettingsContext';
 import { useCity } from '../context/CityContext';
 
 const ContactInfoBar = () => {
   const { selectedCityData } = useCity();
+  const { getContactInfo } = useSettings();
+  const { phone } = getContactInfo();
 
-  // Get contact number from city data or use default
-  const contactNumber = selectedCityData?.contactNumber || '+917739873442';
+  // Get contact number from city data or use global setting
+  const contactNumber = selectedCityData?.contactNumber || phone;
   const cityName = selectedCityData?.name || '';
 
   return (

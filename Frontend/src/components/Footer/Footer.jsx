@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from 'react'; // NEW: Added useState, useEffect
-// eslint-disable-next-line no-unused-vars
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Facebook, Instagram, Award, Sparkles, ThumbsUp, ChevronDown } from 'lucide-react';
-import { FaCcVisa, FaCcMastercard, FaCcAmex, FaCcPaypal } from 'react-icons/fa';
-// DELETED: Removed static category import
-// import { categories } from '../../data/categories'; 
-import { categoryAPI, cityAPI } from '../../services/api'; // NEW: Import your category API
-import axios from 'axios';
+import { categoryAPI, cityAPI } from '../../services/api';
 import { useCity } from '../../context/CityContext';
+import { useSettings } from '../../context/SettingsContext';
 import logo from '/TodayMyDream.png';
 
-// --- Accordion Component (No changes here) ---
 const FooterAccordion = ({ title, items }) => {
-  // ... accordion code is unchanged
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -64,18 +58,16 @@ const FooterAccordion = ({ title, items }) => {
 const Footer = () => {
   const navigate = useNavigate();
   const { setSelectedCity, setSelectedCityId } = useCity();
+  const { getContactInfo } = useSettings();
+  const { socials } = getContactInfo();
 
-  // NEW: State to hold categories fetched from the API
   const [footerCategories, setFooterCategories] = useState([]);
-  // NEW: State to hold cities fetched from the API
   const [footerCities, setFooterCities] = useState([]);
 
-  // NEW: useEffect to fetch categories when the component mounts
   useEffect(() => {
     const fetchFooterCategories = async () => {
       try {
         const response = await categoryAPI.getCategories();
-        // API returns { categories: [...] } according to backend controller
         let cats = [];
 
         if (response && response.data) {
@@ -84,34 +76,28 @@ const Footer = () => {
           else if (Array.isArray(response.data.category)) cats = response.data.category;
         }
 
-        // Validate and normalize category items: ensure they have a usable name
         const validated = cats
           .filter(c => c && (typeof c === 'object') && (c.name || c.title))
           .map(c => ({ name: (c.name || c.title || '').trim(), id: c._id || c.id }))
           .filter(c => c.name && c.name.length > 0);
 
-        // Keep the top 4 categories or fallback to empty
         setFooterCategories(validated.slice(0, 8));
       } catch (error) {
-        // Failed to fetch footer categories
         setFooterCategories([]);
       }
     };
 
     fetchFooterCategories();
-  }, []); // Empty dependency array means this runs only once on mount
+  }, []);
 
-  // NEW: useEffect to fetch cities when the component mounts
   useEffect(() => {
     const fetchFooterCities = async () => {
       try {
         const response = await cityAPI.getCities();
-        // Filter to only show active cities (isActive !== false)
         const allCities = response.data.cities || [];
         const activeCities = allCities.filter(city => city.isActive !== false);
-        setFooterCities(activeCities.slice(0, 8)); // Keep the top 8 cities
+        setFooterCities(activeCities.slice(0, 8));
       } catch (error) {
-        // Failed to fetch footer cities
         setFooterCities([]);
       }
     };
@@ -127,11 +113,6 @@ const Footer = () => {
     }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-  };
-
   const whyChooseUsPoints = [
     { icon: <Award size={20} />, text: "Professional Services" },
     { icon: <Sparkles size={20} />, text: "Bespoke & Creative Decorations" },
@@ -145,8 +126,6 @@ const Footer = () => {
     { label: "Policies", link: "/policies" },
   ];
 
-  // UPDATED: Uses the dynamic 'footerCategories' state and slices the first 4
-  // Provide a sensible fallback if we don't have categories from the API
   const fallbackCategoryLinks = [
     { label: 'Balloons', link: '/shop?category=Balloons' },
     { label: 'Birthday', link: '/shop?category=Birthday' },
@@ -159,16 +138,13 @@ const Footer = () => {
     : fallbackCategoryLinks
   );
 
-  // Handle city selection
   const handleCityClick = (city) => {
     setSelectedCity(city.name);
     setSelectedCityId(city._id);
-    // Navigate to home page with city parameter
     navigate(`/?city=${encodeURIComponent(city.name)}`);
     window.scrollTo(0, 0);
   };
 
-  // Create city links for footer
   const cityLinks = footerCities.map(city => ({
     label: city.name,
     onClick: () => handleCityClick(city)
@@ -196,7 +172,7 @@ const Footer = () => {
             {/* Socials Inline */}
             <div className="flex items-center gap-3">
               <a
-                href="https://www.facebook.com/profile.php?id=61586200673210#"
+                href={socials?.facebook || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"
@@ -204,7 +180,7 @@ const Footer = () => {
                 <Facebook size={14} />
               </a>
               <a
-                href="https://www.instagram.com/today_my_dream"
+                href={socials?.instagram || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"
