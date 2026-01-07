@@ -65,3 +65,82 @@ exports.accept = async (req, res) => {
     res.status(400).json({ success: false, message: e.message });
   }
 };
+
+const crypto = require('crypto');
+
+const { sendEmail } = require('../utils/emailService');
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const vendor = await Vendor.findOne({ email });
+    if (!vendor) return res.status(404).json({ success: false, message: 'Vendor with this email does not exist.' });
+
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Set token and expiration (1 hour)
+    vendor.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    vendor.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+    await vendor.save();
+
+    const resetUrl = `${process.env.FRONTEND_URL}/vendor/reset-password/${resetToken}`;
+
+    const message = `
+      <h1>Password Reset Request</h1>
+      <p>You have requested a password reset. Please go to this link to reset your password:</p>
+      <a href="${resetUrl}" clicktracking=off>${resetUrl}</a>
+      <p>This link is valid for 1 hour.</p>
+    `;
+
+    try {
+      await sendEmail({
+        to: vendor.email,
+        subject: 'Password Reset Request',
+        html: message,
+      });
+
+      res.json({ success: true, message: 'Email sent' });
+    } catch (err) {
+      vendor.resetPasswordToken = undefined;
+      vendor.resetPasswordExpires = undefined;
+      await vendor.save();
+      return res.status(500).json({ success: false, message: 'Email could not be sent' });
+    }
+
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    // Hash the token to compare with DB
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const vendor = await Vendor.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!vendor) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+    }
+
+    // Set new password
+    vendor.passwordHash = await bcrypt.hash(password, 10);
+    vendor.resetPasswordToken = undefined;
+    vendor.resetPasswordExpires = undefined;
+
+    await vendor.save();
+
+    res.json({ success: true, message: 'Password Reset Successfully. You can now login.' });
+
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+};

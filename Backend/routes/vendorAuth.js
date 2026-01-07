@@ -11,5 +11,7 @@ router.post('/register', upload.fields([
 router.post('/login', ctrl.login);
 router.get('/me', vendorAuth, ctrl.me);
 router.patch('/accept', vendorAuth, ctrl.accept);
+router.post('/forgot-password', ctrl.forgotPassword);
+router.put('/reset-password/:token', ctrl.resetPassword);
 
 module.exports = router;

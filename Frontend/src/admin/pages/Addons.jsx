@@ -39,7 +39,7 @@ const Addons = () => {
 
   const handleToggleStatus = async (id) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('admin_token');
       const response = await fetch(`${config.API_BASE_URL}/api/addons/${id}/toggle-status`, {
         method: 'PATCH',
         credentials: 'include',
@@ -65,7 +65,7 @@ const Addons = () => {
 
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('admin_token');
       const response = await fetch(`${config.API_BASE_URL}/api/addons/${deleteModal.id}`, {
         method: 'DELETE',
         credentials: 'include',

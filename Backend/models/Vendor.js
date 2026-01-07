@@ -17,7 +17,10 @@ const VendorSchema = new mongoose.Schema({
   // Approval flow
   isApproved: { type: Boolean, default: false },
   vendorAccepted: { type: Boolean, default: false },
-  status: { type: String, enum: ['active', 'blocked'], default: 'active' }
+  status: { type: String, enum: ['active', 'blocked'], default: 'active' },
+  // Password Reset
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Vendor', VendorSchema);

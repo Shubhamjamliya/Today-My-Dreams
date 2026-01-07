@@ -1,46 +1,55 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 import config from '../config/config';
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
+const ResetPassword = () => {
+  const { token } = useParams();
+  const navigate = useNavigate();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSendLink = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setMessage('');
-    setIsLoading(true);
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      toast.error("Passwords don't match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      const response = await fetch(`${config.API_BASE_URL}/api/auth/forgot-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ email })
-      });
+      const res = await axios.put(`${config.API_BASE_URL}/api/auth/reset-password/${token}`, { password });
+      setMessage(res.data.message);
+      toast.success(res.data.message);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to send reset link');
-      }
-
-      setMessage(data.message);
-      toast.success('Reset link sent to your email');
+      // Delay redirect
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
     } catch (err) {
-      const errorMessage = err.message || 'An error occurred. Please try again.';
-      setError(errorMessage);
-      toast.error(errorMessage);
+      const errorMsg = err.response?.data?.message || 'Something went wrong or token expired';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -67,11 +76,11 @@ const ForgotPassword = () => {
               <img src="/TodayMyDream.png" alt="TodayMyDream Logo" className="w-32 h-auto object-contain drop-shadow-md" />
             </div>
             <h1 className="text-5xl font-bold leading-tight mb-6 tracking-tight">
-              Don't Worry, <br />
-              <span className="text-white opacity-90 italic font-serif">We Got You.</span>
+              Secure Your <br />
+              <span className="text-white opacity-90 italic font-serif">Account</span>
             </h1>
             <p className="text-lg text-yellow-50 max-w-md leading-relaxed">
-              It happens to the best of us. Enter your email and we'll help you get back to planning your dream event.
+              Create a new, strong password to protect your account and get back to your dream events.
             </p>
           </div>
 
@@ -97,13 +106,9 @@ const ForgotPassword = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <div className="text-center mb-8">
-                <Link to="/login" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#F59E0B] mb-6 transition-colors">
-                  <ArrowLeft className="w-4 h-4 mr-1" />
-                  Back to Login
-                </Link>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Forgot Password?</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">Reset Password</h2>
                 {!message && (
-                  <p className="text-gray-500">No worries! Verify your email to reset it.</p>
+                  <p className="text-gray-500">Please enter your new password below.</p>
                 )}
               </div>
 
@@ -112,14 +117,17 @@ const ForgotPassword = () => {
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="w-8 h-8 text-green-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Check your email</h3>
-                  <p className="text-gray-600 mb-6">{message}</p>
-                  <p className="text-sm text-gray-500">
-                    Did not receive the email? <button onClick={() => setMessage('')} className="text-[#F59E0B] font-semibold hover:underline">Try again</button>
-                  </p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Password Reset!</h3>
+                  <p className="text-gray-600 mb-6">Your password has been successfully updated. You can now login with your new credentials.</p>
+                  <Link
+                    to="/login"
+                    className="inline-flex items-center justify-center w-full py-4 bg-[#FCD24C] hover:bg-[#F59E0B] text-white font-bold rounded-xl transition-all shadow-lg shadow-orange-200"
+                  >
+                    Go to Login
+                  </Link>
                 </div>
               ) : (
-                <form onSubmit={handleSendLink} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   {error && (
                     <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
                       <div className="w-1 h-4 bg-red-500 rounded-full" />
@@ -128,37 +136,66 @@ const ForgotPassword = () => {
                   )}
 
                   <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-gray-700 ml-1">Email Address</label>
+                    <label className="text-sm font-semibold text-gray-700 ml-1">New Password</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                        <Mail className="h-5 w-5" />
+                        <Lock className="h-5 w-5" />
                       </div>
                       <input
-                        id="email"
-                        name="email"
-                        type="email"
+                        type={showPassword ? 'text' : 'password'}
                         required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="block w-full pl-11 pr-11 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FCD24C] focus:border-transparent focus:bg-white transition-all duration-200"
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-gray-700 ml-1">Confirm Password</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                        <Lock className="h-5 w-5" />
+                      </div>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         className="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FCD24C] focus:border-transparent focus:bg-white transition-all duration-200"
-                        placeholder="john@example.com"
+                        placeholder="••••••••"
                       />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={loading}
                     className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-[#FCD24C] to-[#F59E0B] hover:from-[#facc15] hover:to-[#d97706] text-white font-bold rounded-xl shadow-lg shadow-orange-200 hover:shadow-xl transform transition-all duration-200 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-lg"
                   >
-                    {isLoading ? (
+                    {loading ? (
                       <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <>
-                        Send Reset Link <ArrowRight className="w-5 h-5" />
+                        Set New Password <ArrowRight className="w-5 h-5" />
                       </>
                     )}
                   </button>
+
+                  <div className="text-center mt-6">
+                    <Link to="/login" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#F59E0B] transition-colors">
+                      <ArrowLeft className="w-4 h-4 mr-1" />
+                      Back to Login
+                    </Link>
+                  </div>
                 </form>
               )}
             </motion.div>
@@ -169,4 +206,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

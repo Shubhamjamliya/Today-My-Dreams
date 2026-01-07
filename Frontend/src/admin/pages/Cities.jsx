@@ -499,7 +499,7 @@ const Cities = () => {
 
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('admin_token');
 
             // Create FormData object (backend expects multipart/form-data)
             const formData = new FormData();

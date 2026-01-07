@@ -77,13 +77,18 @@ const Login = () => {
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
+                <div className="flex justify-end pt-1">
+                  <Link to="/vendor/forgot-password" className="text-sm font-semibold text-[#F59E0B] hover:text-[#d97706]">
+                    Forgot Password?
+                  </Link>
+                </div>
               </div>
               <button
                 type="submit"
                 disabled={loading}
                 className={`w-full py-4 rounded-xl text-gray-900 font-bold text-lg shadow-lg transform transition-all duration-200 active:scale-95 ${loading
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-[#FCD24C] to-[#F59E0B] hover:shadow-xl hover:-translate-y-0.5'
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-[#FCD24C] to-[#F59E0B] hover:shadow-xl hover:-translate-y-0.5'
                   }`}
               >
                 {loading ? (

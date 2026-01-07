@@ -40,6 +40,7 @@ const Wishlist = lazy(() => import('./pages/Wishlist'));
 const ProductView = lazy(() => import('./pages/ProductView'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
 const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'));
 // Direct import for LCP optimization
@@ -274,6 +275,11 @@ function AppContent() {
         <Route path="/forgot-password" element={
           <Suspense fallback={<Loader size="md" text="Loading..." />}>
             <ForgotPassword />
+          </Suspense>
+        } />
+        <Route path="/reset-password/:token" element={
+          <Suspense fallback={<Loader size="md" text="Loading..." />}>
+            <ResetPassword />
           </Suspense>
         } />
         <Route path="/policies" element={

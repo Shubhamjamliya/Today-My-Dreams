@@ -41,13 +41,13 @@ const CreateAddon = () => {
 
     try {
       setUploading(true);
-      
+
       // Create FormData
       const formDataToUpload = new FormData();
       formDataToUpload.append('image', file);
-      
-      const token = localStorage.getItem('token');
-      
+
+      const token = localStorage.getItem('admin_token');
+
       // Upload to backend
       const response = await fetch(`${config.API_BASE_URL}/api/addons/upload`, {
         method: 'POST',
@@ -76,7 +76,7 @@ const CreateAddon = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.price) {
       toast.error('Please fill in all required fields');
       return;
@@ -89,8 +89,8 @@ const CreateAddon = () => {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      
+      const token = localStorage.getItem('admin_token');
+
       const response = await fetch(`${config.API_BASE_URL}/api/addons`, {
         method: 'POST',
         credentials: 'include',
@@ -215,7 +215,7 @@ const CreateAddon = () => {
 
           {/* Checkboxes */}
           <div className="space-y-4">
-            
+
 
             <div className="flex items-center">
               <input
