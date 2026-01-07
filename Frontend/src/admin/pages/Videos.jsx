@@ -44,7 +44,7 @@ const Videos = () => {
   const fetchVideos = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('admin_token');
       const response = await fetch(config.API_URLS.VIDEOS, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -117,7 +117,7 @@ const Videos = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('admin_token');
       let videoUrl = formData.video;
 
       // Upload video if a new file is selected
@@ -180,7 +180,7 @@ const Videos = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('admin_token');
       const response = await fetch(`${config.API_URLS.VIDEOS}/${videoId}`, {
         method: 'DELETE',
         headers: {
@@ -292,9 +292,9 @@ const Videos = () => {
                 )}
                 <div className="absolute top-2 left-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${video.category === 'review' ? 'bg-green-100 text-green-800' :
-                      video.category === 'work' ? 'bg-blue-100 text-blue-800' :
-                        video.category === 'testimonial' ? 'bg-purple-100 text-purple-800' :
-                          'bg-orange-100 text-orange-800'
+                    video.category === 'work' ? 'bg-blue-100 text-blue-800' :
+                      video.category === 'testimonial' ? 'bg-purple-100 text-purple-800' :
+                        'bg-orange-100 text-orange-800'
                     }`}>
                     {categories.find(c => c.value === video.category)?.label}
                   </span>

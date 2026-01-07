@@ -69,7 +69,7 @@ const uploadWithFiles = (url, formData) => {
 
   return axios.post(`${config.API_BASE_URL}${url}`, formData, {
     headers,
-    timeout: 300000, // 5 minutes timeout for large file uploads
+    timeout: 5000, // 5 seconds timeout
   }).catch(error => {
     console.error('=== Upload Error ===');
     console.error('Error response status:', error.response?.status);
@@ -98,7 +98,21 @@ const updateWithFiles = (url, formData) => {
   if (token) headers['Authorization'] = `Bearer ${token}`;
   return axios.put(`${config.API_BASE_URL}${url}`, formData, {
     headers,
-    timeout: 300000, // 5 minutes timeout for large file uploads
+    timeout: 5000, // 5 seconds timeout
+  }).catch(error => {
+    console.error('=== Update Error ===');
+    console.error('Error response status:', error.response?.status);
+    console.error('Error response data:', error.response?.data);
+    console.error('Error message:', error.message);
+
+    // Provide more specific error messages
+    if (error.code === 'ECONNREFUSED' || error.message.includes('Network Error')) {
+      const networkError = new Error('Cannot connect to backend server. Please ensure the backend server is running ');
+      networkError.isNetworkError = true;
+      throw networkError;
+    }
+
+    throw error;
   });
 };
 

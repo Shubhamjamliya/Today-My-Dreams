@@ -49,12 +49,17 @@ const uploadFields = upload.fields([
 
 // Middleware to handle multer upload
 const handleUpload = (req, res, next) => {
+  console.log('=== Multer Upload Middleware Started ==='); // DEBUG
   uploadFields(req, res, function (err) {
     if (err instanceof multer.MulterError) {
+      console.error('Multer Error:', err); // DEBUG
       return res.status(400).json({ error: 'File upload error', details: err.message });
     } else if (err) {
+      console.error('Unknown Upload Error:', err); // DEBUG
       return res.status(500).json({ error: 'File upload error', details: err.message });
     }
+    console.log('=== Multer Upload Middleware Finished ==='); // DEBUG
+    console.log('Files received:', req.files ? Object.keys(req.files) : 'None'); // DEBUG
     next();
   });
 };

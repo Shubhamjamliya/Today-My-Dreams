@@ -213,7 +213,7 @@ const Products = ({ module }) => {
           </div>
 
           <div className="flex space-x-2">
-            <Link to={`/admin/products/edit/${product._id}`} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-3 rounded-lg text-sm font-medium transition-colors">
+            <Link to={module === 'shop' ? `/admin/shop/products/edit/${product._id}` : `/admin/products/edit/${product._id}`} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-3 rounded-lg text-sm font-medium transition-colors">
               Edit
             </Link>
             <button onClick={() => handleDelete(product._id)} className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors">

@@ -19,7 +19,7 @@ const getAllProducts = async (req, res) => {
     if (city) {
       const City = require('../models/City');
       let cityId = null;
-      
+
       if (mongoose.Types.ObjectId.isValid(city)) {
         cityId = city;
       } else {
@@ -29,7 +29,7 @@ const getAllProducts = async (req, res) => {
           cityId = cityDoc._id;
         }
       }
-      
+
       if (cityId) {
         // Find ONLY products that have this city in their cities array
         // No backward compatibility - only show explicitly assigned products
@@ -48,14 +48,14 @@ const getAllProducts = async (req, res) => {
         query.category = category;
       } else {
         // First try to find category by name or slug
-        const catDoc = await Category.findOne({ 
+        const catDoc = await Category.findOne({
           $or: [
             { name: new RegExp(`^${category}$`, 'i') },
             { slug: category.toLowerCase() }
           ],
           isActive: true // Only find active categories
         });
-        
+
         if (catDoc) {
           query.category = catDoc._id;
           // Note: We don't need to verify category-city match here because
@@ -86,56 +86,56 @@ const getAllProducts = async (req, res) => {
     // Handle search with improved individual word matching and fuzzy search
     if (search && search.trim()) {
       const searchTerm = search.trim();
-      
+
       // Split search term into individual words for better matching
       const searchWords = searchTerm.split(/\s+/).filter(word => word.length > 0);
-      
+
       // Create regex patterns for fuzzy matching (allows for partial matches)
-      const regexPatterns = searchWords.map(word => 
+      const regexPatterns = searchWords.map(word =>
         new RegExp(word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
       );
-      
+
       // Build search conditions for multiple fields
       const searchConditions = [];
-      
+
       // Search in product name (highest priority)
       searchConditions.push({
         name: { $regex: searchTerm, $options: 'i' }
       });
-      
+
       // Search in material field
       searchConditions.push({
         material: { $regex: searchTerm, $options: 'i' }
       });
-      
+
       // Search in colour field
       searchConditions.push({
         colour: { $regex: searchTerm, $options: 'i' }
       });
-      
+
       // Search in utility field
       searchConditions.push({
         utility: { $regex: searchTerm, $options: 'i' }
       });
-      
+
       // Search in size field
       searchConditions.push({
         size: { $regex: searchTerm, $options: 'i' }
       });
-      
+
       // Also search in category and subcategory names (populated fields)
       // This will be handled in the aggregation pipeline
-      
+
       // Use $or to match any of the search conditions
       query.$or = searchConditions;
     }
 
     // Use aggregation pipeline for better search with category matching and relevance scoring
     let aggregationPipeline = [];
-    
+
     // Match stage with base query
     aggregationPipeline.push({ $match: query });
-    
+
     // Lookup stages for category and subcategory
     aggregationPipeline.push({
       $lookup: {
@@ -145,7 +145,7 @@ const getAllProducts = async (req, res) => {
         as: 'categoryInfo'
       }
     });
-    
+
     aggregationPipeline.push({
       $lookup: {
         from: 'subcategories',
@@ -154,7 +154,7 @@ const getAllProducts = async (req, res) => {
         as: 'subCategoryInfo'
       }
     });
-    
+
     // Add category and subcategory names for search
     aggregationPipeline.push({
       $addFields: {
@@ -162,14 +162,14 @@ const getAllProducts = async (req, res) => {
         subCategoryName: { $arrayElemAt: ['$subCategoryInfo.name', 0] }
       }
     });
-    
+
     // If search is active, add category and subcategory search and relevance scoring
     if (search && search.trim()) {
       const searchWords = search.trim().split(/\s+/).filter(word => word.length > 0);
-      const regexPatterns = searchWords.map(word => 
+      const regexPatterns = searchWords.map(word =>
         new RegExp(word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
       );
-      
+
       // Add category and subcategory search conditions
       const categorySearchConditions = [
         {
@@ -179,10 +179,10 @@ const getAllProducts = async (req, res) => {
           subCategoryName: { $regex: searchTerm, $options: 'i' }
         }
       ];
-      
+
       // Add category search to the main query
       query.$or = query.$or ? [...query.$or, ...categorySearchConditions] : categorySearchConditions;
-      
+
       // Add relevance scoring
       aggregationPipeline.push({
         $addFields: {
@@ -277,7 +277,7 @@ const getAllProducts = async (req, res) => {
         }
       });
     }
-    
+
     // Project stage to clean up the data
     aggregationPipeline.push({
       $project: {
@@ -309,14 +309,14 @@ const getAllProducts = async (req, res) => {
         relevanceScore: { $ifNull: ['$relevanceScore', 0] }
       }
     });
-    
+
     // Sort stage
     if (search && search.trim()) {
       aggregationPipeline.push({ $sort: { relevanceScore: -1, date: -1 } });
     } else {
       aggregationPipeline.push({ $sort: { date: -1 } });
     }
-    
+
     // Get total count for pagination
     const totalCountPipeline = [...aggregationPipeline, { $count: 'total' }];
     const totalCountResult = await Product.aggregate(totalCountPipeline);
@@ -365,14 +365,14 @@ const getAllProducts = async (req, res) => {
 const getSearchSuggestions = async (req, res) => {
   try {
     const { q: query, city, limit = 10 } = req.query;
-    
+
     if (!query || query.trim().length < 2) {
       return res.json({ suggestions: [], categories: [], products: [] });
     }
 
     const searchTerm = query.trim();
     const searchWords = searchTerm.split(/\s+/).filter(word => word.length > 0);
-    const regexPatterns = searchWords.map(word => 
+    const regexPatterns = searchWords.map(word =>
       new RegExp(word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
     );
 
@@ -386,7 +386,7 @@ const getSearchSuggestions = async (req, res) => {
     if (city) {
       const City = require('../models/City');
       let cityId = null;
-      
+
       if (mongoose.Types.ObjectId.isValid(city)) {
         cityId = city;
       } else {
@@ -395,7 +395,7 @@ const getSearchSuggestions = async (req, res) => {
           cityId = cityDoc._id;
         }
       }
-      
+
       if (cityId) {
         productQuery.cities = cityId;
       }
@@ -504,7 +504,7 @@ const getSearchSuggestions = async (req, res) => {
     if (city) {
       const City = require('../models/City');
       let cityId = null;
-      
+
       if (mongoose.Types.ObjectId.isValid(city)) {
         cityId = city;
       } else {
@@ -513,7 +513,7 @@ const getSearchSuggestions = async (req, res) => {
           cityId = cityDoc._id;
         }
       }
-      
+
       if (cityId) {
         categoryQuery.cities = cityId;
       }
@@ -534,7 +534,7 @@ const getSearchSuggestions = async (req, res) => {
 
     // Create suggestions array
     const suggestions = [];
-    
+
     // Add category suggestions
     categories.forEach(category => {
       suggestions.push({
@@ -576,18 +576,18 @@ const getProductsBySection = async (req, res) => {
   try {
     const { section } = req.params;
     const { city } = req.query;
-    
+
     let query = {
       // Only show in-stock products
       inStock: true,
       stock: { $gt: 0 }
     };
-    
+
     // Add city filter if provided
     if (city) {
       const City = require('../models/City');
       let cityId = null;
-      
+
       if (mongoose.Types.ObjectId.isValid(city)) {
         cityId = city;
       } else {
@@ -597,14 +597,14 @@ const getProductsBySection = async (req, res) => {
           cityId = cityDoc._id;
         }
       }
-      
+
       if (cityId) {
         // Find ONLY products that have this city in their cities array
         query.cities = cityId;
       }
     }
-    
-    switch(section) {
+
+    switch (section) {
       case 'bestsellers':
         query.isBestSeller = true;
         break;
@@ -617,7 +617,7 @@ const getProductsBySection = async (req, res) => {
       default:
         return res.status(400).json({ message: "Invalid section" });
     }
-    
+
     // UPDATED: Populate category and subCategory for section-based queries
     const products = await Product.find(query)
       .populate('category', 'name')
@@ -634,25 +634,25 @@ const getProduct = async (req, res) => {
   try {
     const { id } = req.params;
     let product;
-    
+
     // Try to find by MongoDB ID first
     if (mongoose.Types.ObjectId.isValid(id)) {
       product = await Product.findById(id)
         .populate('category', 'name slug')
         .populate('subCategory', 'name slug');
     }
-    
+
     // If not found by ID or ID is invalid, try to find by name (URL-decoded and slug-to-name conversion)
     if (!product) {
       // Convert slug back to searchable name (replace hyphens with spaces and make case-insensitive)
       const nameFromSlug = decodeURIComponent(id).replace(/-/g, ' ');
-      product = await Product.findOne({ 
-        name: new RegExp(`^${nameFromSlug}$`, 'i') 
+      product = await Product.findOne({
+        name: new RegExp(`^${nameFromSlug}$`, 'i')
       })
         .populate('category', 'name slug')
         .populate('subCategory', 'name slug');
     }
-    
+
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -670,10 +670,10 @@ const createProductWithFiles = async (req, res) => {
     console.log('Request body:', req.body);
     console.log('Request files:', req.files);
     console.log('Request headers:', req.headers);
-    
+
     if (!req.files || !req.files.mainImage) {
       console.error('Main image missing - files:', req.files);
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Main image is required.',
         message: 'Please upload a main image for the product'
       });
@@ -681,9 +681,9 @@ const createProductWithFiles = async (req, res) => {
 
     const files = req.files;
     const productData = req.body;
-    
+
     const requiredFields = [
-      "name", "material", "size", "colour", 
+      "name", "material", "size", "colour",
       "category", "utility", "price", "regularPrice"
     ];
 
@@ -696,15 +696,15 @@ const createProductWithFiles = async (req, res) => {
     // Validate price values
     const price = parseFloat(productData.price);
     const regularPrice = parseFloat(productData.regularPrice);
-    
+
     if (isNaN(price) || price < 0) {
       return res.status(400).json({ error: 'Invalid price value' });
     }
-    
+
     if (isNaN(regularPrice) || regularPrice < 0) {
       return res.status(400).json({ error: 'Invalid regular price value' });
     }
-    
+
     if (price > regularPrice) {
       return res.status(400).json({ error: 'Price cannot be greater than regular price' });
     }
@@ -729,12 +729,12 @@ const createProductWithFiles = async (req, res) => {
     const productObject = {
       name: productData.name,
       material: productData.material,
-    
+
       size: productData.size,
       colour: productData.colour,
       category: productData.category,
       subCategory: productData.subCategory && productData.subCategory.trim() !== '' ? productData.subCategory : undefined,
-    
+
       utility: productData.utility,
       care: productData.care,
       included: productData.included ? JSON.parse(productData.included) : [],
@@ -750,17 +750,17 @@ const createProductWithFiles = async (req, res) => {
       codAvailable: productData.codAvailable !== 'false',
       stock: Number(productData.stock) || 0
     };
-    
+
     console.log('Product object to save:', productObject);
-    
+
     const newProduct = new Product(productObject);
     console.log('Product instance created, attempting to save...');
-    
+
     const savedProduct = await newProduct.save();
     console.log('Product saved successfully:', savedProduct._id);
-    
-    res.status(201).json({ 
-      message: "Product created successfully", 
+
+    res.status(201).json({
+      message: "Product created successfully",
       product: savedProduct,
     });
   } catch (error) {
@@ -770,35 +770,35 @@ const createProductWithFiles = async (req, res) => {
     console.error('Error stack:', error.stack);
     console.error('Request body:', req.body);
     console.error('Request files:', req.files);
-    
+
     // Handle specific error types
     if (error.name === 'ValidationError') {
       const validationErrors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ 
-        message: "Validation Error", 
+      return res.status(400).json({
+        message: "Validation Error",
         error: "Please check the following fields: " + validationErrors.join(', '),
         details: validationErrors
       });
     }
-    
+
     if (error.name === 'CastError') {
-      return res.status(400).json({ 
-        message: "Invalid Data Type", 
+      return res.status(400).json({
+        message: "Invalid Data Type",
         error: `Invalid value for field: ${error.path}`,
         details: error.message
       });
     }
-    
+
     if (error.code === 11000) {
-      return res.status(400).json({ 
-        message: "Duplicate Entry", 
+      return res.status(400).json({
+        message: "Duplicate Entry",
         error: "A product with this information already exists",
         details: error.message
       });
     }
-    
-    res.status(500).json({ 
-      message: "Error creating product", 
+
+    res.status(500).json({
+      message: "Error creating product",
       error: error.message,
       details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
@@ -808,10 +808,15 @@ const createProductWithFiles = async (req, res) => {
 // Update product with file upload
 const updateProductWithFiles = async (req, res) => {
   try {
+    console.log('=== Update Product Request Received ==='); // DEBUG
+    console.log('Product ID:', req.params.id); // DEBUG
+    console.log('Request Body:', req.body); // DEBUG
+    console.log('Request Files:', req.files ? Object.keys(req.files) : 'No files'); // DEBUG
+
     const id = req.params.id;
     const files = req.files || {};
     const productData = req.body;
-    
+
     const existingProduct = await Product.findById(id);
     if (!existingProduct) {
       return res.status(404).json({ message: "Product not found" });
@@ -839,7 +844,7 @@ const updateProductWithFiles = async (req, res) => {
       colour: productData.colour || existingProduct.colour,
       category: productData.category || existingProduct.category,
       subCategory: productData.subCategory && productData.subCategory.trim() !== '' ? productData.subCategory : (productData.subCategory === '' ? undefined : existingProduct.subCategory), // Handle empty string
-   
+
       utility: productData.utility || existingProduct.utility,
       care: productData.care || existingProduct.care,
       included: productData.included ? JSON.parse(productData.included) : existingProduct.included,
@@ -922,8 +927,8 @@ const updateProductSections = async (req, res) => {
     console.error('=== Error Updating Sections ===');
     console.error('Error details:', error);
     console.error('Stack trace:', error.stack);
-    res.status(500).json({ 
-      message: "Error updating product sections", 
+    res.status(500).json({
+      message: "Error updating product sections",
       error: error.message,
       details: error.stack
     });

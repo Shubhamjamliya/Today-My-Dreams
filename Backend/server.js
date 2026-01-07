@@ -224,6 +224,7 @@ async function startServer() {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000, // Reduced timeout for faster startup if it fails
       socketTimeoutMS: 45000,
+      family: 4, // Force IPv4
     });
     console.log("MongoDB connected successfully to:", MONGODB_URI);
 

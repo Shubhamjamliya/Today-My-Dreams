@@ -4,7 +4,8 @@ import Dashboard from "./components/Dashboard";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
 import Login from "./pages/Login";
-import EditProduct from "./pages/EditProduct";
+import EditServiceProduct from "./pages/EditServiceProduct";
+import EditShopProduct from "./pages/EditShopProduct";
 import SidebarLayout from "./components/SidebarLayout";
 import Categories from './pages/Categories';
 import EditCategories from "./pages/EditCategories";
@@ -104,7 +105,7 @@ const AdminRoutes = () => {
       <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
       <Route path="products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
-      <Route path="products/edit/:id" element={<ProtectedRoute><EditProduct /></ProtectedRoute>} />
+      <Route path="products/edit/:id" element={<ProtectedRoute><EditServiceProduct /></ProtectedRoute>} />
 
       <Route path="orders" element={<ProtectedRoute><Orders module="service" /></ProtectedRoute>} />
 
@@ -129,7 +130,7 @@ const AdminRoutes = () => {
       <Route path="shop/categories" element={<ProtectedRoute><Categories module="shop" /></ProtectedRoute>} />
       <Route path="shop/subcategories" element={<ProtectedRoute><Categories module="shop" showSubcategoriesOnly={true} /></ProtectedRoute>} />
       <Route path="shop/products" element={<ProtectedRoute><Products module="shop" /></ProtectedRoute>} />
-      <Route path="shop/products/edit/:id" element={<ProtectedRoute><EditProduct /></ProtectedRoute>} />
+      <Route path="shop/products/edit/:id" element={<ProtectedRoute><EditShopProduct /></ProtectedRoute>} />
       <Route path="shop/orders" element={<ProtectedRoute><Orders module="shop" /></ProtectedRoute>} />
 
       <Route path="addons" element={<ProtectedRoute><Addons /></ProtectedRoute>} />

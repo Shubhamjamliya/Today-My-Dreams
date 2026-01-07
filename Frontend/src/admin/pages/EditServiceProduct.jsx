@@ -4,34 +4,21 @@ import { Upload, X, ImagePlus, AlertCircle, CheckCircle, Plus, Copy, Hash, Arrow
 import apiService from "../services/api";
 import Loader from "../components/Loader";
 
-const EditProduct = () => {
+const EditServiceProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const isNew = id === "new";
 
-  // Effect to handle initial state for new product from query params
-  useEffect(() => {
-    if (isNew) {
-      const searchParams = new URLSearchParams(location.search);
-      const moduleParam = searchParams.get('module');
-      if (moduleParam) {
-        setProduct(prev => ({ ...prev, module: moduleParam }));
-      }
-    }
-  }, [isNew, location.search]);
-
   const [product, setProduct] = useState({
     id: "",
-    _id: "", // MongoDB ID
+    _id: "",
     name: "",
     material: "",
-
     size: "",
     colour: "",
     category: "",
-    subCategory: "", // NEW: Added subCategory to state
-
+    subCategory: "",
     utility: "",
     care: "",
     included: [],
@@ -89,34 +76,14 @@ const EditProduct = () => {
     image9: false,
   });
 
-  // States for categories and sub-categories
   const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]); // NEW: State for sub-categories
-  const [isAddingNewCategory, setIsAddingNewCategory] = useState(false);
-  const [newCategory, setNewCategory] = useState({ name: "", description: "" });
+  const [subCategories, setSubCategories] = useState([]);
 
-  // NOTE: Review logic is unchanged, so it has been removed for brevity.
-
-  // Fetch all categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        console.log("Fetching categories for module:", product.module); // DEBUG
-        const response = await apiService.getCategories();
-        console.log("Categories raw response:", response.data); // DEBUG
-
+        const response = await apiService.getCategories({ module: 'service' });
         let allCats = response.data.categories || response.data || [];
-        console.log("All fetched categories count:", allCats.length); // DEBUG
-
-        // Filter by current product module
-        if (product.module) {
-          const originalCount = allCats.length;
-          allCats = allCats.filter(cat => {
-            const catModule = cat.module || 'service'; // Default to 'service' for legacy categories
-            return catModule === product.module;
-          });
-          console.log(`Filtered categories for module '${product.module}': ${allCats.length} (was ${originalCount})`); // DEBUG
-        }
         setCategories(allCats);
       } catch (error) {
         console.error("Failed to fetch categories", error);
@@ -124,36 +91,31 @@ const EditProduct = () => {
       }
     };
     fetchCategories();
-  }, [product.module]);
+  }, []);
 
-  // Fetch product data if editing an existing product
   useEffect(() => {
     if (!isNew) {
       setLoading(true);
-      const queryParams = new URLSearchParams(location.search);
-      const moduleParam = queryParams.get('module');
-      apiService.getProduct(id, { module: moduleParam || product.module })
+      apiService.getProduct(id, { module: 'service' })
         .then((response) => {
           const prod = response.data.product || response.data;
           if (prod) {
             setProduct({
               ...prod,
               id: prod._id,
-              _id: prod._id, // Store MongoDB ID separately
-              category: prod.category?._id || "", // Set category ID
-              subCategory: prod.subCategory?._id || "", // Set subCategory ID
+              _id: prod._id,
+              category: prod.category?._id || "",
+              subCategory: prod.subCategory?._id || "",
               price: prod.price?.toString() || "",
               regularPrice: prod.regularPrice?.toString() || "",
               stock: prod.stock || 0,
-              module: prod.module || "service"
+              module: "service"
             });
 
-            // If a category is already set, fetch its sub-categories
             if (prod.category?._id) {
               fetchSubCategories(prod.category._id);
             }
 
-            // Set preview URLs
             const imageMapping = {
               mainImage: prod.images?.[0] || prod.image || "",
               image1: prod.images?.[1] || "",
@@ -174,29 +136,29 @@ const EditProduct = () => {
         .catch((error) => {
           console.error("Failed to fetch product:", error);
           showToast("Error loading product", "error");
-        });
+        })
+        .finally(() => setLoading(false));
     }
   }, [id, isNew]);
 
-  // NEW: Function to fetch sub-categories based on a category ID
   const fetchSubCategories = async (categoryId) => {
     if (!categoryId) {
       setSubCategories([]);
       return;
     }
     try {
-      const response = await apiService.getSubCategories(categoryId, { module: product.module });
+      const response = await apiService.getSubCategories(categoryId, { module: 'service' });
       setSubCategories(response.data || []);
     } catch (error) {
       console.error("Failed to fetch sub-categories", error);
       showToast("Could not load sub-categories for the selected category", "error");
-      setSubCategories([]); // Clear sub-categories on error
+      setSubCategories([]);
     }
   };
 
   const showToast = (message, type = "success", details = "") => {
     setToast({ show: true, message, type, details });
-    setTimeout(() => setToast({ show: false, message: "", type: "", details: "" }), 8000); // Longer timeout for detailed errors
+    setTimeout(() => setToast({ show: false, message: "", type: "", details: "" }), 8000);
   };
 
   const copyMongoId = async () => {
@@ -205,13 +167,6 @@ const EditProduct = () => {
         await navigator.clipboard.writeText(product._id);
         showToast("MongoDB ID copied to clipboard!", "success");
       } catch (err) {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = product._id;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
         showToast("MongoDB ID copied to clipboard!", "success");
       }
     }
@@ -220,10 +175,8 @@ const EditProduct = () => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    // NEW: Special handling for category change to fetch sub-categories
     if (name === 'category') {
       fetchSubCategories(value);
-      // Reset sub-category when parent category changes
       setProduct((prev) => ({
         ...prev,
         category: value,
@@ -237,13 +190,11 @@ const EditProduct = () => {
     }
   };
 
-  // Prevent scroll wheel from changing number input values
   const handleWheel = (e) => {
     e.preventDefault();
     e.target.blur();
   };
 
-  // Additional handler to prevent focus on scroll
   const handleFocus = (e) => {
     e.target.addEventListener('wheel', handleWheel, { passive: false });
   };
@@ -276,7 +227,6 @@ const EditProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("=== handleSubmit triggered ==="); // DEBUG
     setLoading(true);
 
     const requiredFields = [
@@ -284,39 +234,24 @@ const EditProduct = () => {
       "category", "utility", "price", "regularPrice", "stock"
     ];
 
-    const missingFields = requiredFields.filter(field => !product[field] || product[field].toString().trim() === "");
+    // Correct validation: Allow 0 for stock/price
+    const missingFields = requiredFields.filter(field => {
+      const value = product[field];
+      return value === undefined || value === null || (typeof value === 'string' && value.trim() === "");
+    });
+
     if (missingFields.length > 0) {
-      console.log("Validation failed: Missing fields", missingFields); // DEBUG
       showToast(`Please fill all required fields: ${missingFields.join(", ")}`, "error");
       setLoading(false);
       return;
     }
 
-    // Validate price values
     const price = parseFloat(product.price);
     const regularPrice = parseFloat(product.regularPrice);
     const stock = Number(product.stock);
 
-    if (isNaN(price) || price < 0) {
-      showToast("Please enter a valid price", "error");
-      setLoading(false);
-      return;
-    }
-
-    if (isNaN(regularPrice) || regularPrice < 0) {
-      showToast("Please enter a valid regular price", "error");
-      setLoading(false);
-      return;
-    }
-
-    if (price > regularPrice) {
-      showToast("Price cannot be greater than regular price", "error");
-      setLoading(false);
-      return;
-    }
-
-    if (isNaN(stock) || stock < 0) {
-      showToast("Please enter a valid stock quantity", "error");
+    if (isNaN(price) || price < 0 || isNaN(regularPrice) || regularPrice < 0 || price > regularPrice || isNaN(stock) || stock < 0) {
+      showToast("Please check pricing and stock values", "error");
       setLoading(false);
       return;
     }
@@ -326,8 +261,6 @@ const EditProduct = () => {
       setLoading(false);
       return;
     }
-
-    console.log("Validation passed. Preparing FormData..."); // DEBUG
 
     const formData = new FormData();
     Object.keys(product).forEach(key => {
@@ -342,100 +275,30 @@ const EditProduct = () => {
     });
 
     try {
-      // Clear any previous error details
       setErrorDetails(null);
-      console.log("Calling API..."); // DEBUG
-
       if (isNew) {
         await apiService.createProduct(formData);
-        console.log("Create API success"); // DEBUG
-        showToast("Product created successfully!");
+        showToast("Service Product created successfully!");
       } else {
         await apiService.updateProduct(product.id, formData);
-        console.log("Update API success"); // DEBUG
-        showToast("Product updated successfully!");
+        showToast("Service Product updated successfully!");
       }
-      navigate(product.module === 'shop' ? "/admin/shop/products" : "/admin/products");
+      navigate("/admin/products");
     } catch (error) {
-      console.error('=== Error saving product ===');
-      console.error('Error:', error);
-      console.error('Error response:', error.response);
-      console.error('Error data:', error.response?.data);
-      console.error('Product data being sent:', product);
-      console.error('Files being sent:', files);
-
-      // Extract detailed error message
+      console.error('=== Error saving product ===', error);
       let errorMessage = "Error saving product";
       let errorDetails = "";
-
-      // Handle network errors specifically
-      if (error.isNetworkError || error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
-        errorMessage = "Network Connection Error";
-        errorDetails = `Unable to connect to the backend server. Please check:
-1. Backend server is running 
-2. No firewall blocking the connection
-3. Backend server is accessible from the admin panel
-
-Error: ${error.message}`;
-      } else if (error.response?.data) {
-        const errorData = error.response.data;
-        errorMessage = errorData.message || errorData.error || errorMessage;
-
-        if (errorData.details) {
-          if (Array.isArray(errorData.details)) {
-            errorDetails = errorData.details.join(', ');
-          } else {
-            errorDetails = errorData.details;
-          }
-        }
+      if (error.response?.data) {
+        errorMessage = error.response.data.message || error.message;
+        errorDetails = JSON.stringify(error.response.data);
       } else if (error.message) {
         errorMessage = error.message;
       }
-
-      // Show detailed error message in UI
-      const fullErrorMessage = errorMessage;
-      showToast(fullErrorMessage, "error", errorDetails);
-
-      // Set detailed error information for inline display
-      setErrorDetails({
-        message: fullErrorMessage,
-        details: errorDetails,
-        response: error.response?.data,
-        status: error.response?.status,
-        productData: product,
-        filesData: Object.keys(files).map(key => ({
-          field: key,
-          file: files[key] ? { name: files[key].name, size: files[key].size, type: files[key].type } : null
-        }))
-      });
-
-      // Also log to console for debugging
-      console.error('Full error message:', fullErrorMessage);
-      console.error('Error details:', errorDetails);
-
-      // Show additional debug info in development
-      if (process.env.NODE_ENV === 'development') {
-        console.error('=== DEBUG INFO ===');
-        console.error('Product state:', product);
-        console.error('Files state:', files);
-        console.error('Form data being sent:');
-        const debugFormData = new FormData();
-        Object.keys(product).forEach(key => debugFormData.append(key, product[key]));
-        Object.keys(files).forEach(key => {
-          if (files[key]) debugFormData.append(key, files[key]);
-        });
-        for (let [key, value] of debugFormData.entries()) {
-          console.error(`${key}:`, value);
-        }
-      }
+      showToast(errorMessage, "error", errorDetails);
+      setErrorDetails({ message: errorMessage, details: errorDetails });
     } finally {
-      console.log("Executing finally block - setting loading to false"); // DEBUG
       setLoading(false);
     }
-  };
-
-  const handleNewCategorySubmit = async () => {
-    // This function logic is unchanged
   };
 
   const renderFileInput = (fieldName, label, required = false) => {
@@ -483,18 +346,17 @@ Error: ${error.message}`;
           <div className="p-6 sm:p-8">
             <div className="flex items-center mb-8">
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/admin/products")}
                 className="mr-4 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 title="Go Back"
               >
                 <ArrowLeft size={24} />
               </button>
               <h1 className="text-3xl font-bold text-gray-900">
-                {isNew ? "Add New Product" : "Edit Product"}
+                {isNew ? "Add New Service Product" : "Edit Service Product"}
               </h1>
             </div>
 
-            {/* MongoDB ID Display */}
             {!isNew && product._id && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
                 <div className="flex items-center justify-between">
@@ -505,11 +367,7 @@ Error: ${error.message}`;
                       <p className="text-blue-600 text-sm font-mono break-all">{product._id}</p>
                     </div>
                   </div>
-                  <button
-                    onClick={copyMongoId}
-                    className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    title="Copy MongoDB ID to clipboard"
-                  >
+                  <button onClick={copyMongoId} className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     <Copy size={16} />
                     <span className="text-sm">Copy</span>
                   </button>
@@ -518,66 +376,14 @@ Error: ${error.message}`;
             )}
 
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Error Details Section */}
               {errorDetails && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <div className="flex items-start space-x-2">
-                    <AlertCircle className="text-red-500 mt-0.5 flex-shrink-0" size={20} />
-                    <div className="flex-1">
-                      <h3 className="text-red-800 font-medium mb-2">Error Details</h3>
-                      <div className="space-y-2 text-sm">
-                        <div>
-                          <span className="font-medium text-red-700">Message:</span>
-                          <span className="ml-2 text-red-600">{errorDetails.message}</span>
-                        </div>
-                        {errorDetails.details && (
-                          <div>
-                            <span className="font-medium text-red-700">Details:</span>
-                            <span className="ml-2 text-red-600">{errorDetails.details}</span>
-                          </div>
-                        )}
-                        {errorDetails.status && (
-                          <div>
-                            <span className="font-medium text-red-700">Status Code:</span>
-                            <span className="ml-2 text-red-600">{errorDetails.status}</span>
-                          </div>
-                        )}
-                        {errorDetails.response && (
-                          <div>
-                            <span className="font-medium text-red-700">Server Response:</span>
-                            <pre className="ml-2 text-red-600 text-xs mt-1 bg-red-100 p-2 rounded overflow-auto">
-                              {JSON.stringify(errorDetails.response, null, 2)}
-                            </pre>
-                          </div>
-                        )}
-                        <div>
-                          <span className="font-medium text-red-700">Files Being Sent:</span>
-                          <div className="ml-2 mt-1">
-                            {errorDetails.filesData.map((fileInfo, index) => (
-                              <div key={index} className="text-red-600 text-xs">
-                                {fileInfo.field}: {fileInfo.file ?
-                                  `${fileInfo.file.name} (${fileInfo.file.size} bytes, ${fileInfo.file.type})` :
-                                  'No file selected'
-                                }
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setErrorDetails(null)}
-                        className="mt-3 text-xs text-red-600 hover:text-red-800 underline"
-                      >
-                        Hide Details
-                      </button>
-                    </div>
-                  </div>
+                  <p className="text-red-600">{errorDetails.message}</p>
                 </div>
               )}
-              {/* Basic Information */}
+
               <div className="bg-gray-50 rounded-xl p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Basic Information (Service)</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block font-medium text-gray-700">Name <span className="text-red-500">*</span></label>
@@ -589,30 +395,24 @@ Error: ${error.message}`;
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700">Category <span className="text-red-500">*</span></label>
-                    {!isAddingNewCategory ? (
-                      <div className="flex gap-2">
-                        <select
-                          name="category"
-                          value={product.category}
-                          onChange={handleChange}
-                          className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                          required
-                        >
-                          <option value="">Select a category</option>
-                          {categories.map((cat) => (
-                            <option key={cat._id} value={cat._id}>
-                              {cat.name}
-                            </option>
-                          ))}
-                        </select>
-
-                      </div>
-                    ) : (
-                      {/* New Category Form is unchanged */ }
-                    )}
+                    <div className="flex gap-2">
+                      <select
+                        name="category"
+                        value={product.category}
+                        onChange={handleChange}
+                        className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        required
+                      >
+                        <option value="">Select a category</option>
+                        {categories.map((cat) => (
+                          <option key={cat._id} value={cat._id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
-                  {/* NEW: Sub-Category Dropdown */}
                   <div>
                     <label className="block font-medium text-gray-700">Sub-Category</label>
                     <select
@@ -624,12 +424,7 @@ Error: ${error.message}`;
                       disabled={!product.category || subCategories.length === 0}
                     >
                       <option value="">
-                        {!product.category
-                          ? "Select a category first"
-                          : subCategories.length === 0
-                            ? "No sub-categories found"
-                            : "Select a sub-category"
-                        }
+                        {!product.category ? "Select a category first" : subCategories.length === 0 ? "No sub-categories found" : "Select a sub-category"}
                       </option>
                       {subCategories.map((sub) => (
                         <option key={sub._id} value={sub._id}>
@@ -639,7 +434,6 @@ Error: ${error.message}`;
                     </select>
                   </div>
 
-                  {/* Other fields: size, colour, weight */}
                   <div>
                     <label className="block font-medium text-gray-700">Size <span className="text-red-500">*</span></label>
                     <input type="text" name="size" value={product.size} onChange={handleChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
@@ -648,83 +442,30 @@ Error: ${error.message}`;
                     <label className="block font-medium text-gray-700">Colour <span className="text-red-500">*</span></label>
                     <input type="text" name="colour" value={product.colour} onChange={handleChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
                   </div>
-                  {product.module === 'shop' && (
-                    <div>
-                      <label className="block font-medium text-gray-700">Module <span className="text-red-500">*</span></label>
-                      <select
-                        name="module"
-                        value={product.module}
-                        onChange={handleChange}
-                        className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        required
-                      >
-                        <option value="service" disabled>Service (Decoration)</option>
-                        <option value="shop">Shop (Jewellery, Shoes, etc.)</option>
-                      </select>
-                      <p className="mt-1 text-sm text-gray-500">This product is part of the Shop module.</p>
-                    </div>
-                  )}
-
                 </div>
               </div>
 
-              {/* Pricing & Stock */}
               <div className="bg-gray-50 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Pricing & Stock</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div>
                     <label className="block font-medium text-gray-700">Price <span className="text-red-500">*</span></label>
-                    <input
-                      type="number"
-                      name="price"
-                      value={product.price}
-                      onChange={handleChange}
-                      onWheel={handleWheel}
-                      onFocus={handleFocus}
-                      onBlur={handleBlur}
-                      className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      step="0.01"
-                      required
-                    />
+                    <input type="number" name="price" value={product.price} onChange={handleChange} onWheel={handleWheel} onFocus={handleFocus} onBlur={handleBlur} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" step="0.01" required />
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700">Regular Price <span className="text-red-500">*</span></label>
-                    <input
-                      type="number"
-                      name="regularPrice"
-                      value={product.regularPrice}
-                      onChange={handleChange}
-                      onWheel={handleWheel}
-                      onFocus={handleFocus}
-                      onBlur={handleBlur}
-                      className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      step="0.01"
-                      required
-                    />
+                    <input type="number" name="regularPrice" value={product.regularPrice} onChange={handleChange} onWheel={handleWheel} onFocus={handleFocus} onBlur={handleBlur} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" step="0.01" required />
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700">Stock Quantity <span className="text-red-500">*</span></label>
-                    <input
-                      type="number"
-                      name="stock"
-                      min="0"
-                      value={product.stock}
-                      onChange={handleChange}
-                      onWheel={handleWheel}
-                      onFocus={handleFocus}
-                      onBlur={handleBlur}
-                      className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      required
-                    />
+                    <input type="number" name="stock" min="0" value={product.stock} onChange={handleChange} onWheel={handleWheel} onFocus={handleFocus} onBlur={handleBlur} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
                   </div>
                 </div>
               </div>
 
-              {/* Additional Information */}
               <div className="bg-gray-50 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Additional Information</h2>
                 <div className="grid grid-cols-1 gap-6">
-
                   <div>
                     <label className="block font-medium text-gray-700">Utility <span className="text-red-500">*</span></label>
                     <textarea name="utility" value={product.utility} onChange={handleChange} rows={3} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
@@ -734,51 +475,21 @@ Error: ${error.message}`;
                     <textarea name="care" value={product.care} onChange={handleChange} rows={3} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
                   </div>
 
-
-
-                  {/* Excluded Items */}
                   <div>
                     <label className="block font-medium text-gray-700 mb-2">What's Excluded ✗</label>
                     <div className="space-y-2">
                       {product.excluded.map((item, index) => (
                         <div key={index} className="flex gap-2">
-                          <input
-                            type="text"
-                            value={item}
-                            onChange={(e) => {
-                              const newExcluded = [...product.excluded];
-                              newExcluded[index] = e.target.value;
-                              setProduct({ ...product, excluded: newExcluded });
-                            }}
-                            className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                            placeholder="e.g., Installation not included"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newExcluded = product.excluded.filter((_, i) => i !== index);
-                              setProduct({ ...product, excluded: newExcluded });
-                            }}
-                            className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
+                          <input type="text" value={item} onChange={(e) => { const newExcluded = [...product.excluded]; newExcluded[index] = e.target.value; setProduct({ ...product, excluded: newExcluded }); }} className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="e.g., Installation not included" />
+                          <button type="button" onClick={() => { const newExcluded = product.excluded.filter((_, i) => i !== index); setProduct({ ...product, excluded: newExcluded }); }} className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"><X className="w-4 h-4" /></button>
                         </div>
                       ))}
-                      <button
-                        type="button"
-                        onClick={() => setProduct({ ...product, excluded: [...product.excluded, ''] })}
-                        className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add Excluded Item
-                      </button>
+                      <button type="button" onClick={() => setProduct({ ...product, excluded: [...product.excluded, ''] })} className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"><Plus className="w-4 h-4" /> Add Excluded Item</button>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Product Sections & Toggles */}
               <div className="bg-gray-50 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Settings & Sections</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -801,7 +512,6 @@ Error: ${error.message}`;
                 </div>
               </div>
 
-              {/* Product Images */}
               <div className="bg-gray-50 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Product Images</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
@@ -810,49 +520,27 @@ Error: ${error.message}`;
                   {renderFileInput('image2', 'Additional Image 2')}
                   {renderFileInput('image3', 'Additional Image 3')}
                   {renderFileInput('image4', 'Additional Image 4')}
-                  {renderFileInput('image5', 'Additional Image 5')}
-                  {renderFileInput('image6', 'Additional Image 6')}
-                  {renderFileInput('image7', 'Additional Image 7')}
-                  {renderFileInput('image8', 'Additional Image 8')}
-                  {renderFileInput('image9', 'Additional Image 9')}
                 </div>
               </div>
 
-              {/* Form Actions */}
               <div className="flex items-center justify-end space-x-4">
-                <button type="button" onClick={() => navigate("/admin/products")} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
-                  Cancel
-                </button>
+                <button type="button" onClick={() => navigate("/admin/products")} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
                 <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2">
                   {loading && <Loader size="tiny" inline text="" />}
-                  <span>{isNew ? "Create Product" : "Update Product"}</span>
+                  <span>{isNew ? "Create Service Product" : "Update Service Product"}</span>
                 </button>
               </div>
             </form>
           </div>
         </div>
-
-        {/* Enhanced Toast Notification */}
         {toast.show && (
-          <div className={`fixed bottom-4 right-4 max-w-md px-6 py-4 rounded-lg shadow-lg text-white ${toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'
-            }`}>
+          <div className={`fixed bottom-4 right-4 max-w-md px-6 py-4 rounded-lg shadow-lg text-white ${toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
             <div className="flex items-start space-x-2">
-              {toast.type === 'error' ? <AlertCircle size={20} className="mt-0.5 flex-shrink-0" /> : <CheckCircle size={20} className="mt-0.5 flex-shrink-0" />}
               <div className="flex-1 min-w-0">
                 <div className="font-medium">{toast.message}</div>
-                {toast.details && (
-                  <div className="mt-2 text-sm opacity-90">
-                    <div className="font-medium">Details:</div>
-                    <div className="mt-1 break-words">{toast.details}</div>
-                  </div>
-                )}
+                {toast.details && <div className="mt-2 text-sm opacity-90">{toast.details}</div>}
               </div>
-              <button
-                onClick={() => setToast({ show: false, message: "", type: "", details: "" })}
-                className="ml-2 text-white hover:text-gray-200 flex-shrink-0"
-              >
-                <X size={16} />
-              </button>
+              <button onClick={() => setToast({ show: false, message: "", type: "", details: "" })} className="ml-2 text-white hover:text-gray-200 flex-shrink-0"><X size={16} /></button>
             </div>
           </div>
         )}
@@ -861,4 +549,4 @@ Error: ${error.message}`;
   );
 };
 
-export default EditProduct;
+export default EditServiceProduct;
