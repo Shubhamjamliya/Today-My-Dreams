@@ -85,12 +85,12 @@ const ProductCard = ({ product }) => {
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2 z-20">
             {product.isBestSeller && (
-              <span className="flex items-center gap-1 bg-gradient-to-r from-amber-400 to-yellow-500 text-white px-2.5 py-1 rounded-full shadow-sm text-[10px] font-bold uppercase tracking-wide">
+              <span className="flex items-center gap-1 bg-gradient-to-r from-amber-400 to-yellow-500 text-white px-2 py-0.5 rounded-full shadow-sm text-[9px] font-bold uppercase tracking-wide">
                 <Award className="w-3 h-3" /> Best Seller
               </span>
             )}
             {product.isTrending && (
-              <span className="flex items-center gap-1 bg-rose-500 text-white px-2.5 py-1 rounded-full shadow-sm text-[10px] font-bold uppercase tracking-wide">
+              <span className="flex items-center gap-1 bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-sm text-[9px] font-bold uppercase tracking-wide">
                 <TrendingUp className="w-3 h-3" /> Trending
               </span>
             )}
@@ -128,14 +128,14 @@ const ProductCard = ({ product }) => {
             {product.name || 'Unnamed Product'}
           </h3>
 
-          <div className="mt-4 flex items-center justify-between gap-2 overflow-hidden">
-            <div className="flex items-end gap-2">
-              <p className="text-lg font-black text-slate-900">
+          <div className="mt-4 flex flex-col gap-3">
+            <div className="flex items-end justify-between w-full">
+              <p className="text-lg font-black text-slate-900 leading-none">
                 ₹{currentPrice.toFixed(0)}
               </p>
               {discountPercentage > 0 && regularPrice > 0 && (
-                <div className="flex flex-col items-start leading-none mb-0.5">
-                  <p className="text-xs text-slate-400 line-through decoration-slate-400/50">
+                <div className="flex flex-col items-end leading-none">
+                  <p className="text-xs text-slate-400 line-through decoration-slate-400/50 mb-0.5">
                     ₹{regularPrice.toFixed(0)}
                   </p>
                   <p className="text-[10px] font-bold text-green-600">
@@ -147,17 +147,20 @@ const ProductCard = ({ product }) => {
 
             {product.module === 'shop' && (
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleAddToCart}
                 disabled={adding}
-                className="p-2 bg-slate-900 text-white rounded-xl shadow-lg shadow-slate-200 hover:bg-slate-800 transition-colors"
+                className="w-full py-2.5 bg-slate-900 text-white rounded-xl shadow-lg shadow-slate-200 hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
                 aria-label="Add to cart"
               >
                 {adding ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
-                  <ShoppingCart className="w-5 h-5" />
+                  <>
+                    <ShoppingCart className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Add to Cart</span>
+                  </>
                 )}
               </motion.button>
             )}
@@ -165,15 +168,15 @@ const ProductCard = ({ product }) => {
             {/* Book Now button for services */}
             {product.module !== 'shop' && (
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-[#FCD24C] to-[#F5A623] 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#FCD24C] to-[#F5A623] 
                            text-slate-900 rounded-xl shadow-md shadow-[#FCD24C]/20
                            hover:shadow-lg hover:shadow-[#FCD24C]/30 transition-all duration-300
-                           text-xs font-bold"
+                           text-xs font-bold cursor-pointer"
               >
-                <Calendar className="w-3.5 h-3.5" />
-                <span>Book</span>
+                <Calendar className="w-4 h-4" />
+                <span className="uppercase tracking-wider">Book Now</span>
               </motion.div>
             )}
           </div>

@@ -61,6 +61,7 @@ const ProductView = () => {
     const [showAddonsModal, setShowAddonsModal] = useState(false);
     const [addonsLoading, setAddonsLoading] = useState(false);
     const [addingToCart, setAddingToCart] = useState(false);
+    const [showCartAnimation, setShowCartAnimation] = useState(false);
     const { addToCart } = useCart();
     const [adminContacts, setAdminContacts] = useState({ service: '', shop: '' });
 
@@ -369,11 +370,17 @@ const ProductView = () => {
 
     const handleAddToCart = () => {
         setAddingToCart(true);
+        setShowCartAnimation(true);
         addToCart(product, quantity);
+
         setTimeout(() => {
             setAddingToCart(false);
             toast.success('Product added to cart!');
         }, 800);
+
+        setTimeout(() => {
+            setShowCartAnimation(false);
+        }, 1000);
     };
 
     const handleBookNow = () => {
@@ -576,7 +583,7 @@ const ProductView = () => {
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
-                        className="lg:col-span-7 sticky top-28 self-start"
+                        className="lg:col-span-7 sticky top-28 self-start order-1"
                     >
                         <div className="relative w-full rounded-3xl overflow-hidden bg-white group border border-slate-100 shadow-lg shadow-slate-200/50">
                             {/* Main Image Container */}
@@ -692,273 +699,272 @@ const ProductView = () => {
                                 </div>
                             )}
                         </div>
-
-
-                        {/* Tabs Navigation - Modern Style */}
-                        <div className="pt-6" id="reviews">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-1.5 bg-slate-100/80 rounded-2xl mb-6">
-                                {tabs.map((tab) => {
-                                    const TabIcon = tab.icon;
-                                    return (
-                                        <button
-                                            key={tab.id}
-                                            onClick={() => setActiveTab(tab.id)}
-                                            className={`flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all duration-300 ${activeTab === tab.id
-                                                ? 'bg-white text-slate-900 shadow-md shadow-slate-200/50 ring-1 ring-black/5'
-                                                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-                                                }`}
-                                        >
-                                            <TabIcon className={`w-4 h-4 flex-shrink-0 ${activeTab === tab.id ? 'text-[#FCD24C]' : 'opacity-70'}`} />
-                                            <span className="truncate">{tab.label}</span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-
-
-                            <div className="py-3">
-                                <AnimatePresence mode="wait">
-                                    {activeTab === 'details' && (
-                                        <motion.div
-                                            key="details"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="space-y-6"
-                                        >
-
-
-                                            {/* Features Grid */}
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-
-                                                {/* What's Included & Excluded Card */}
-                                                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-
-                                                    {/* Care Instructions/Included */}
-                                                    {product.care && (
-                                                        <div className="mb-6">
-                                                            <h5 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2 uppercase tracking-wide">
-                                                                <span className="w-1.5 h-4 bg-green-500 rounded-full"></span>
-                                                                What's Included
-                                                            </h5>
-                                                            <ul className="space-y-3">
-                                                                {product.care
-                                                                    .split(/\n/)
-                                                                    .filter(item => item.trim() !== '')
-                                                                    .map((item, index) => (
-                                                                        <li key={index} className="flex items-start gap-3 text-sm text-gray-600">
-                                                                            <span className="text-green-500 font-bold flex-shrink-0 mt-0.5">✓</span>
-                                                                            <span className="leading-relaxed">{item.trim()}</span>
-                                                                        </li>
-                                                                    ))}
-                                                            </ul>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Excluded Items */}
-                                                    {product.excluded && product.excluded.length > 0 && (
-                                                        <div className="pt-6 border-t border-gray-100">
-                                                            <h5 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2 uppercase tracking-wide">
-                                                                <span className="w-1.5 h-4 bg-red-500 rounded-full"></span>
-                                                                Not Included
-                                                            </h5>
-                                                            <ul className="space-y-3">
-                                                                {product.excluded.map((item, index) => (
-                                                                    <li key={index} className="flex items-start gap-3 text-sm text-gray-600">
-                                                                        <span className="text-red-500 font-bold flex-shrink-0 mt-0.5">✕</span>
-                                                                        <span className="leading-relaxed">{item}</span>
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                            </div>
-
-                                            {/* Why Choose This Product */}
-                                            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                                                <h4 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                                    <GiftIcon className="w-5 h-5 text-gray-900" />
-                                                    Why Choose This Product?
-                                                </h4>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                                    <div className="flex items-start gap-3">
-                                                        <div className="p-2 bg-white rounded-lg shadow-sm flex-shrink-0">
-                                                            <SparklesIcon className="w-5 h-5 text-black" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-semibold text-gray-900 text-sm">Eye-Catching Design</p>
-                                                            <p className="text-xs text-gray-500 mt-0.5">Creates stunning visual impact that wows your guests</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-start gap-3">
-                                                        <div className="p-2 bg-white rounded-lg shadow-sm flex-shrink-0">
-                                                            <ShieldCheckIcon className="w-5 h-5 text-black" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-semibold text-gray-900 text-sm">Quality Guaranteed</p>
-                                                            <p className="text-xs text-gray-500 mt-0.5">100% authentic products with quality assurance</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-start gap-3">
-                                                        <div className="p-2 bg-white rounded-lg shadow-sm flex-shrink-0">
-                                                            <TruckIcon className="w-5 h-5 text-black" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-semibold text-gray-900 text-sm">Fast & Safe Delivery</p>
-                                                            <p className="text-xs text-gray-500 mt-0.5">Carefully packaged for damage-free arrival</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-start gap-3">
-                                                        <div className="p-2 bg-white rounded-lg shadow-sm flex-shrink-0">
-                                                            <ChatBubbleLeftRightIcon className="w-5 h-5 text-black" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-semibold text-gray-900 text-sm">Expert Support</p>
-                                                            <p className="text-xs text-gray-500 mt-0.5">24/7 customer service to help with your needs</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-
-                                    {activeTab === 'specifications' && (
-                                        <motion.div
-                                            key="specifications"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="space-y-6"
-                                        >
-
-                                            {/* Key Features Card */}
-                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                                <div className="flex items-center gap-3 mb-6">
-                                                    <div className="p-2 bg-gray-100 rounded-lg">
-                                                        <SparklesIcon className="w-5 h-5 text-gray-900" />
-                                                    </div>
-                                                    <h4 className="text-lg font-bold text-gray-900">Key Features</h4>
-                                                </div>
-                                                <ul className="space-y-4">
-                                                    <li className="flex items-start gap-3">
-                                                        <div className="w-1.5 h-1.5 bg-black rounded-full mt-2 flex-shrink-0"></div>
-                                                        <div>
-                                                            <p className="font-semibold text-gray-900 text-sm">Premium Material</p>
-                                                            <p className="text-sm text-gray-600 mt-0.5"> {product.material || 'high-quality, durable materials'}</p>
-                                                        </div>
-                                                    </li>
-                                                    <li className="flex items-start gap-3">
-                                                        <div className="w-1.5 h-1.5 bg-black rounded-full mt-2 flex-shrink-0"></div>
-                                                        <div>
-                                                            <p className="font-semibold text-gray-900 text-sm">Perfect For</p>
-                                                            <p className="text-sm text-gray-600 mt-0.5">{product.utility || 'Birthdays, weddings, anniversaries, and all celebrations'}</p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-
-                                            {/* Main Specifications Card */}
-                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                                <div className="flex items-center gap-3 mb-6">
-                                                    <div className="p-2 bg-gray-100 rounded-lg">
-                                                        <CogIcon className="w-5 h-5 text-gray-900" />
-                                                    </div>
-                                                    <h4 className="text-lg font-bold text-gray-900">Product Specifications</h4>
-                                                </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                    <div className="p-3 bg-gray-50 rounded-lg">
-                                                        <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Material</p>
-                                                        <p className="text-sm text-gray-900 font-medium mt-1">{product.material || 'Premium Quality Materials'}</p>
-                                                    </div>
-                                                    <div className="p-3 bg-gray-50 rounded-lg">
-                                                        <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Size</p>
-                                                        <p className="text-sm text-gray-900 font-medium mt-1">{product.size || 'Standard Size'}</p>
-                                                    </div>
-                                                    <div className="p-3 bg-gray-50 rounded-lg">
-                                                        <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Color</p>
-                                                        <p className="text-sm text-gray-900 font-medium mt-1">{product.colour || 'As Shown'}</p>
-                                                    </div>
-                                                    <div className="p-3 bg-gray-50 rounded-lg">
-                                                        <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">SKU</p>
-                                                        <p className="text-sm text-gray-900 font-medium mt-1 font-mono">{product.sku || product._id.slice(-8).toUpperCase()}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-
-                                    {activeTab === 'shipping' && (
-                                        <motion.div
-                                            key="shipping"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="prose max-w-none text-slate-600"
-                                        >
-                                            <h3 className="text-xl font-serif text-slate-800 mb-4">Your Celebration, Delivered Promptly & Safely</h3>
-                                            <p>We understand that timing is everything when planning an event. We take extra care to ensure your decorations arrive safely and on time.</p>
-                                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div>
-                                                    <h4 className="font-semibold text-slate-900 mb-3">Shipping Details</h4>
-                                                    <ul className="space-y-2 text-sm">
-                                                        <li>• Free shipping on orders above ₹1000</li>
-                                                        <li>• Standard delivery: 3-5 business days</li>
-                                                    </ul>
-                                                </div>
-                                                <div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-
-                                    {activeTab === 'reviews' && (
-                                        <motion.div
-                                            key="reviews"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="space-y-8"
-                                        >
-                                            {reviewsLoading ? (
-                                                <div className="flex items-center justify-center py-8">
-                                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-                                                    <span className="ml-3 text-gray-600 font-medium">Loading customer stories...</span>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <ReviewForm
-                                                        productId={product._id}
-                                                        existingReview={userReview}
-                                                        isEditing={isEditingReview}
-                                                        onStartEdit={() => setIsEditingReview(true)}
-                                                        onCancelEdit={() => setIsEditingReview(false)}
-                                                        onReviewSubmitted={handleReviewSubmitted}
-                                                        onReviewUpdated={handleReviewUpdated}
-                                                        onReviewDeleted={handleReviewDeleted}
-                                                    />
-                                                    <ReviewList
-                                                        reviews={reviews}
-                                                        averageRating={averageRating}
-                                                        totalReviews={reviews.length}
-                                                    />
-                                                </>
-                                            )}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        </div>
                     </motion.div>
 
+
+                    {/* Tabs Navigation - Modern Style */}
+                    <div className="pt-6 lg:col-span-7 order-3" id="reviews">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-1.5 bg-slate-100/80 rounded-2xl mb-6">
+                            {tabs.map((tab) => {
+                                const TabIcon = tab.icon;
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all duration-300 ${activeTab === tab.id
+                                            ? 'bg-white text-slate-900 shadow-md shadow-slate-200/50 ring-1 ring-black/5'
+                                            : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                                            }`}
+                                    >
+                                        <TabIcon className={`w-4 h-4 flex-shrink-0 ${activeTab === tab.id ? 'text-[#FCD24C]' : 'opacity-70'}`} />
+                                        <span className="truncate">{tab.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+
+                        <div className="py-3">
+                            <AnimatePresence mode="wait">
+                                {activeTab === 'details' && (
+                                    <motion.div
+                                        key="details"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="space-y-6"
+                                    >
+
+
+                                        {/* Features Grid */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+                                            {/* What's Included & Excluded Card */}
+                                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+
+                                                {/* Care Instructions/Included */}
+                                                {product.care && (
+                                                    <div className="mb-6">
+                                                        <h5 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2 uppercase tracking-wide">
+                                                            <span className="w-1.5 h-4 bg-green-500 rounded-full"></span>
+                                                            What's Included
+                                                        </h5>
+                                                        <ul className="space-y-3">
+                                                            {product.care
+                                                                .split(/\n/)
+                                                                .filter(item => item.trim() !== '')
+                                                                .map((item, index) => (
+                                                                    <li key={index} className="flex items-start gap-3 text-sm text-gray-600">
+                                                                        <span className="text-green-500 font-bold flex-shrink-0 mt-0.5">✓</span>
+                                                                        <span className="leading-relaxed">{item.trim()}</span>
+                                                                    </li>
+                                                                ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+
+                                                {/* Excluded Items */}
+                                                {product.excluded && product.excluded.length > 0 && (
+                                                    <div className="pt-6 border-t border-gray-100">
+                                                        <h5 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2 uppercase tracking-wide">
+                                                            <span className="w-1.5 h-4 bg-red-500 rounded-full"></span>
+                                                            Not Included
+                                                        </h5>
+                                                        <ul className="space-y-3">
+                                                            {product.excluded.map((item, index) => (
+                                                                <li key={index} className="flex items-start gap-3 text-sm text-gray-600">
+                                                                    <span className="text-red-500 font-bold flex-shrink-0 mt-0.5">✕</span>
+                                                                    <span className="leading-relaxed">{item}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                        </div>
+
+                                        {/* Why Choose This Product */}
+                                        <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                            <h4 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                                <GiftIcon className="w-5 h-5 text-gray-900" />
+                                                Why Choose This Product?
+                                            </h4>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                <div className="flex items-start gap-3">
+                                                    <div className="p-2 bg-white rounded-lg shadow-sm flex-shrink-0">
+                                                        <SparklesIcon className="w-5 h-5 text-black" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-900 text-sm">Eye-Catching Design</p>
+                                                        <p className="text-xs text-gray-500 mt-0.5">Creates stunning visual impact that wows your guests</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-start gap-3">
+                                                    <div className="p-2 bg-white rounded-lg shadow-sm flex-shrink-0">
+                                                        <ShieldCheckIcon className="w-5 h-5 text-black" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-900 text-sm">Quality Guaranteed</p>
+                                                        <p className="text-xs text-gray-500 mt-0.5">100% authentic products with quality assurance</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-start gap-3">
+                                                    <div className="p-2 bg-white rounded-lg shadow-sm flex-shrink-0">
+                                                        <TruckIcon className="w-5 h-5 text-black" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-900 text-sm">Fast & Safe Delivery</p>
+                                                        <p className="text-xs text-gray-500 mt-0.5">Carefully packaged for damage-free arrival</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-start gap-3">
+                                                    <div className="p-2 bg-white rounded-lg shadow-sm flex-shrink-0">
+                                                        <ChatBubbleLeftRightIcon className="w-5 h-5 text-black" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-900 text-sm">Expert Support</p>
+                                                        <p className="text-xs text-gray-500 mt-0.5">24/7 customer service to help with your needs</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {activeTab === 'specifications' && (
+                                    <motion.div
+                                        key="specifications"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="space-y-6"
+                                    >
+
+                                        {/* Key Features Card */}
+                                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <div className="p-2 bg-gray-100 rounded-lg">
+                                                    <SparklesIcon className="w-5 h-5 text-gray-900" />
+                                                </div>
+                                                <h4 className="text-lg font-bold text-gray-900">Key Features</h4>
+                                            </div>
+                                            <ul className="space-y-4">
+                                                <li className="flex items-start gap-3">
+                                                    <div className="w-1.5 h-1.5 bg-black rounded-full mt-2 flex-shrink-0"></div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-900 text-sm">Premium Material</p>
+                                                        <p className="text-sm text-gray-600 mt-0.5"> {product.material || 'high-quality, durable materials'}</p>
+                                                    </div>
+                                                </li>
+                                                <li className="flex items-start gap-3">
+                                                    <div className="w-1.5 h-1.5 bg-black rounded-full mt-2 flex-shrink-0"></div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-900 text-sm">Perfect For</p>
+                                                        <p className="text-sm text-gray-600 mt-0.5">{product.utility || 'Birthdays, weddings, anniversaries, and all celebrations'}</p>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        {/* Main Specifications Card */}
+                                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <div className="p-2 bg-gray-100 rounded-lg">
+                                                    <CogIcon className="w-5 h-5 text-gray-900" />
+                                                </div>
+                                                <h4 className="text-lg font-bold text-gray-900">Product Specifications</h4>
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div className="p-3 bg-gray-50 rounded-lg">
+                                                    <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Material</p>
+                                                    <p className="text-sm text-gray-900 font-medium mt-1">{product.material || 'Premium Quality Materials'}</p>
+                                                </div>
+                                                <div className="p-3 bg-gray-50 rounded-lg">
+                                                    <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Size</p>
+                                                    <p className="text-sm text-gray-900 font-medium mt-1">{product.size || 'Standard Size'}</p>
+                                                </div>
+                                                <div className="p-3 bg-gray-50 rounded-lg">
+                                                    <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">Color</p>
+                                                    <p className="text-sm text-gray-900 font-medium mt-1">{product.colour || 'As Shown'}</p>
+                                                </div>
+                                                <div className="p-3 bg-gray-50 rounded-lg">
+                                                    <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">SKU</p>
+                                                    <p className="text-sm text-gray-900 font-medium mt-1 font-mono">{product.sku || product._id.slice(-8).toUpperCase()}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {activeTab === 'shipping' && (
+                                    <motion.div
+                                        key="shipping"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="prose max-w-none text-slate-600"
+                                    >
+                                        <h3 className="text-xl font-serif text-slate-800 mb-4">Your Celebration, Delivered Promptly & Safely</h3>
+                                        <p>We understand that timing is everything when planning an event. We take extra care to ensure your decorations arrive safely and on time.</p>
+                                        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <h4 className="font-semibold text-slate-900 mb-3">Shipping Details</h4>
+                                                <ul className="space-y-2 text-sm">
+                                                    <li>• Free shipping on orders above ₹1000</li>
+                                                    <li>• Standard delivery: 3-5 business days</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {activeTab === 'reviews' && (
+                                    <motion.div
+                                        key="reviews"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="space-y-8"
+                                    >
+                                        {reviewsLoading ? (
+                                            <div className="flex items-center justify-center py-8">
+                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+                                                <span className="ml-3 text-gray-600 font-medium">Loading customer stories...</span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <ReviewForm
+                                                    productId={product._id}
+                                                    existingReview={userReview}
+                                                    isEditing={isEditingReview}
+                                                    onStartEdit={() => setIsEditingReview(true)}
+                                                    onCancelEdit={() => setIsEditingReview(false)}
+                                                    onReviewSubmitted={handleReviewSubmitted}
+                                                    onReviewUpdated={handleReviewUpdated}
+                                                    onReviewDeleted={handleReviewDeleted}
+                                                />
+                                                <ReviewList
+                                                    reviews={reviews}
+                                                    averageRating={averageRating}
+                                                    totalReviews={reviews.length}
+                                                />
+                                            </>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </div>
                     {/* Right Column - Product Info */}
-                    <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-28 self-start py-6 lg:py-0">
+                    <div className="lg:col-span-5 lg:row-span-2 space-y-6 lg:sticky lg:top-28 self-start py-6 lg:py-0 order-2">
 
                         {/* Category & Badges */}
                         <div className="flex flex-wrap items-center gap-2">
@@ -1377,7 +1383,7 @@ const ProductView = () => {
                                 : 'bg-black text-white hover:bg-gray-900'
                                 }`}
                         >
-                            <span>{isOutOfStock ? 'Out of Stock' : (isShop ? 'Shop Now' : 'Book Now')}</span>
+                            <span>{isOutOfStock ? 'Out of Stock' : (isShop ? 'Add to Cart' : 'Book Now')}</span>
                         </button>
 
                         {/* WhatsApp Button */}
@@ -1568,6 +1574,36 @@ const ProductView = () => {
                             </div>
                         </motion.div>
                     </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Flying Image Animation for Add to Cart */}
+            <AnimatePresence>
+                {showCartAnimation && (
+                    <motion.img
+                        initial={{
+                            opacity: 1,
+                            scale: 1,
+                            position: 'fixed',
+                            bottom: '80px',
+                            left: '50%',
+                            x: '-50%',
+                            zIndex: 9999
+                        }}
+                        animate={{
+                            opacity: 0,
+                            scale: 0.1,
+                            top: '20px',
+                            right: '20px',
+                            bottom: 'auto',
+                            left: 'auto',
+                            x: 0
+                        }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                        src={productImages[0]}
+                        className="w-20 h-20 rounded-full border-2 border-[#FCD24C] shadow-2xl object-cover pointer-events-none"
+                    />
                 )}
             </AnimatePresence>
 

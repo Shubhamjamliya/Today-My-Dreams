@@ -486,7 +486,7 @@ const Shop = () => {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full pb-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-3 md:gap-6 w-full pb-8">
                   {filteredProducts.map((product, index) => (
                     <motion.div
                       key={product._id}

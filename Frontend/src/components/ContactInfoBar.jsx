@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { useSettings } from '../context/SettingsContext';
 import { useCity } from '../context/CityContext';
@@ -29,6 +30,15 @@ const ContactInfoBar = () => {
             <FaPhoneAlt className="text-amber-400 animate-pulse" size={14} />
             <span className="font-medium">Call us: {contactNumber}</span>
           </a>
+
+          {/* Partner Vendor CTA */}
+          {/* Partner Vendor CTA */}
+          <Link
+            to="/vendor/register"
+            className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-900 rounded-full font-bold text-xs hover:scale-105 transition-transform shadow-lg shadow-amber-500/20 animate-pulse ml-4"
+          >
+            🚀 Become our Partner Vendor in your city
+          </Link>
         </div>
         <div className="text-gray-400 text-xs">
           ✨ Available  for your celebrations

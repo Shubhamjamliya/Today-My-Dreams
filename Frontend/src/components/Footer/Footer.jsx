@@ -171,22 +171,26 @@ const Footer = () => {
             </p>
             {/* Socials Inline */}
             <div className="flex items-center gap-3">
-              <a
-                href={socials?.facebook || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"
-              >
-                <Facebook size={14} />
-              </a>
-              <a
-                href={socials?.instagram || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"
-              >
-                <Instagram size={14} />
-              </a>
+              {socials?.facebook && (
+                <a
+                  href={socials.facebook.startsWith('http') ? socials.facebook : `https://${socials.facebook}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"
+                >
+                  <Facebook size={14} />
+                </a>
+              )}
+              {socials?.instagram && (
+                <a
+                  href={socials.instagram.startsWith('http') ? socials.instagram : `https://${socials.instagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FCD24C] hover:text-slate-900 hover:border-[#FCD24C] transition-all"
+                >
+                  <Instagram size={14} />
+                </a>
+              )}
             </div>
           </div>
 

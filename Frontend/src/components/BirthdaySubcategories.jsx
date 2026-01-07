@@ -44,13 +44,6 @@ const BirthdaySubcategories = () => {
     fetchBirthdaySubcategories();
   }, [selectedCity]);
 
-  // Fetch product counts when city or themes change
-  useEffect(() => {
-    if (birthdayThemes.length > 0 && birthdayCategoryName) {
-      fetchSubCategoryProductCounts();
-    }
-  }, [birthdayThemes, birthdayCategoryName, selectedCity]);
-
   const fetchBirthdaySubcategories = async () => {
     try {
       setLoading(true);
@@ -126,33 +119,6 @@ const BirthdaySubcategories = () => {
       setBirthdayThemes([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Fetch product counts for each subcategory based on selected city
-  const fetchSubCategoryProductCounts = async () => {
-    try {
-      const urlParams = new URLSearchParams();
-      if (selectedCity) {
-        urlParams.append('city', selectedCity);
-      }
-      urlParams.append('limit', '1000');
-
-      const response = await axios.get(`${config.API_URLS.PRODUCTS}?${urlParams.toString()}`);
-      const products = response.data || [];
-
-      // Count products per subcategory
-      const counts = {};
-      birthdayThemes.forEach(theme => {
-        counts[theme.name] = products.filter(p =>
-          p.category?.name === birthdayCategoryName &&
-          p.subCategory?.name === theme.name
-        ).length;
-      });
-
-      setSubCategoryProductCounts(counts);
-    } catch (error) {
-      // Error fetching subcategory product counts
     }
   };
 
@@ -271,12 +237,12 @@ const BirthdaySubcategories = () => {
                   )}
 
                   {/* Content Overlay */}
-                  <div className="absolute inset-x-4 bottom-4">
-                    <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl text-center shadow-lg transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300 border border-white/50">
-                      <h3 className="font-bold text-slate-800 text-sm md:text-base truncate leading-tight">
+                  <div className="absolute inset-x-2 bottom-2 md:inset-x-4 md:bottom-4">
+                    <div className="bg-white/95 backdrop-blur-sm p-3 md:p-4 rounded-xl md:rounded-2xl text-center shadow-lg transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300 border border-white/50">
+                      <h3 className="font-bold text-slate-800 text-xs md:text-base truncate leading-tight">
                         {theme.name}
                       </h3>
-                      <p className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <p className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">
                         View Theme
                       </p>
                     </div>

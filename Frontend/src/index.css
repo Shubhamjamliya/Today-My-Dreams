@@ -205,45 +205,7 @@ body {
   }
 
   /* Ensure scroll to top button is visible on mobile */
-  .scroll-to-top-button {
-    position: fixed !important;
-    bottom: 1.5rem !important;
-    right: 1.5rem !important;
-    z-index: 9999 !important;
-    width: 3rem !important;
-    height: 3rem !important;
-    background-color: white !important;
-    border-radius: 50% !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    /* Ensure it's not hidden by other elements */
-    pointer-events: auto !important;
-    /* Add a subtle border for better visibility */
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  }
 
-  .scroll-to-top-button:hover {
-    background-color: #f3f4f6 !important;
-    transform: scale(1.05) !important;
-  }
-
-  .scroll-to-top-button:active {
-    transform: scale(0.95) !important;
-  }
-
-  /* Additional mobile-specific positioning */
-  @media (max-width: 480px) {
-    .scroll-to-top-button {
-      bottom: 1rem !important;
-      right: 1rem !important;
-      width: 2.75rem !important;
-      height: 2.75rem !important;
-    }
-  }
 }
 
 @layer components {

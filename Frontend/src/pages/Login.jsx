@@ -91,8 +91,8 @@ const Login = () => {
   const isGoogleConfigured = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 p-4 lg:p-8">
-      <div className="w-full max-w-6xl h-full min-h-[600px] bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row shadow-orange-100/50">
+    <div className="min-h-screen flex items-center justify-center lg:bg-gradient-to-br lg:from-yellow-50 lg:via-amber-50 lg:to-orange-50 lg:p-8 bg-white">
+      <div className="w-full lg:max-w-6xl h-full min-h-screen lg:min-h-[600px] bg-white lg:rounded-[2.5rem] lg:shadow-2xl overflow-hidden flex flex-col lg:flex-row lg:shadow-orange-100/50">
 
         {/* Left Side - Brand (Visible on large screens) */}
         <motion.div
@@ -133,21 +133,35 @@ const Login = () => {
         </motion.div>
 
         {/* Right Side - Login Form */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 sm:p-12 lg:p-16 bg-white relative">
+        <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 py-10 pb-32 sm:p-12 lg:p-16 bg-white relative">
 
           <div className="max-w-md w-full mx-auto">
-            {/* Mobile Logo */}
-            <div className="lg:hidden flex justify-center mb-8">
-              <img src="/TodayMyDream.png" alt="TodayMyDream Logo" className="w-24 h-auto" />
-            </div>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-center"
             >
+              <div className="flex p-1.5 bg-gray-50 rounded-2xl mb-8 border border-gray-100">
+                <button
+                  className="w-1/2 py-3 text-sm font-bold text-gray-900 bg-white shadow-sm rounded-xl transition-all"
+                >
+                  Customer
+                </button>
+                <button
+                  onClick={() => navigate('/vendor/login')}
+                  className="w-1/2 py-3 text-sm font-extrabold text-[#F59E0B] hover:text-[#d97706] hover:bg-[#FFFBEB] rounded-xl transition-all flex items-center justify-center gap-2 group"
+                >
+                  Partner / Vendor
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F59E0B] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F59E0B]"></span>
+                  </span>
+                </button>
+              </div>
+
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-              <p className="text-gray-500 mb-8">Please enter your details to sign in.</p>
+              <p className="text-gray-500 mb-6">Please enter your details to sign in.</p>
 
               {error && (
                 <div className="mb-6 bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center gap-2">

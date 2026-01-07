@@ -42,7 +42,8 @@ const Checkout = lazy(() => import('./pages/Checkout'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
 const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'));
-const Home = lazy(() => import('./pages/Home'));
+// Direct import for LCP optimization
+import Home from './pages/Home';
 
 const Policies = lazy(() => import('./pages/Policies'));
 const PaymentStatus = lazy(() => import('./pages/PaymentStatus'));
@@ -192,11 +193,9 @@ function AppContent() {
       {/* Customer Section */}
       <Route element={<CustomerLayout seoData={seoData} />}>
         <Route path="/" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <ErrorBoundary>
-              <Home />
-            </ErrorBoundary>
-          </Suspense>
+          <ErrorBoundary>
+            <Home />
+          </ErrorBoundary>
         } />
         <Route path="/about" element={
           <Suspense fallback={<Loader size="md" text="Loading..." />}>
@@ -360,7 +359,7 @@ function App() {
     <ErrorBoundary>
       <SettingsProvider>
         <CartProvider>
-          <Router>
+          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <AppContent />
           </Router>
         </CartProvider>

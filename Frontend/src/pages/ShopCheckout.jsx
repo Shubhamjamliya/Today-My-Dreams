@@ -224,11 +224,17 @@ const ShopCheckout = () => {
     }
   };
 
-  if (!isAuthenticated) return <AuthPrompt onLogin={() => window.location.reload()} />;
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4">
+        <AuthPrompt onLogin={() => window.location.reload()} />
+      </div>
+    );
+  }
   if (loading) return <Loader text="Processing your order..." />;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] py-12 md:py-20">
+    <div className="min-h-screen bg-[#FAFAFA] py-12 md:py-20 pb-24">
       <SEO title="Checkout | TodayMyDream" />
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">

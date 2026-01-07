@@ -25,31 +25,40 @@ export default defineConfig({
       output: {
         // Simplified chunking to prevent React initialization order issues
         manualChunks: {
-          // Bundle ALL React-related code together to prevent "undefined" errors
-          'react-vendor': [
+          // Core React
+          'react-core': [
             'react',
             'react-dom',
             'react-router-dom',
+            'react-hot-toast',
+            'react-toastify',
+            '@react-oauth/google',
+          ],
+          // UI Libraries & Animations (Heavy)
+          'ui-libs': [
             'framer-motion',
             'lucide-react',
             'react-icons',
             '@heroicons/react',
-            'react-hot-toast',
-            'react-toastify',
             'react-slick',
             'react-responsive-carousel',
-            '@react-oauth/google',
-            'recharts',
+          ],
+          // Material UI (Very Heavy, split it out)
+          'mui': [
             '@mui/material',
             '@emotion/react',
             '@emotion/styled',
           ],
-          // Heavy utilities that don't depend on React initialization
+          // Data Visualization (Heavy, likely only used in Admin)
+          'vis-libs': [
+            'recharts',
+          ],
+          // Utilities
           'utils': [
             'axios',
             'date-fns',
           ],
-          // PDF/Export utilities (lazy loaded anyway)
+          // PDF/Export utilities
           'pdf': [
             'html2canvas',
             'jspdf',

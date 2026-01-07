@@ -165,6 +165,8 @@ const Hero = () => {
               className={`w-full h-full ${isMobile ? 'object-contain' : 'object-cover'}`}
               objectFit={isMobile ? 'contain' : 'cover'}
               priority={true}
+              fetchPriority="high" // Critical for LCP
+              loading="eager" // Ensure eager loading
             />
           )}
 
@@ -175,7 +177,8 @@ const Hero = () => {
             }`}></div>
 
           {/* Content Overlay */}
-          {(currentItem.title || currentItem.description) && (
+          {/* Content Overlay - HIDDEN AS PER REQUEST */}
+          {/* {(currentItem.title || currentItem.description) && (
             <div className={`absolute inset-0 flex px-6 md:px-24 ${isMobile ? 'items-end pb-8' : 'items-center'
               }`}>
               <div className={`max-w-4xl w-full ${isMobile ? 'text-center' : 'text-left'}`}>
@@ -201,7 +204,7 @@ const Hero = () => {
                 </motion.p>
               </div>
             </div>
-          )}
+          )} */}
         </motion.div>
       </AnimatePresence>
 

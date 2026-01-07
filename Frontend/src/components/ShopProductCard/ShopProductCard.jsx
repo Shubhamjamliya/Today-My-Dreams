@@ -39,10 +39,10 @@ const ShopProductCard = ({ product }) => {
   };
 
   const { regularPrice, currentPrice, discountPercentage, rating } = useMemo(() => {
-    const reg = typeof product.regularPrice === 'number' ? product.regularPrice : 0;
-    const curr = typeof product.price === 'number' ? product.price : 0;
+    const reg = parseFloat(product.regularPrice) || 0;
+    const curr = parseFloat(product.price) || 0;
     const disc = reg > curr && reg > 0 ? Math.round(((reg - curr) / reg) * 100) : 0;
-    const rate = product.averageRating || 0;
+    const rate = parseFloat(product.averageRating) || 0;
     return { regularPrice: reg, currentPrice: curr, discountPercentage: disc, rating: rate };
   }, [product.regularPrice, product.price, product.averageRating]);
 
@@ -111,15 +111,16 @@ const ShopProductCard = ({ product }) => {
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -8 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="relative bg-white rounded-3xl overflow-hidden h-full flex flex-col
-                   border border-slate-100/80 
-                   shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]
-                   hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)]
-                   hover:border-slate-200/80
-                   transition-all duration-500 ease-out"
+        className="relative bg-white rounded-xl md:rounded-3xl overflow-hidden h-full flex flex-col
+                   border border-slate-100 
+                   shadow-[0_15px_30px_-10px_rgba(0,0,0,0.08)]
+                   hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)]
+                   hover:border-slate-200
+                   hover:-translate-y-2
+                   transition-all duration-300 ease-out"
       >
         {/* Image Container */}
-        <div className="relative w-full aspect-[4/5] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="relative w-full aspect-square overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
           {/* Main Image */}
           <OptimizedImage
             key={mainImage} // Force re-render on image change
@@ -223,10 +224,10 @@ const ShopProductCard = ({ product }) => {
         </div>
 
         {/* Content Section */}
-        <div className="p-4 flex-1 flex flex-col bg-gradient-to-b from-white to-slate-50/50">
+        <div className="p-3 md:p-4 flex-1 flex flex-col bg-gradient-to-b from-white to-slate-50/50">
           {/* Category Tag */}
           {product.category?.name && (
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">
               {product.category.name}
             </span>
           )}
@@ -238,9 +239,9 @@ const ShopProductCard = ({ product }) => {
             {product.name || 'Unnamed Product'}
           </h3>
 
-          {/* Rating Section */}
+          {/* Rating Section - Compact on Mobile */}
           {hasReviews && (
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-1.5 mb-2">
               <div className="flex items-center gap-0.5">
                 {renderStars(rating)}
               </div>
@@ -253,46 +254,65 @@ const ShopProductCard = ({ product }) => {
             </div>
           )}
 
+          {/* Product Attributes (Material, Size, Color) */}
+          <div className="flex flex-wrap gap-2 mb-2">
+            {(product.material || product.colour) && (
+              <div className="inline-flex items-center px-1.5 py-0.5 rounded border border-slate-100 bg-slate-50 text-[10px] font-medium text-slate-500 capitalize">
+                {product.colour && <span className="mr-1 w-1.5 h-1.5 rounded-full bg-current opacity-70" style={{ color: product.colour?.toLowerCase() }} />}
+                {[product.material, product.size].filter(Boolean).join(' • ')}
+              </div>
+            )}
+            {product.codAvailable && (
+              <div className="inline-flex items-center px-1.5 py-0.5 rounded border border-emerald-100 bg-emerald-50 text-[10px] font-bold text-emerald-700">
+                COD
+              </div>
+            )}
+          </div>
+
           {/* Spacer */}
           <div className="flex-1" />
 
           {/* Price & Action Section */}
-          <div className="flex items-end justify-between gap-3 pt-3 border-t border-slate-100/80">
+          <div className="pt-3 border-t border-slate-100/80 mt-auto flex flex-col gap-3">
             <div className="flex flex-col">
               {discountPercentage > 0 && regularPrice > 0 && (
-                <span className="text-xs text-slate-400 line-through font-medium">
+                <span className="text-[10px] md:text-xs text-slate-400 line-through font-medium">
                   ₹{regularPrice.toLocaleString('en-IN')}
                 </span>
               )}
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+              <div className="flex items-baseline gap-2">
+                <span className="text-lg md:text-2xl font-black text-slate-900 tracking-tight">
                   ₹{currentPrice.toLocaleString('en-IN')}
                 </span>
                 {discountPercentage > 0 && (
-                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                    SAVE ₹{(regularPrice - currentPrice).toLocaleString('en-IN')}
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
+                    {discountPercentage}% OFF
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Add to Cart Button */}
+
+            {/* Add to Cart Button - Full Width */}
             <motion.button
               onClick={handleAddToCart}
               disabled={adding}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative p-3 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl 
-                         shadow-lg shadow-slate-900/20 hover:shadow-xl hover:shadow-slate-900/30
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-900 text-white rounded-xl 
+                         shadow-lg shadow-slate-900/20 hover:shadow-xl hover:shadow-slate-900/30 hover:bg-slate-800
                          transition-all duration-300 overflow-hidden group/btn"
               aria-label="Add to cart"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
                              -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
               {adding ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <ShoppingCart className="w-5 h-5 relative z-10" />
+                <>
+                  <ShoppingCart className="w-4 h-4 relative z-10" />
+                  <span className="text-xs font-bold uppercase tracking-wider relative z-10">Add to Cart</span>
+                </>
               )}
             </motion.button>
           </div>
@@ -311,7 +331,7 @@ const ShopProductCard = ({ product }) => {
                         border-2 border-[#FCD24C]/0 group-hover/card:border-[#FCD24C]/30
                         ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
       </motion.div>
-    </Link>
+    </Link >
   );
 };
 

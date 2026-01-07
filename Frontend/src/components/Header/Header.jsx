@@ -463,7 +463,7 @@ const Header = () => {
             {/* Contact Info Bar */}
             <ContactInfoBar />
 
-            <header className="bg-slate-900 w-full sticky top-0 z-50">
+            <header className="bg-slate-900 w-full fixed md:sticky top-0 z-50">
                 {/* --- PREMIUM DESKTOP HEADER --- */}
                 <div className="hidden md:block">
                     {/* [REMOVED] Tier 1: Utility Bar */}
@@ -730,6 +730,9 @@ const Header = () => {
                     </AnimatePresence>
                 </div>
             </header>
+
+            {/* Spacer for fixed mobile header */}
+            <div className="md:hidden w-full h-[120px]" />
 
             {/* --- Mobile Slide-Out Menu --- */}
             < AnimatePresence >
