@@ -49,7 +49,7 @@ const VendorManagement = () => {
         toast.error(data.message || 'Action failed');
       }
     } catch (err) {
-      toast.error('Connection error');
+      toast.error(err.message || 'Connection error');
     }
   };
 
@@ -80,7 +80,7 @@ const VendorManagement = () => {
         toast.error(data.message || 'Assignment failed');
       }
     } catch (err) {
-      toast.error('Connection error');
+      toast.error(err.message || 'Connection error');
     }
   };
 

@@ -69,7 +69,7 @@ const uploadWithFiles = (url, formData) => {
 
   return axios.post(`${config.API_BASE_URL}${url}`, formData, {
     headers,
-    timeout: 5000, // 5 seconds timeout
+    timeout: 60000, // 60 seconds timeout
   }).catch(error => {
     console.error('=== Upload Error ===');
     console.error('Error response status:', error.response?.status);
@@ -98,7 +98,7 @@ const updateWithFiles = (url, formData) => {
   if (token) headers['Authorization'] = `Bearer ${token}`;
   return axios.put(`${config.API_BASE_URL}${url}`, formData, {
     headers,
-    timeout: 5000, // 5 seconds timeout
+    timeout: 60000, // 60 seconds timeout
   }).catch(error => {
     console.error('=== Update Error ===');
     console.error('Error response status:', error.response?.status);

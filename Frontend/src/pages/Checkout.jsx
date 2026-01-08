@@ -1219,7 +1219,7 @@ const Checkout = () => {
                           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                             {Array.from({ length: 7 }, (_, i) => {
                               const date = new Date();
-                              date.setDate(date.getDate() + i + 1); // Start from tomorrow
+                              date.setDate(date.getDate() + i + 1); // Start from Tomorrow
                               const dateStr = date.toISOString().split('T')[0];
                               const isSelected = scheduledDate === dateStr;
                               const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
@@ -1230,13 +1230,18 @@ const Checkout = () => {
                                 <button
                                   key={dateStr}
                                   type="button"
-                                  onClick={() => setScheduledDate(dateStr)}
+                                  onClick={() => {
+                                    setScheduledDate(dateStr);
+                                    setScheduledTime(''); // Reset time when date changes
+                                  }}
                                   className={`flex-shrink-0 flex flex-col items-center justify-center w-16 h-20 rounded-xl border-2 transition-all duration-300 ${isSelected
                                     ? 'bg-gradient-to-br from-[#FCD24C] to-[#F5A623] border-transparent text-slate-900 shadow-lg shadow-amber-300/40 scale-105'
                                     : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
                                     }`}
                                 >
-                                  <span className={`text-xs font-medium ${isSelected ? 'text-slate-900/70' : 'text-slate-400'}`}>{dayName}</span>
+                                  <span className={`text-xs font-medium ${isSelected ? 'text-slate-900/70' : 'text-slate-400'}`}>
+                                    {dayName}
+                                  </span>
                                   <span className={`text-xl font-bold ${isSelected ? 'text-slate-900' : 'text-slate-700'}`}>{dayNum}</span>
                                   <span className={`text-xs ${isSelected ? 'text-slate-900/70' : 'text-slate-400'}`}>{monthName}</span>
                                 </button>
@@ -1268,14 +1273,31 @@ const Checkout = () => {
                                 { time: '20:00', label: '8:00 PM', icon: '🌙' },
                               ].map((slot) => {
                                 const isSelected = scheduledTime === slot.time;
+
+                                // Check if slot is in the past for "Today"
+                                let isDisabled = false;
+                                const todayStr = new Date().toISOString().split('T')[0];
+                                if (scheduledDate === todayStr) {
+                                  const now = new Date();
+                                  const currentHour = now.getHours();
+                                  const slotHour = parseInt(slot.time.split(':')[0], 10);
+                                  // Disable if slot hour is <= current hour + 1 (1 hour buffer)
+                                  if (slotHour <= currentHour + 1) {
+                                    isDisabled = true;
+                                  }
+                                }
+
                                 return (
                                   <button
                                     key={slot.time}
                                     type="button"
+                                    disabled={isDisabled}
                                     onClick={() => setScheduledTime(slot.time)}
                                     className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl border-2 transition-all duration-300 ${isSelected
                                       ? 'bg-gradient-to-br from-emerald-500 to-green-600 border-transparent text-white shadow-lg shadow-green-300/40'
-                                      : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                                      : isDisabled
+                                        ? 'bg-gray-100 border-gray-100 text-gray-400 opacity-50 cursor-not-allowed'
+                                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
                                       }`}
                                   >
                                     <span className="text-base">{slot.icon}</span>
@@ -1284,6 +1306,10 @@ const Checkout = () => {
                                 );
                               })}
                             </div>
+                            {/* Helper text if no slots available */}
+                            {scheduledDate === new Date().toISOString().split('T')[0] && new Date().getHours() >= 19 && (
+                              <p className="text-xs text-red-500 mt-2 text-center">No slots available for today. Please choose a future date.</p>
+                            )}
                           </div>
                         )}
 

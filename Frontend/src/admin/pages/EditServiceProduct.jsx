@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Upload, X, ImagePlus, AlertCircle, CheckCircle, Plus, Copy, Hash, ArrowLeft } from 'lucide-react';
 import apiService from "../services/api";
 import Loader from "../components/Loader";
+import imageCompression from 'browser-image-compression';
 
 const EditServiceProduct = () => {
   const { id } = useParams();
@@ -203,12 +204,31 @@ const EditServiceProduct = () => {
     e.target.removeEventListener('wheel', handleWheel);
   };
 
-  const handleFile = (file, fieldName) => {
+  const handleFile = async (file, fieldName) => {
     if (file && file.type.startsWith('image/')) {
-      setFiles(prev => ({ ...prev, [fieldName]: file }));
+      // Show preview immediately with original file
       const reader = new FileReader();
       reader.onload = () => setPreviewUrls(prev => ({ ...prev, [fieldName]: reader.result }));
       reader.readAsDataURL(file);
+
+      // Compress image
+      try {
+        console.log(`Original file size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+          fileType: file.type // Preserve original type if possible, or usually defaults to jpeg/png
+        };
+
+        const compressedFile = await imageCompression(file, options);
+        console.log(`Compressed file size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+
+        setFiles(prev => ({ ...prev, [fieldName]: compressedFile }));
+      } catch (error) {
+        console.error("Image compression failed, using original file:", error);
+        setFiles(prev => ({ ...prev, [fieldName]: file }));
+      }
     }
   };
 

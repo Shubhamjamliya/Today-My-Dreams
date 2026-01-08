@@ -81,7 +81,7 @@ const Categories = ({ module, showSubcategoriesOnly }) => {
 
     } catch (error) {
       console.error("Failed to fetch data", error);
-      setError("Failed to load data. Please try again later.");
+      setError(error.response?.data?.message || "Failed to load data. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ const Categories = ({ module, showSubcategoriesOnly }) => {
         await fetchData();
       } catch (error) {
         console.error("Failed to delete", error);
-        setError("Failed to delete item. Please try again later.");
+        setError(error.response?.data?.message || "Failed to delete item. Please try again later.");
       }
     }
   };
@@ -165,7 +165,7 @@ const Categories = ({ module, showSubcategoriesOnly }) => {
       await apiService.updateCategoryOrder(updates);
     } catch (error) {
       console.error("Failed to save category order", error);
-      setError("Failed to save order. Please try again.");
+      setError(error.response?.data?.message || "Failed to save order. Please try again.");
       await fetchData();
     } finally {
       setSavingOrder(false);
@@ -186,7 +186,7 @@ const Categories = ({ module, showSubcategoriesOnly }) => {
       await fetchData(); // Refetch to look clean
     } catch (error) {
       console.error("Failed to toggle status", error);
-      setError("Failed to update status.");
+      setError(error.response?.data?.message || "Failed to update status.");
     }
   };
 

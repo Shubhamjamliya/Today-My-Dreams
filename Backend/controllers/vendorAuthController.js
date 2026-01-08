@@ -5,8 +5,31 @@ const Vendor = require('../models/Vendor');
 exports.register = async (req, res) => {
   try {
     const { name, email, phone, password, cityText, categoryText } = req.body;
+
+    // 1. Basic Validation
+    if (!name || !email || !password || !phone) {
+      return res.status(400).json({ success: false, message: 'Please fill in all required fields (Name, Email, Phone, Password).' });
+    }
+
+    // 2. Email Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: 'Invalid email address format.' });
+    }
+
+    // 3. Phone Validation (Simple 10-digit check)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone.replace(/\D/g, ''))) { // Remove non-digits to check
+      return res.status(400).json({ success: false, message: 'Invalid phone number. Please enter a 10-digit number.' });
+    }
+
+    // 4. Password Strength
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long.' });
+    }
+
     const exists = await Vendor.findOne({ email });
-    if (exists) return res.status(400).json({ success: false, message: 'Email already registered' });
+    if (exists) return res.status(400).json({ success: false, message: 'This email is already registered. Please login.' });
 
     const passwordHash = await bcrypt.hash(password, 10);
 
@@ -34,7 +57,19 @@ exports.register = async (req, res) => {
     });
     res.json({ success: true, message: 'Registered. Await admin approval.', vendorId: v._id });
   } catch (e) {
-    res.status(400).json({ success: false, message: e.message });
+    console.error('Registration error:', e);
+
+    // Handle specific Mongoose errors
+    if (e.code === 11000) {
+      return res.status(400).json({ success: false, message: 'This email is already registered.' });
+    }
+
+    if (e.name === 'ValidationError') {
+      const messages = Object.values(e.errors).map(val => val.message);
+      return res.status(400).json({ success: false, message: messages.join(', ') });
+    }
+
+    res.status(500).json({ success: false, message: 'Server error during registration. Please try again later.' });
   }
 };
 

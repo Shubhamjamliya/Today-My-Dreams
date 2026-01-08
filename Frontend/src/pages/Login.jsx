@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +8,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, loginWithGoogle, error: contextError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -16,6 +17,10 @@ const Login = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Get return url from location state or default to home
+  const from = location.state?.from?.pathname || '/';
+  const previousState = location.state?.from?.state;
 
   // Handler for traditional form submission
   const handleSubmit = async (e) => {
@@ -31,8 +36,7 @@ const Login = () => {
     try {
       await login(loginData);
       toast.success('Welcome back to TodayMyDream!');
-      navigate('/');
-      window.location.reload();
+      navigate(from, { replace: true, state: previousState });
     } catch (err) {
       setError(err.message || contextError || 'Failed to login');
     } finally {
@@ -176,8 +180,7 @@ const Login = () => {
                     onLoginSuccess={async (tokenResponse) => {
                       await loginWithGoogle(tokenResponse.access_token);
                       toast.success('Successfully logged in with Google!');
-                      navigate('/');
-                      window.location.reload();
+                      navigate(from, { replace: true, state: previousState });
                     }}
                     onError={(err) => {
                       setError(err.message || 'Google login failed');

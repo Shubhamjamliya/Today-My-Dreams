@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiService from '../services/api';
+import config from '../config/config';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, MapPin, PlusCircle, ExternalLink, Hash, Copy } from 'lucide-react'; // Import necessary icons
@@ -146,6 +147,7 @@ const Orders = ({ module }) => {
           <table className="w-full min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
                 <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order Name</th>
                 <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
                 <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
@@ -162,6 +164,19 @@ const Orders = ({ module }) => {
                 const orderName = firstItem?.name || 'Order';
                 return (
                   <tr key={order._id} className="hover:bg-gray-50">
+                    <td className="px-2 py-4 whitespace-nowrap">
+                      <div className="h-12 w-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden">
+                        <img
+                          src={config.fixImageUrl(firstItem?.image)}
+                          alt={orderName}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://placehold.co/100x100?text=No+Img';
+                          }}
+                        />
+                      </div>
+                    </td>
                     <td className="px-2 py-4 whitespace-nowrap">
                       <div className="text-sm font-bold text-gray-900">{orderName}</div>
                       <div className="text-xs text-indigo-600 font-semibold">{order.customOrderId || order._id}</div>
@@ -262,7 +277,18 @@ const Orders = ({ module }) => {
                   <div className="space-y-2">
                     {selectedOrder.items.map((item, index) => (
                       <div key={index} className="border rounded-lg p-3 bg-blue-50 border-blue-200">
-                        <div className="flex justify-between items-start">
+                        <div className="flex justify-between items-start gap-3">
+                          <div className="h-16 w-16 flex-shrink-0 rounded-lg bg-white overflow-hidden border border-gray-200">
+                            <img
+                              src={config.fixImageUrl(item.image)}
+                              alt={item.name}
+                              className="h-full w-full object-cover"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = 'https://placehold.co/100x100?text=No+Img';
+                              }}
+                            />
+                          </div>
                           <div className="flex-1">
                             <p className="font-medium text-gray-900">{item.name}</p>
                             <p className="text-xs text-gray-600 mt-1">

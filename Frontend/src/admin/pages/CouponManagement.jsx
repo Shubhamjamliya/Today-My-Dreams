@@ -30,7 +30,7 @@ const CouponManagement = () => {
       const response = await apiService.getCoupons();
       setCoupons(response.data);
     } catch (error) {
-      setError('Failed to fetch coupons');
+      setError(error.response?.data?.message || 'Failed to fetch coupons');
       console.error('Error fetching coupons:', error);
     } finally {
       setLoading(false);
@@ -93,7 +93,7 @@ const CouponManagement = () => {
       await apiService.deleteCoupon(id);
       fetchCoupons();
     } catch (error) {
-      setError('Failed to delete coupon');
+      setError(error.response?.data?.message || 'Failed to delete coupon');
       console.error('Error deleting coupon:', error);
     }
   };

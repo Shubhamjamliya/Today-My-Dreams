@@ -69,6 +69,7 @@ const BirthdaySubcategories = lazy(() => import('./components/BirthdaySubcategor
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -79,7 +80,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;
@@ -258,9 +259,11 @@ function AppContent() {
         } />
 
         <Route path="/checkout" element={
-          <Suspense fallback={<Loader size="md" text="Loading..." />}>
-            <Checkout />
-          </Suspense>
+          <ProtectedRoute>
+            <Suspense fallback={<Loader size="md" text="Loading..." />}>
+              <Checkout />
+            </Suspense>
+          </ProtectedRoute>
         } />
         <Route path="/order-confirmation/:id" element={
           <Suspense fallback={<Loader size="md" text="Loading..." />}>

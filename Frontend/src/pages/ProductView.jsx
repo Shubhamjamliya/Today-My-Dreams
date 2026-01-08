@@ -388,7 +388,14 @@ const ProductView = () => {
             handleAddToCart();
             return;
         }
-        // Always show the add-ons modal for consistent user experience
+
+        // If explicitly no addons exist, proceed directly to checkout
+        if (!addons || addons.length === 0) {
+            handleProceedToCheckout();
+            return;
+        }
+
+        // Otherwise show the add-ons modal
         setShowAddonsModal(true);
     };
 

@@ -74,8 +74,8 @@ const Cities = () => {
             // Admin should see all cities including inactive ones
             const res = await axios.get(`${API_URL}?showAll=true`);
             setCities(res.data.cities || []);
-        } catch {
-            setError('Failed to fetch cities');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Failed to fetch cities');
         } finally {
             setLoading(false);
         }
@@ -116,7 +116,7 @@ const Cities = () => {
             setAllCarouselItems(carouselItems);
         } catch (error) {
             console.error('Error fetching all data:', error);
-            setError('Failed to fetch data');
+            setError(error.response?.data?.message || 'Failed to fetch data');
         }
     };
 
@@ -134,8 +134,8 @@ const Cities = () => {
             setCityCategories(categoriesRes.data.categories || []);
             setCitySubCategories(subCategoriesRes.data.subCategories || []);
             setCityCarouselItems(carouselRes.data.items || []);
-        } catch {
-            setError('Failed to fetch city data');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Failed to fetch city data');
         } finally {
             setLoading(false);
         }
@@ -154,8 +154,8 @@ const Cities = () => {
             await axios.post(API_URL, newCity);
             setNewCity({ name: '', state: 'Bihar', contactNumber: '+917739873442' });
             fetchCities();
-        } catch {
-            setError('Failed to add city');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Failed to add city');
         } finally {
             setLoading(false);
         }
@@ -167,8 +167,8 @@ const Cities = () => {
         try {
             await axios.delete(`${API_URL}/${id}`);
             fetchCities();
-        } catch {
-            setError('Failed to delete city');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Failed to delete city');
         } finally {
             setLoading(false);
         }
@@ -193,8 +193,8 @@ const Cities = () => {
             setEditId(null);
             setEditData({ name: '', state: '', contactNumber: '' });
             fetchCities();
-        } catch {
-            setError('Failed to update city');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Failed to update city');
         } finally {
             setLoading(false);
         }
@@ -206,8 +206,8 @@ const Cities = () => {
             const res = await axios.patch(`${API_URL}/${id}/toggle-status`);
             alert(res.data.message || 'City status updated');
             fetchCities();
-        } catch {
-            setError('Failed to toggle city status');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Failed to toggle city status');
         } finally {
             setLoading(false);
         }
@@ -267,8 +267,8 @@ const Cities = () => {
             setSelectedItems([]);
             fetchCityData(selectedCity._id);
             fetchCities();
-        } catch {
-            setError(`Failed to add ${activeTab}`);
+        } catch (error) {
+            setError(error.response?.data?.message || `Failed to add ${activeTab}`);
         } finally {
             setLoading(false);
         }
@@ -315,8 +315,8 @@ const Cities = () => {
 
             fetchCityData(selectedCity._id);
             fetchCities();
-        } catch {
-            setError(`Failed to remove ${activeTab.slice(0, -1)}`);
+        } catch (error) {
+            setError(error.response?.data?.message || `Failed to remove ${activeTab.slice(0, -1)}`);
         } finally {
             setLoading(false);
         }
@@ -348,8 +348,8 @@ const Cities = () => {
             setImportSourceCity('');
             setImportType('all');
             fetchCities();
-        } catch {
-            setError('Failed to import content');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Failed to import content');
         } finally {
             setLoading(false);
         }

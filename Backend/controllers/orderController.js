@@ -188,14 +188,21 @@ const createOrder = async (req, res) => {
           });
         }
 
-        // Validate that the delivery date is at least 5 days in the future
+        // Validate that the delivery date is at least 1 day in the future
         const minDeliveryDate = new Date();
-        minDeliveryDate.setDate(minDeliveryDate.getDate() + 5);
+        minDeliveryDate.setDate(minDeliveryDate.getDate() + 1);
+        minDeliveryDate.setHours(0, 0, 0, 0); // Reset time to midnight for fair comparison
 
-        if (deliveryDate < minDeliveryDate) {
+        const checkDate = new Date(deliveryDate);
+        checkDate.setHours(0, 0, 0, 0);
+
+        if (checkDate < minDeliveryDate) {
+          // If the user wants "next day only", then "checkDate" (delivery date) must be >= "minDeliveryDate" (tomorrow).
+          // If checkDate is today, it will be less than minDeliveryDate (tomorrow), so it will fail.
+          // This aligns with "next day se rkho sirf" (keep it from next day only).
           return res.status(400).json({
             success: false,
-            message: 'Scheduled delivery must be at least 5 days in the future.'
+            message: 'Scheduled delivery must be at least 1 day in the future.'
           });
         }
 
@@ -221,15 +228,41 @@ const createOrder = async (req, res) => {
     const orderNumber = await Counter.getNextSequence('order');
     const customOrderId = `decorationcelebration${orderNumber}`;
 
-    // Auto-assign to a vendor in the city if available (Simple First-Found Strategy)
+    // Auto-assign to a vendor based on city and category
     let assignedVendorId = null;
     if (cityId) {
       try {
-        const vendor = await Vendor.findOne({ cityId }); // Finds the first vendor in this city
+        let categoryFilter = {};
+
+        // Try to find the category of the first item
+        if (items.length > 0 && items[0].productId) {
+          try {
+            const firstProduct = await Product.findById(items[0].productId);
+            if (firstProduct && firstProduct.category) {
+              categoryFilter = { categoryIds: firstProduct.category };
+              console.log(`Filtering vendors by category: ${firstProduct.category}`);
+            }
+          } catch (prodErr) {
+            console.warn("Could not fetch product for category filtering:", prodErr.message);
+          }
+        }
+
+        // Find a vendor in the city AND matching the category (if identified)
+        let vendor = await Vendor.findOne({ cityId, ...categoryFilter });
+
+        // Fallback: If no vendor matches category, try finding ANY vendor in the city
+        if (!vendor) {
+          console.log("Strict category match failed. Trying city-only fallback.");
+          vendor = await Vendor.findOne({ cityId });
+        }
+
         if (vendor) {
           assignedVendorId = vendor._id;
           console.log(`Auto-assigned order to vendor: ${vendor.name} (${vendor._id})`);
+        } else {
+          console.log("No vendor found in this city. Leaving unassigned.");
         }
+
       } catch (err) {
         console.warn("Failed to auto-assign vendor:", err.message);
       }
@@ -260,6 +293,28 @@ const createOrder = async (req, res) => {
     });
 
     const savedOrder = await newOrder.save();
+
+    // --- Send Confirmation Email (Invoice) to User ---
+    // This was previously missing for standard service orders
+    if (savedOrder && savedOrder.email) {
+      try {
+        await sendOrderConfirmationEmail(savedOrder);
+      } catch (emailErr) {
+        console.error("Failed to send order confirmation email:", emailErr.message);
+      }
+    }
+
+    // --- Notify Assigned Vendor ---
+    if (assignedVendorId) {
+      try {
+        const vendorToNotify = await Vendor.findById(assignedVendorId);
+        if (vendorToNotify && vendorToNotify.email) {
+          sendVendorAssignmentEmail(vendorToNotify, savedOrder);
+        }
+      } catch (notifyErr) {
+        console.error("Failed to notify vendor:", notifyErr.message);
+      }
+    }
 
     // --- Commission and Stock Logic (unchanged) ---
 
@@ -311,7 +366,7 @@ const createOrder = async (req, res) => {
 // Helper to send the NEW redesigned order confirmation email
 async function sendOrderConfirmationEmail(order) {
   const { email, customerName, items, addOns, totalAmount, address, scheduledDelivery, _id, customOrderId, paymentMethod, paymentStatus, upfrontAmount, remainingAmount, transactionId, phone } = order;
-  const subject = '🎉 Congratulations! Your Order is Confirmed - Today My Dream';
+  const subject = `🎉 Order Confirmed & Invoice #${customOrderId} - Today My Dream`;
 
   // Calculate subtotal from items
   const itemsSubtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -720,10 +775,96 @@ async function sendOrderStatusUpdateEmail(order) {
   }
 }
 
+// Notify Vendor of New Assignment
+async function sendVendorAssignmentEmail(vendor, order) {
+  const { name, email } = vendor;
+  const { customOrderId, items, scheduledDelivery, address, paymentMethod, totalAmount } = order;
+
+  const subject = `🚀 New Order Assigned: #${customOrderId} - Action Required!`;
+
+  const deliveryTime = scheduledDelivery
+    ? new Date(scheduledDelivery).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+    : 'Standard Delivery';
+
+  const itemListHtml = items.map(item => `
+    <tr>
+      <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.name}</td>
+      <td style="padding: 8px; border-bottom: 1px solid #eee;">x${item.quantity}</td>
+    </tr>
+  `).join('');
+
+  const htmlBody = `
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+      <div style="background-color: #2c3e50; padding: 20px; text-align: center;">
+        <h2 style="color: #ffffff; margin: 0;">New Order Assignment!</h2>
+        <p style="color: #bdc3c7; margin: 5px 0;">Order #${customOrderId}</p>
+      </div>
+      
+      <div style="padding: 20px;">
+        <p>Hello <strong>${name}</strong>,</p>
+        <p>You have been assigned a new order! Please review the details below and prepare for fulfillment.</p>
+
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 6px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #2c3e50;">📅 Delivery/Schedule</h3>
+          <p style="font-size: 16px; font-weight: bold; color: #e67e22; margin: 0;">${deliveryTime}</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #2c3e50;">📍 Location</h3>
+          <p style="margin: 0;">
+            ${address.street}<br>
+            ${address.city}, ${address.pincode}
+          </p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #2c3e50;">📦 Order Items</h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <thead style="background-color: #ecf0f1;">
+              <tr>
+                <th style="padding: 8px; text-align: left;">Item</th>
+                <th style="padding: 8px; text-align: left;">Qty</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemListHtml}
+            </tbody>
+          </table>
+        </div>
+
+         <div style="background-color: #dff9fb; padding: 15px; border-radius: 6px; border-left: 4px solid #22a6b3;">
+          <p style="margin: 0; color: #333;"><strong>Payment:</strong> <span style="text-transform: capitalize;">${paymentMethod}</span> (₹${totalAmount.toFixed(2)})</p>
+         </div>
+
+         <div style="text-align: center; margin-top: 30px;">
+           <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/vendor/orders" style="background-color: #27ae60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">View Order in Dashboard</a>
+         </div>
+      </div>
+      
+      <div style="background-color: #f5f6fa; padding: 15px; text-align: center; font-size: 12px; color: #7f8c8d;">
+        <p>Today My Dream Partner Team</p>
+      </div>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"Today My Dream Partner" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject,
+      html: htmlBody,
+    });
+    console.log(`Vendor assignment email sent to ${email} for order ${customOrderId}`);
+  } catch (err) {
+    console.error('Error sending vendor assignment email:', err);
+  }
+}
+
 module.exports = {
   createOrder,
   getOrdersByEmail,
   getOrderById,
   sendOrderStatusUpdateEmail,
+  sendVendorAssignmentEmail,
   formatScheduledDelivery,
 };

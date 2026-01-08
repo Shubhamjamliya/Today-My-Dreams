@@ -1,11 +1,42 @@
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 const mongoose = require('mongoose');
 
 exports.list = async (req, res) => {
   try {
-    const cityId = req.vendor.cityId;
-    const orders = await Order.find({ cityId }).sort({ createdAt: -1 });
-    res.json({ success: true, orders });
+    const { cityId, categoryIds } = req.vendor;
+
+    // 1. Fetch all orders for the vendor's city
+    // We lean on .lean() for performance since we'll process arrays manually
+    const allOrdersInCity = await Order.find({ cityId }).sort({ createdAt: -1 }).lean();
+
+    // 2. Filter orders based on vendor's categories
+    const filteredOrders = [];
+
+    for (const order of allOrdersInCity) {
+      // If order has no items, skip it (edge case)
+      if (!order.items || order.items.length === 0) continue;
+
+      // We determine the order's "primary" category from the first item
+      // In a more complex system, an order might have mixed categories,
+      // but typically a service order is for a specific package type.
+      const firstItem = order.items[0];
+
+      if (firstItem.productId) {
+        const product = await Product.findById(firstItem.productId).select('category').lean();
+
+        // If product exists and its category matches one of the vendor's allowed categories
+        if (product && product.category && categoryIds.some(catId => catId.toString() === product.category.toString())) {
+          filteredOrders.push(order);
+        }
+      } else {
+        // If order items don't have product IDs (e.g. custom/legacy), 
+        // we might choose to include or exclude. 
+        // For strict category enforcement, we exclude if we can't verify category.
+      }
+    }
+
+    res.json({ success: true, orders: filteredOrders });
   } catch (error) {
     console.error('List Orders Error:', error);
     res.status(500).json({ success: false, message: 'Server Error' });

@@ -12,7 +12,7 @@ const getStorage = (folderName) => {
     cloudinary: cloudinary,
     params: {
       folder: `todaymydream/${folderName}`,
-      allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'mp4', 'mov'],
+      allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'mp4', 'mov', 'avif', 'heic', 'pdf', 'doc', 'docx'],
       resource_type: 'auto',
     },
   });

@@ -60,7 +60,7 @@ const Videos = () => {
       }
     } catch (error) {
       console.error('Error fetching videos:', error);
-      toast.error('Error fetching videos');
+      toast.error(error.message || 'Error fetching videos');
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,12 @@ const Videos = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           resolve(JSON.parse(xhr.responseText));
         } else {
-          reject(JSON.parse(xhr.responseText));
+          try {
+            const response = JSON.parse(xhr.responseText);
+            reject({ error: response.message || response.error || 'Upload failed' });
+          } catch (e) {
+            reject({ error: 'Upload failed' });
+          }
         }
       };
 
@@ -166,11 +171,11 @@ const Videos = () => {
         fetchVideos();
       } else {
         const error = await response.json();
-        toast.error(error.error || 'Failed to save video');
+        toast.error(error.message || error.error || 'Failed to save video');
       }
     } catch (error) {
       console.error('Error saving video:', error);
-      toast.error('Error saving video');
+      toast.error(error.message || 'Error saving video');
     }
   };
 
@@ -192,11 +197,12 @@ const Videos = () => {
         toast.success('Video deleted successfully');
         fetchVideos();
       } else {
-        toast.error('Failed to delete video');
+        const error = await response.json();
+        toast.error(error.message || error.error || 'Failed to delete video');
       }
     } catch (error) {
       console.error('Error deleting video:', error);
-      toast.error('Error deleting video');
+      toast.error(error.message || 'Error deleting video');
     }
   };
 
