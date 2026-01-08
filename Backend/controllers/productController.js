@@ -808,10 +808,6 @@ const createProductWithFiles = async (req, res) => {
 // Update product with file upload
 const updateProductWithFiles = async (req, res) => {
   try {
-    console.log('=== Update Product Request Received ==='); // DEBUG
-    console.log('Product ID:', req.params.id); // DEBUG
-    console.log('Request Body:', req.body); // DEBUG
-    console.log('Request Files:', req.files ? Object.keys(req.files) : 'No files'); // DEBUG
 
     const id = req.params.id;
     const files = req.files || {};
@@ -827,10 +823,7 @@ const updateProductWithFiles = async (req, res) => {
       imagePaths = existingProduct.image ? [existingProduct.image] : [];
     }
 
-    // Debug: Log removal flags
-    Object.keys(req.body).forEach(k => {
-      if (k.startsWith('remove_')) console.log(`Removal Flag: ${k} = ${req.body[k]}`);
-    });
+
 
     // Check for explicit removal flags from frontend
     // Frontend should send key "remove_image0" = "true" if main image is removed
@@ -839,7 +832,6 @@ const updateProductWithFiles = async (req, res) => {
       const removeKey = i === 0 ? 'remove_mainImage' : `remove_image${i}`;
       if (req.body[removeKey] === 'true') {
         imagePaths[i] = ""; // Clear the path
-        console.log(`Marked image at index ${i} for removal.`);
       }
     }
 

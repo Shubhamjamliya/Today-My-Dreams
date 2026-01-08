@@ -2,9 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://todaymydream.com/api/sitemap.xml
-Sitemap: https://todaymydream.com/api/sitemap-index.xml
-Sitemap: https://todaymydream.com/api/blog/sitemap.xml
+Sitemap: https://todaymydream.com/sitemap.xml
 
 # Disallow admin areas
 Disallow: /admin/

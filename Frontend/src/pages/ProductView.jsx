@@ -289,56 +289,90 @@ const ProductView = () => {
     const productSEO = seoConfig.product(product);
     const isOutOfStock = product.stock === 0 || product.inStock === false;
 
-    // Enhanced SEO data for products
+    // Enhanced SEO data for products with BreadcrumbList
     const enhancedProductSEO = {
         ...productSEO,
         structuredData: {
             "@context": "https://schema.org",
-            "@type": "Product",
-            "name": product.name,
-            "image": product.images || ["/logo.png"],
-            "brand": {
-                "@type": "Brand",
-                "name": "TodayMyDream",
-                "logo": "https://todaymydream.com/TodayMyDream.png"
-            },
-            "category": product.category?.name || "Decoration Materials",
-            "sku": product.sku || product._id,
-            "mpn": product.sku || product._id,
-            "offers": {
-                "@type": "Offer",
-                "price": product.price,
-                "priceCurrency": "INR",
-                "availability": isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
-                "url": `https://todaymydream.com/product/${product._id}`,
-                "seller": {
-                    "@type": "Organization",
-                    "name": "TodayMyDream"
+            "@graph": [
+                {
+                    "@type": "Product",
+                    "name": product.name,
+                    "description": product.utility || `${product.name} - Premium decoration for celebrations`,
+                    "image": product.images || ["/logo.png"],
+                    "brand": {
+                        "@type": "Brand",
+                        "name": "TodayMyDream",
+                        "logo": "https://todaymydream.com/TodayMyDream.png"
+                    },
+                    "category": product.category?.name || "Decoration Materials",
+                    "sku": product.sku || product._id,
+                    "mpn": product.sku || product._id,
+                    "offers": {
+                        "@type": "Offer",
+                        "price": product.price,
+                        "priceCurrency": "INR",
+                        "availability": isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+                        "url": `https://todaymydream.com/product/${product._id}`,
+                        "seller": {
+                            "@type": "Organization",
+                            "name": "TodayMyDream"
+                        },
+                        "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                    },
+                    "aggregateRating": reviews.length > 0 ? {
+                        "@type": "AggregateRating",
+                        "ratingValue": (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1),
+                        "reviewCount": reviews.length,
+                        "bestRating": 5,
+                        "worstRating": 1
+                    } : undefined,
+                    "review": reviews.slice(0, 5).map(review => ({
+                        "@type": "Review",
+                        "author": {
+                            "@type": "Person",
+                            "name": review.userName || "Anonymous"
+                        },
+                        "reviewRating": {
+                            "@type": "Rating",
+                            "ratingValue": review.stars,
+                            "bestRating": 5,
+                            "worstRating": 1
+                        },
+                        "reviewBody": review.reviewDescription,
+                        "datePublished": review.createdAt
+                    }))
                 },
-                "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-            },
-            "aggregateRating": reviews.length > 0 ? {
-                "@type": "AggregateRating",
-                "ratingValue": (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1),
-                "reviewCount": reviews.length,
-                "bestRating": 5,
-                "worstRating": 1
-            } : undefined,
-            "review": reviews.slice(0, 5).map(review => ({
-                "@type": "Review",
-                "author": {
-                    "@type": "Person",
-                    "name": review.userName || "Anonymous"
-                },
-                "reviewRating": {
-                    "@type": "Rating",
-                    "ratingValue": review.stars,
-                    "bestRating": 5,
-                    "worstRating": 1
-                },
-                "reviewBody": review.reviewDescription,
-                "datePublished": review.createdAt
-            }))
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        {
+                            "@type": "ListItem",
+                            "position": 1,
+                            "name": "Home",
+                            "item": "https://todaymydream.com/"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 2,
+                            "name": "Shop",
+                            "item": "https://todaymydream.com/shop"
+                        },
+                        product.category?.name ? {
+                            "@type": "ListItem",
+                            "position": 3,
+                            "name": product.category.name,
+                            "item": `https://todaymydream.com/shop?category=${encodeURIComponent(product.category.name)}`
+                        } : null,
+                        {
+                            "@type": "ListItem",
+                            "position": product.category?.name ? 4 : 3,
+                            "name": product.name,
+                            "item": `https://todaymydream.com/product/${product._id}`
+                        }
+                    ].filter(Boolean)
+                }
+            ]
         }
     };
 
@@ -633,7 +667,7 @@ const ProductView = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.4, ease: "easeOut" }}
                                     src={productImages[selectedImage]}
-                                    alt={product.name}
+                                    alt={`${product.name} - ${product.utility || 'Decoration for birthday, wedding, anniversary celebrations'}`}
                                     className="w-full h-full object-contain max-h-[500px] cursor-zoom-in p-6 transition-transform duration-500 group-hover:scale-[1.02]"
                                     onClick={handleImageClick}
                                     onError={e => {
@@ -694,7 +728,7 @@ const ProductView = () => {
                                         >
                                             <img
                                                 src={img}
-                                                alt={`${product.name} view ${idx + 1}`}
+                                                alt={`${product.name} - Image ${idx + 1} - ${product.category?.name || 'Decoration'} product`}
                                                 className="w-full h-full object-cover"
                                                 onError={e => { e.target.src = 'https://placehold.co/100x100/f3f4f6/9ca3af?text=...'; }}
                                             />
