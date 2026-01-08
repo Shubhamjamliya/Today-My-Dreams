@@ -7,7 +7,7 @@ export const seoConfig = {
     description: "Shop premium birthday, wedding, and anniversary decoration materials at Today My Dream. Balloons, banners, lights, party props, and celebration supplies for every special event.",
     keywords: "birthday decoration, wedding decoration, anniversary decoration, party supplies, balloons, banners, event decor, celebration materials, party props, decoration materials",
     url: "https://todaymydream.com/",
-    image: "/logo.png",
+    image: "/TodayMyDream.png",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "WebSite",
@@ -19,7 +19,7 @@ export const seoConfig = {
         "@type": "Brand",
         "name": "Today My Dream",
         "alternateName": "Today My Dream",
-        "logo": "https://todaymydream.com/logo.png",
+        "logo": "https://todaymydream.com/TodayMyDream.png",
         "slogan": "Celebration Made Beautiful with Today My Dream"
       },
       "potentialAction": {
@@ -35,7 +35,7 @@ export const seoConfig = {
     description: "Browse our premium collection of decoration materials for birthdays, weddings, anniversaries, and celebrations. Balloons, banners, lights, and party props.",
     keywords: "decoration materials shop, birthday decoration supplies, wedding decor materials, anniversary celebration items, party balloons, banners, lights, celebration props",
     url: "https://todaymydream.com/shop",
-    image: "/logo.png",
+    image: "/TodayMyDream.png",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
@@ -64,7 +64,7 @@ export const seoConfig = {
     description: "Contact Today My Dream for decoration materials, celebration supplies, and customer support. Get help with birthday, wedding, and anniversary decoration needs.",
     keywords: "contact today my dream, decoration materials support, celebration supplies help, birthday decoration inquiry, wedding decor contact, anniversary supplies support",
     url: "https://todaymydream.com/contact",
-    image: "/logo.png",
+    image: "/TodayMyDream.png",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "ContactPage",
@@ -78,14 +78,14 @@ export const seoConfig = {
     description: product.description || `Shop this ${product.name} decoration material for birthdays, weddings, anniversaries, and celebrations at Today My Dream.`,
     keywords: `${product.name}, decoration materials, birthday decoration supplies, wedding decor items, anniversary celebration materials, party supplies, celebration props`,
     url: `https://todaymydream.com/product/${product._id || product.id}`,
-    image: product.images?.[0] || "/logo.png",
+    image: product.images?.[0] || "/TodayMyDream.png",
     type: "product",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "Product",
       "name": product.name,
       "description": product.description || `Decoration material: ${product.name}`,
-      "image": product.images || ["/logo.png"],
+      "image": product.images || ["/TodayMyDream.png"],
       "brand": {
         "@type": "Brand",
         "name": "Today My Dream"
@@ -105,7 +105,7 @@ export const seoConfig = {
     description: "Login to your Today My Dream account to shop, track, and manage your decoration materials orders for birthdays, weddings, anniversaries, and celebrations.",
     keywords: "login, today my dream account, user login, decoration materials login, celebration supplies account",
     url: "https://todaymydream.com/login",
-    image: "/logo.png"
+    image: "/TodayMyDream.png"
   },
 
   signup: {
@@ -113,7 +113,7 @@ export const seoConfig = {
     description: "Create your Today My Dream account to shop premium decoration materials and celebration supplies for birthdays, weddings, anniversaries, and special events.",
     keywords: "sign up, decoration materials shopping, birthday decoration signup, celebration supplies registration",
     url: "https://todaymydream.com/signup",
-    image: "/logo.png"
+    image: "/TodayMyDream.png"
   },
 
   policies: {
@@ -121,7 +121,7 @@ export const seoConfig = {
     description: "Read Today My Dream's policies, terms of service, privacy policy, and shopping information for decoration materials and celebration supplies.",
     keywords: "policies, terms of service, privacy policy, decoration materials shopping policy, refund policy",
     url: "https://todaymydream.com/policies",
-    image: "/logo.png"
+    image: "/TodayMyDream.png"
   },
 
 
@@ -143,7 +143,7 @@ export const seoConfig = {
         "name": "Today My Dream",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://todaymydream.com/logo.png"
+          "url": "https://todaymydream.com/TodayMyDream.png"
         }
       },
       "mainEntityOfPage": {
@@ -164,7 +164,7 @@ export const seoConfig = {
     description: "Download the Today My Dream app for the best shopping experience. Get exclusive offers, track orders, and shop for birthday, wedding, and anniversary decoration materials anytime, anywhere.",
     keywords: "today my dream app, download today my dream, decoration shopping app, party supplies app, buy decorations online app, android app",
     url: "https://todaymydream.com/app",
-    image: "/logo.png",
+    image: "/TodayMyDream.png",
     structuredData: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
@@ -186,5 +186,5 @@ export const defaultSEO = {
   description: "Shop premium decoration materials for birthdays, weddings, anniversaries, and celebrations. Balloons, banners, lights, and party props for every special moment.",
   keywords: "decoration materials, birthday decoration, wedding decor, anniversary celebration, party supplies, celebration materials",
   url: "https://todaymydream.com",
-  image: "/logo.png"
+  image: "/TodayMyDream.png"
 };

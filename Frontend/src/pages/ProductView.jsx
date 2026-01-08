@@ -299,7 +299,7 @@ const ProductView = () => {
                     "@type": "Product",
                     "name": product.name,
                     "description": product.utility || `${product.name} - Premium decoration for celebrations`,
-                    "image": product.images || ["/logo.png"],
+                    "image": product.images || ["/TodayMyDream.png"],
                     "brand": {
                         "@type": "Brand",
                         "name": "TodayMyDream",

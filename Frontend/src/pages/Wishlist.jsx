@@ -8,7 +8,7 @@ const Wishlist = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <Link to="/">
-            <img src="/logo.png" alt="Volcanic Neon" className="mx-auto h-20 w-auto mb-3" />
+            <img src="/TodayMyDream.png" alt="Today My Dream" className="mx-auto h-20 w-auto mb-3" />
           </Link>
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">My Wishlist</h2>
         </div>

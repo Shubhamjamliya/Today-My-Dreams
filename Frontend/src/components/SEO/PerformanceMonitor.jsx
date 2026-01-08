@@ -9,8 +9,8 @@ const PerformanceMonitor = () => {
         const lcpObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           const lastEntry = entries[entries.length - 1];
-         
-          
+
+
           // Send to analytics (replace with your analytics service)
           if (window.gtag) {
             window.gtag('event', 'web_vitals', {
@@ -26,8 +26,8 @@ const PerformanceMonitor = () => {
         const fidObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach((entry) => {
-          
-            
+
+
             if (window.gtag) {
               window.gtag('event', 'web_vitals', {
                 event_category: 'Web Vitals',
@@ -48,8 +48,8 @@ const PerformanceMonitor = () => {
               clsValue += entry.value;
             }
           });
-      
-          
+
+
           if (window.gtag) {
             window.gtag('event', 'web_vitals', {
               event_category: 'Web Vitals',
@@ -68,9 +68,9 @@ const PerformanceMonitor = () => {
         const navigation = performance.getEntriesByType('navigation')[0];
         const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
         const domContentLoaded = navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart;
-        
-     
-        
+
+
+
         if (window.gtag) {
           window.gtag('event', 'timing_complete', {
             name: 'load',
@@ -83,7 +83,7 @@ const PerformanceMonitor = () => {
     // Preload critical resources
     const preloadCriticalResources = () => {
       const criticalResources = [
-        '/logo.png',
+        '/TodayMyDream.png',
         '/eastern.jpg'
       ];
 
@@ -91,8 +91,8 @@ const PerformanceMonitor = () => {
         const link = document.createElement('link');
         link.rel = 'preload';
         link.href = resource;
-        link.as = resource.endsWith('.png') ? 'image' : 
-                 resource.endsWith('.jpg') ? 'image' : 'image';
+        link.as = resource.endsWith('.png') ? 'image' :
+          resource.endsWith('.jpg') ? 'image' : 'image';
         document.head.appendChild(link);
       });
     };

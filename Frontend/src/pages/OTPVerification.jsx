@@ -44,7 +44,7 @@ const OTPVerification = () => {
       };
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
@@ -76,7 +76,7 @@ const OTPVerification = () => {
           const data = JSON.parse(registrationData);
           password = data.password;
           email = data.email || '';
-        } catch (e) {}
+        } catch (e) { }
       }
       // Try to get email from location.state as fallback
       if (!email && location.state?.email) {
@@ -150,7 +150,7 @@ const OTPVerification = () => {
       <div className="w-full lg:w-1/2 flex items-start lg:items-center justify-start lg:justify-center px-4 sm:px-6 lg:px-8 pt-8 lg:pt-0">
         <div className="w-full max-w-md space-y-5 p-8 sm:p-10 bg-white shadow-2xl rounded-xl border border-gray-100">
           <div className="text-center">
-            <img src="/logo.png" alt="Riko Craft" className="mx-auto h-20 w-auto mb-3" />
+            <img src="/TodayMyDream.png" alt="Today My Dream" className="mx-auto h-20 w-auto mb-3" />
             <h2 className="text-3xl font-bold tracking-tight text-primary">
               Verify Your Phone
             </h2>
@@ -193,7 +193,7 @@ const OTPVerification = () => {
               type="submit"
               disabled={isLoading || !otp || otp.length < 4}
               className="group relative w-full flex justify-center py-2.5 px-5 border border-transparent text-sm font-medium rounded-md text-white overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ 
+              style={{
                 backgroundImage: 'url(/footer.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
