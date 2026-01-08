@@ -343,7 +343,7 @@ const EditServiceProduct = () => {
                 alt={`Preview ${label}`}
                 className="w-full h-full object-contain rounded-lg"
               />
-              <button type="button" onClick={() => removeImage(fieldName)} className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600">
+              <button type="button" onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeImage(fieldName); }} className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 z-10 relative">
                 <X size={16} />
               </button>
             </div>
