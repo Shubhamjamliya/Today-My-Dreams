@@ -96,7 +96,7 @@ const updateWithFiles = (url, formData) => {
   // Do not set Content-Type manually; let axios/browser handle the multipart boundary
   const headers = {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
-  return axios.put(`${config.API_BASE_URL}${url}`, formData, {
+  return axios.patch(`${config.API_BASE_URL}${url}`, formData, {
     headers,
     timeout: 60000, // 60 seconds timeout
   }).catch(error => {

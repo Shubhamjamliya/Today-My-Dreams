@@ -822,9 +822,25 @@ const updateProductWithFiles = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    let imagePaths = existingProduct.images || [];
+    let imagePaths = existingProduct.images ? [...existingProduct.images] : [];
     if (!Array.isArray(imagePaths)) {
       imagePaths = existingProduct.image ? [existingProduct.image] : [];
+    }
+
+    // Debug: Log removal flags
+    Object.keys(req.body).forEach(k => {
+      if (k.startsWith('remove_')) console.log(`Removal Flag: ${k} = ${req.body[k]}`);
+    });
+
+    // Check for explicit removal flags from frontend
+    // Frontend should send key "remove_image0" = "true" if main image is removed
+    // keys "remove_image1" .. "remove_image9"
+    for (let i = 0; i <= 9; i++) {
+      const removeKey = i === 0 ? 'remove_mainImage' : `remove_image${i}`;
+      if (req.body[removeKey] === 'true') {
+        imagePaths[i] = ""; // Clear the path
+        console.log(`Marked image at index ${i} for removal.`);
+      }
     }
 
     if (files.mainImage && files.mainImage[0]) {
@@ -836,6 +852,18 @@ const updateProductWithFiles = async (req, res) => {
         imagePaths[i] = files[`image${i}`][0].path;
       }
     }
+
+    // Filter out empty strings to clean up the array if desired, 
+    // OR keep them empty if position matters. 
+    // Usually position matters for "Image 1, Image 2". 
+    // But if position 0 is Main, we cannot have it empty effectively unless we shift or allow no image.
+    // If imagePaths[0] becomes empty, `imagePaths[0]` logic later sets `image: imagePaths[0]`.
+    // We should probably allow it to be empty or handle it.
+
+    // Do NOT filter out empty strings. We want to preserve slot indices (0=Main, 1=Image1, etc.)
+    // imagePaths = imagePaths.filter(path => path && path.trim().length > 0);
+
+    const firstValidImage = imagePaths[0] || imagePaths.find(img => img && img.length > 0) || "";
 
     const updatedProductData = {
       name: productData.name || existingProduct.name,
@@ -851,8 +879,8 @@ const updateProductWithFiles = async (req, res) => {
       excluded: productData.excluded ? JSON.parse(productData.excluded) : existingProduct.excluded,
       price: productData.price ? parseFloat(productData.price) : existingProduct.price,
       regularPrice: productData.regularPrice ? parseFloat(productData.regularPrice) : existingProduct.regularPrice,
-      image: imagePaths[0],
-      images: imagePaths,
+      image: firstValidImage, // Primary image
+      images: imagePaths,     // Preserves sparse array/empty slots
       inStock: productData.inStock !== undefined ? (productData.inStock === 'true') : existingProduct.inStock,
       isBestSeller: productData.isBestSeller !== undefined ? (productData.isBestSeller === 'true') : existingProduct.isBestSeller,
       isTrending: productData.isTrending !== undefined ? (productData.isTrending === 'true') : existingProduct.isTrending,

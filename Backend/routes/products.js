@@ -74,6 +74,7 @@ router.get("/:id", getProduct);
 // Removed transformPathsToUrls middleware as Cloudinary handles it
 router.post("/", authenticateToken, isAdmin, handleUpload, createProductWithFiles);
 router.put("/:id", authenticateToken, isAdmin, handleUpload, updateProductWithFiles);
+router.patch("/:id", authenticateToken, isAdmin, handleUpload, updateProductWithFiles);
 router.patch("/:id/sections", authenticateToken, isAdmin, updateProductSections);
 router.delete("/:id", authenticateToken, isAdmin, deleteProduct);
 

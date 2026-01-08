@@ -291,7 +291,12 @@ const EditServiceProduct = () => {
       }
     });
     Object.keys(files).forEach(key => {
-      if (files[key]) formData.append(key, files[key]);
+      if (files[key]) {
+        formData.append(key, files[key]);
+      } else if (!previewUrls[key]) {
+        // Only mark as removed if there is no preview URL (meaning it's cleared)
+        formData.append(`remove_${key}`, 'true');
+      }
     });
 
     try {
@@ -321,43 +326,7 @@ const EditServiceProduct = () => {
     }
   };
 
-  const renderFileInput = (fieldName, label, required = false) => {
-    const hasPreview = previewUrls[fieldName] || files[fieldName];
-    const isDragging = dragOver[fieldName];
-    return (
-      <div className="col-span-1">
-        <label className="block font-medium mb-2 text-gray-700">
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <div
-          className={`relative h-48 rounded-lg border-2 border-dashed transition-all duration-200 ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-            } ${hasPreview ? 'bg-gray-50' : 'bg-white'}`}
-          onDrop={(e) => handleDrop(e, fieldName)}
-          onDragOver={(e) => handleDragOver(e, fieldName)}
-          onDragLeave={(e) => handleDragLeave(e, fieldName)}
-        >
-          {hasPreview ? (
-            <div className="relative h-full">
-              <img
-                src={previewUrls[fieldName]}
-                alt={`Preview ${label}`}
-                className="w-full h-full object-contain rounded-lg"
-              />
-              <button type="button" onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeImage(fieldName); }} className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 z-10 relative">
-                <X size={16} />
-              </button>
-            </div>
-          ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
-              <ImagePlus className="w-12 h-12 mb-2" />
-              <p className="text-sm">Drag & drop or click</p>
-            </div>
-          )}
-          <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, fieldName)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-        </div>
-      </div>
-    );
-  };
+
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -534,12 +503,37 @@ const EditServiceProduct = () => {
 
               <div className="bg-gray-50 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Product Images</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                  {renderFileInput('mainImage', 'Main Image', true)}
-                  {renderFileInput('image1', 'Additional Image 1')}
-                  {renderFileInput('image2', 'Additional Image 2')}
-                  {renderFileInput('image3', 'Additional Image 3')}
-                  {renderFileInput('image4', 'Additional Image 4')}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {/* Main Image */}
+                  <div className="col-span-2 md:col-span-2">
+                    <ImageUploadBox
+                      fieldName="mainImage"
+                      label="Main Image"
+                      required={true}
+                      isDragging={dragOver.mainImage}
+                      previewUrl={previewUrls.mainImage}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onFileChange={handleFileChange}
+                      onRemove={removeImage}
+                    />
+                  </div>
+                  {/* Additional Images 1-5 */}
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <ImageUploadBox
+                      key={num}
+                      fieldName={`image${num}`}
+                      label={`Image ${num}`}
+                      isDragging={dragOver[`image${num}`]}
+                      previewUrl={previewUrls[`image${num}`]}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onFileChange={handleFileChange}
+                      onRemove={removeImage}
+                    />
+                  ))}
                 </div>
               </div>
 
@@ -568,5 +562,55 @@ const EditServiceProduct = () => {
     </div>
   );
 };
+
+const ImageUploadBox = ({
+  fieldName,
+  label,
+  required = false,
+  isDragging,
+  previewUrl,
+  onDrop,
+  onDragOver,
+  onDragLeave,
+  onFileChange,
+  onRemove
+}) => {
+  const hasPreview = !!previewUrl;
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <div
+        className={`relative h-32 md:h-40 rounded-lg border-2 border-dashed transition-all duration-200 ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+          } ${hasPreview ? 'bg-gray-50' : 'bg-white'}`}
+        onDrop={(e) => onDrop(e, fieldName)}
+        onDragOver={(e) => onDragOver(e, fieldName)}
+        onDragLeave={(e) => onDragLeave(e, fieldName)}
+      >
+        {hasPreview ? (
+          <div className="relative h-full">
+            <img
+              src={previewUrl}
+              alt={`Preview ${label}`}
+              className="w-full h-full object-contain rounded-lg"
+            />
+            <button type="button" onClick={(e) => { e.stopPropagation(); e.preventDefault(); onRemove(fieldName); }} className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 z-10 relative">
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
+            <ImagePlus className="w-8 h-8 md:w-10 md:h-10 mb-2" />
+            <p className="text-xs text-center px-1">Click to add</p>
+          </div>
+        )}
+        <input type="file" accept="image/*" onChange={(e) => onFileChange(e, fieldName)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+      </div>
+    </div>
+  );
+};
+
 
 export default EditServiceProduct;
