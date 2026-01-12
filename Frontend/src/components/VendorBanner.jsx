@@ -55,7 +55,7 @@ const VendorBanner = () => {
                 transition={{ delay: 0.2 }}
                 className="text-lg text-slate-300 md:max-w-xl"
               >
-                Join thousands of successful businesses on Today My Dream. Expand your reach, manage bookings effortlessly, and grow your revenue.
+                Join thousands of successful businesses on Today My Dream. Expand your reach for Birthday, Wedding, and Event services, manage bookings effortlessly, and grow your revenue.
               </motion.p>
 
               <motion.div

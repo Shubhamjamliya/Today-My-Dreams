@@ -3,24 +3,50 @@ import { slugify } from '../utils/slugify';
 
 export const seoConfig = {
   home: {
-    title: "Today My Dream - Birthday, Wedding & Anniversary Decoration Materials",
-    description: "Shop premium birthday, wedding, and anniversary decoration materials at Today My Dream. Balloons, banners, lights, party props, and celebration supplies for every special event.",
-    keywords: "birthday decoration, wedding decoration, anniversary decoration, party supplies, balloons, banners, event decor, celebration materials, party props, decoration materials",
+    title: "Today My Dream - Event Decoration Services & Celebration Materials",
+    description: "Book professional decoration services with Today My Dream. We specialize in Birthday, Wedding, Haldi, Mehndi, Baby Shower, Annaprashan, and Kids Birthday decorations. Shop party supplies or join as a partner vendor.",
+    keywords: "Today My Dream, todaymydream, birthday decoration, haldi decoration, mehndi decoration, anniversary decoration, baby shower decoration, baby welcome, diwali festival, shop decoration, annaprashan, kids birthday decoration, event decoration services, partner vendor",
     url: "https://todaymydream.com/",
     image: "/TodayMyDream.png",
     structuredData: {
       "@context": "https://schema.org",
-      "@type": "WebSite",
+      "@type": "LocalBusiness",
       "name": "Today My Dream",
-      "alternateName": ["Today My Dream Decoration", "Celebration Materials", "Party Supplies"],
+      "image": "https://todaymydream.com/TodayMyDream.png",
       "url": "https://todaymydream.com",
-      "description": "Premium decoration materials and celebration supplies for birthdays, weddings, anniversaries, and all special events.",
-      "brand": {
-        "@type": "Brand",
-        "name": "Today My Dream",
-        "alternateName": "Today My Dream",
-        "logo": "https://todaymydream.com/TodayMyDream.png",
-        "slogan": "Celebration Made Beautiful with Today My Dream"
+      "telephone": "+91-98765-43210",
+      "priceRange": "₹₹",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IN"
+      },
+      "description": "Professional event decoration services for Birthdays, Weddings, Haldi, Mehndi, Baby Showers, Anniversaries, and corporate events. We also provide premium party supplies and vendor partnership opportunities.",
+      "founders": [
+        {
+          "@type": "Person",
+          "name": "Today My Dream Team"
+        }
+      ],
+      "areaServed": {
+        "@type": "Country",
+        "name": "India"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Event Decoration Services",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Birthday Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Wedding Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Haldi Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Mehndi Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Anniversary Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Baby Shower Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Baby Welcome Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Diwali Festival Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Shop Opening Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Annaprashan Decoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Kids Birthday Decoration" } }
+        ]
       },
       "potentialAction": {
         "@type": "SearchAction",
@@ -183,8 +209,8 @@ export const seoConfig = {
 // Default SEO fallback
 export const defaultSEO = {
   title: "Today My Dream - Premium Decoration Materials & Celebration Supplies",
-  description: "Shop premium decoration materials for birthdays, weddings, anniversaries, and celebrations. Balloons, banners, lights, and party props for every special moment.",
-  keywords: "decoration materials, birthday decoration, wedding decor, anniversary celebration, party supplies, celebration materials",
+  description: "Book expert event decoration for Birthdays, Weddings, Haldi, Mehndi, and more. Shop party supplies or join as a partner vendor at Today My Dream.",
+  keywords: "event decoration, birthday decor, haldi, mehndi, baby shower, anniversary, festival decoration, party supplies, vendor partnership",
   url: "https://todaymydream.com",
   image: "/TodayMyDream.png"
 };

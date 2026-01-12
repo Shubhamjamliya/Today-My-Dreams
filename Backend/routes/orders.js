@@ -67,7 +67,9 @@ router.put("/:id/status", authenticateToken, isAdmin, async (req, res) => {
     const { orderStatus } = req.body;
 
     // Validate status
-    if (!['processing', 'confirmed', 'manufacturing', 'shipped', 'delivered'].includes(orderStatus)) {
+    // Validate status
+    const validStatuses = ['processing', 'confirmed', 'service_scheduled', 'service_in_progress', 'service_completed', 'cancelled', 'manufacturing', 'shipped', 'delivered'];
+    if (!validStatuses.includes(orderStatus)) {
       return res.status(400).json({ success: false, message: 'Invalid order status' });
     }
 
@@ -118,7 +120,9 @@ router.put("/:id", authenticateToken, isAdmin, async (req, res) => {
     const updateData = req.body;
 
     // Validate orderStatus if provided
-    if (updateData.orderStatus && !['processing', 'confirmed', 'manufacturing', 'shipped', 'delivered'].includes(updateData.orderStatus)) {
+    // Validate orderStatus if provided
+    const validStatuses = ['processing', 'confirmed', 'service_scheduled', 'service_in_progress', 'service_completed', 'cancelled', 'manufacturing', 'shipped', 'delivered'];
+    if (updateData.orderStatus && !validStatuses.includes(updateData.orderStatus)) {
       return res.status(400).json({ success: false, message: 'Invalid order status' });
     }
 

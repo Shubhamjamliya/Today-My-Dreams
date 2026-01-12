@@ -312,7 +312,10 @@ const apiService = {
   },
   getOrderById: (id) => api.get(`/api/orders/${id}`),
   updateOrder: (id, orderData) => api.put(`/api/orders/${id}`, orderData),
-  updateOrderStatus: (id, orderStatus) => api.put(`/api/orders/${id}/status`, { orderStatus }),
+  updateOrderStatus: (id, orderStatus, module) => {
+    const url = module === 'shop' ? `/api/shop/orders/${id}/status` : `/api/orders/${id}/status`;
+    return api.put(url, { orderStatus });
+  },
   // Sub-Category Functions
 
   getSubCategories: (categoryId, params = {}) => {

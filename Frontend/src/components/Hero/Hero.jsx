@@ -129,6 +129,9 @@ const Hero = () => {
 
   return (
     <div className="relative w-full h-[200px] md:h-[85vh] bg-slate-900 overflow-hidden group">
+      {/* SEO: Primary Heading for Brand Ranking */}
+      <h1 className="sr-only">Today My Dream - Event Decoration Services | Birthdays, Weddings, Haldi & More</h1>
+
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.div
           key={currentIndex}
