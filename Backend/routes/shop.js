@@ -17,6 +17,7 @@ const {
   updateShopProduct,
   deleteShopProduct,
   getShopOrders,
+  updateShopOrderStatus,
   getNestedShopCategories
 } = require('../controllers/shopController');
 
@@ -71,5 +72,6 @@ router.delete("/products/:id", deleteShopProduct);
 
 // --- Shop Orders Routes ---
 router.get("/orders", getShopOrders);
+router.put("/orders/:id/status", updateShopOrderStatus);
 
 module.exports = router;

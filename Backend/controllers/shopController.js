@@ -227,6 +227,32 @@ const getShopOrders = async (req, res) => {
   }
 };
 
+const updateShopOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { orderStatus } = req.body;
+
+    const validStatuses = ['processing', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+    if (!validStatuses.includes(orderStatus)) {
+      return res.status(400).json({ message: "Invalid order status" });
+    }
+
+    const order = await ShopOrder.findByIdAndUpdate(
+      id,
+      { orderStatus },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ message: "Shop order not found" });
+    }
+
+    res.json({ message: "Shop order status updated", order });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating shop order status", error: error.message });
+  }
+};
+
 const deleteShopProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -255,5 +281,6 @@ module.exports = {
   updateShopProduct,
   deleteShopProduct,
   getShopOrders,
+  updateShopOrderStatus,
   getNestedShopCategories
 };

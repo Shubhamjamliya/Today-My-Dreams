@@ -1220,17 +1220,18 @@
     "id": "695f6140337ef3bcc037b808"
   },
   {
+    "address": {
+      "street": "428-A Sarvsampanna Nagar",
+      "pincode": "465116",
+      "country": "India"
+    },
+    "_id": "695f62621d1df867b19b8410",
     "customOrderId": "decorationcelebration34",
     "customerName": "Sujal Jamliya",
     "email": "jamliyasujal@gmail.com",
     "phone": "7896541236",
     "cityId": "695be27ea10946e48c101f90",
     "assignedVendorId": "695f49b9f7a65a961a336141",
-    "address": {
-      "street": "428-A Sarvsampanna Nagar",
-      "pincode": "465116",
-      "country": "India"
-    },
     "scheduledDelivery": null,
     "items": [
       {
@@ -1244,7 +1245,7 @@
     "addOns": [],
     "totalAmount": 1099,
     "paymentMethod": "cod",
-    "orderStatus": "processing",
+    "orderStatus": "service_scheduled",
     "paymentStatus": "pending",
     "upfrontAmount": 0,
     "remainingAmount": 1099,
@@ -1253,9 +1254,8 @@
     "shippingCost": 0,
     "codExtraCharge": 0,
     "serviceFee": 100,
-    "_id": "695f62621d1df867b19b8410",
     "createdAt": "2026-01-08T07:53:06.613Z",
-    "updatedAt": "2026-01-08T07:53:06.613Z",
+    "updatedAt": "2026-01-12T18:14:08.479Z",
     "__v": 0,
     "id": "695f62621d1df867b19b8410"
   }

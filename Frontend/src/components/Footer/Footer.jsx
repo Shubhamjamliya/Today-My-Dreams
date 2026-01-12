@@ -164,7 +164,7 @@ const Footer = () => {
           {/* Column 1: Brand (Span 3) */}
           <div className="col-span-2 md:col-span-4 lg:col-span-3">
             <Link to="/" className="inline-block">
-              <img src={logo} alt="TodayMyDream" className="h-10 mb-3 object-contain opacity-90 hover:opacity-100 transition-opacity" />
+              <img src={logo} alt="Today My Dream" className="h-10 mb-3 object-contain opacity-90 hover:opacity-100 transition-opacity" />
             </Link>
             <p className="text-xs leading-relaxed text-slate-500 mb-4 max-w-xs">
               Your premier destination for booking bespoke decorations. Making life's moments unforgettable, one event at a time.

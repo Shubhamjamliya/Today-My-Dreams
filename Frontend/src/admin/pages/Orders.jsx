@@ -63,7 +63,7 @@ const Orders = ({ module }) => {
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       setUpdatingOrder(orderId);
-      await apiService.updateOrderStatus(orderId, newStatus);
+      await apiService.updateOrderStatus(orderId, newStatus, module);
       setSuccess(`Order status updated to ${newStatus} successfully!`);
       await fetchOrders();
       setTimeout(() => setSuccess(null), 3000);

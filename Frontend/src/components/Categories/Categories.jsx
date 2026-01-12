@@ -182,7 +182,7 @@ const Categories = () => {
         >
           <div className="max-w-xl mx-auto">
             <h2 className="text-2xl md:text-4xl font-serif font-bold text-[#4A1D54] mb-2 tracking-wide">
-              Make Every Occasion Extra Special
+              Make Every Occasion Extra Special with Today My Dream
             </h2>
             {/* Optional subtitle if needed, or just spacers */}
           </div>
