@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const dns = require("node:dns").promises;
 const cookieParser = require("cookie-parser");
 const shopRoutes = require("./routes/shop");
 const productRoutes = require("./routes/products");
@@ -217,6 +218,8 @@ const PORT = process.env.PORT || 5000;
 // Async function to start server after MongoDB connection
 async function startServer() {
   try {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
     // Connect to MongoDB first and wait for connection
     console.log('Connecting to MongoDB...');
     await mongoose.connect(MONGODB_URI, {

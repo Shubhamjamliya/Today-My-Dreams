@@ -1,15 +1,39 @@
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+function getRazorpayInstance() {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+  if (!keyId || !keySecret) {
+    return null;
+  }
+
+  return new Razorpay({
+    key_id: keyId,
+    key_secret: keySecret,
+  });
+}
+
+function ensureRazorpayConfigured(res) {
+  if (getRazorpayInstance()) {
+    return true;
+  }
+
+  return res.status(503).json({
+    success: false,
+    message: 'Razorpay is not configured. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to enable this payment method.'
+  });
+}
 
 // Create Razorpay Order
 exports.createOrder = async (req, res) => {
   try {
+    const razorpay = getRazorpayInstance();
+    if (!razorpay) {
+      return ensureRazorpayConfigured(res);
+    }
+
     const {
       amount,
       customerName,
@@ -109,6 +133,10 @@ exports.createOrder = async (req, res) => {
 // Verify Razorpay Payment
 exports.verifyPayment = async (req, res) => {
   try {
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      return ensureRazorpayConfigured(res);
+    }
+
     const {
       razorpay_order_id,
       razorpay_payment_id,
@@ -152,6 +180,11 @@ exports.verifyPayment = async (req, res) => {
 // Get Payment Details
 exports.getPaymentDetails = async (req, res) => {
   try {
+    const razorpay = getRazorpayInstance();
+    if (!razorpay) {
+      return ensureRazorpayConfigured(res);
+    }
+
     const { paymentId } = req.params;
 
     const payment = await razorpay.payments.fetch(paymentId);
@@ -174,6 +207,11 @@ exports.getPaymentDetails = async (req, res) => {
 // Process Refund
 exports.refundPayment = async (req, res) => {
   try {
+    const razorpay = getRazorpayInstance();
+    if (!razorpay) {
+      return ensureRazorpayConfigured(res);
+    }
+
     const { paymentId, amount, notes } = req.body;
 
     const refund = await razorpay.payments.refund(paymentId, {
