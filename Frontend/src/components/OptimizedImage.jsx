@@ -20,6 +20,7 @@ const OptimizedImage = ({
   priority = false, // If true, eager load (for LCP images like Hero)
   objectFit = 'cover',
   onLoad,
+  fetchPriority,
   ...props
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -81,7 +82,7 @@ const OptimizedImage = ({
         src={imgSrc}
         alt={alt || "Image"}
         loading={priority ? "eager" : "lazy"}
-        fetchPriority={props.fetchPriority || (priority ? "high" : "auto")}
+        fetchpriority={fetchPriority || (priority ? "high" : "auto")}
         decoding={priority ? "async" : "async"} // Changed sync to async to prevent main thread blocking
         className={`w-full h-full ${baseClasses} ${loadingClasses}`}
         style={{ objectFit }}
