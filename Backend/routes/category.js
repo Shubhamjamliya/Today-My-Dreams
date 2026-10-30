@@ -57,6 +57,7 @@ router.post('/', authenticateToken, isAdmin, handleUpload, categoryController.cr
 router.post('/upload', authenticateToken, isAdmin, handleUpload, categoryController.createCategory);
 router.post('/update-order', authenticateToken, isAdmin, categoryController.updateCategoryOrder);
 router.put('/:id', authenticateToken, isAdmin, handleUpload, categoryController.updateCategory);
+router.patch('/:id', authenticateToken, isAdmin, handleUpload, categoryController.updateCategory);
 router.put('/:id/upload', authenticateToken, isAdmin, handleUpload, categoryController.updateCategory);
 router.delete('/:id', authenticateToken, isAdmin, categoryController.deleteCategory);
 
