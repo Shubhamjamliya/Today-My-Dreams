@@ -15,13 +15,13 @@ const EditServiceProduct = () => {
     id: "",
     _id: "",
     name: "",
-    material: "",
+    material: "N/A",
     size: "",
-    colour: "",
+    colour: "N/A",
     category: "",
     subCategory: "",
-    utility: "",
-    care: "",
+    utility: "N/A",
+    care: "N/A",
     included: [],
     excluded: [],
     price: "",
@@ -250,8 +250,8 @@ const EditServiceProduct = () => {
     setLoading(true);
 
     const requiredFields = [
-      "name", "material", "size", "colour",
-      "category", "utility", "price", "regularPrice", "stock"
+      "name", "size",
+      "category", "price", "regularPrice"
     ];
 
     // Correct validation: Allow 0 for stock/price
@@ -379,10 +379,6 @@ const EditServiceProduct = () => {
                     <input type="text" name="name" value={product.name} onChange={handleChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
                   </div>
                   <div>
-                    <label className="block font-medium text-gray-700">Material <span className="text-red-500">*</span></label>
-                    <input type="text" name="material" value={product.material} onChange={handleChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
-                  </div>
-                  <div>
                     <label className="block font-medium text-gray-700">Category <span className="text-red-500">*</span></label>
                     <div className="flex gap-2">
                       <select
@@ -427,16 +423,12 @@ const EditServiceProduct = () => {
                     <label className="block font-medium text-gray-700">Size <span className="text-red-500">*</span></label>
                     <input type="text" name="size" value={product.size} onChange={handleChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
                   </div>
-                  <div>
-                    <label className="block font-medium text-gray-700">Colour <span className="text-red-500">*</span></label>
-                    <input type="text" name="colour" value={product.colour} onChange={handleChange} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
-                  </div>
                 </div>
               </div>
 
               <div className="bg-gray-50 rounded-xl p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Pricing & Stock</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Pricing</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block font-medium text-gray-700">Price <span className="text-red-500">*</span></label>
                     <input type="number" name="price" value={product.price} onChange={handleChange} onWheel={handleWheel} onFocus={handleFocus} onBlur={handleBlur} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" step="0.01" required />
@@ -445,25 +437,12 @@ const EditServiceProduct = () => {
                     <label className="block font-medium text-gray-700">Regular Price <span className="text-red-500">*</span></label>
                     <input type="number" name="regularPrice" value={product.regularPrice} onChange={handleChange} onWheel={handleWheel} onFocus={handleFocus} onBlur={handleBlur} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" step="0.01" required />
                   </div>
-                  <div>
-                    <label className="block font-medium text-gray-700">Stock Quantity <span className="text-red-500">*</span></label>
-                    <input type="number" name="stock" min="0" value={product.stock} onChange={handleChange} onWheel={handleWheel} onFocus={handleFocus} onBlur={handleBlur} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
-                  </div>
                 </div>
               </div>
 
               <div className="bg-gray-50 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Additional Information</h2>
                 <div className="grid grid-cols-1 gap-6">
-                  <div>
-                    <label className="block font-medium text-gray-700">Utility <span className="text-red-500">*</span></label>
-                    <textarea name="utility" value={product.utility} onChange={handleChange} rows={3} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
-                  </div>
-                  <div>
-                    <label className="block font-medium text-gray-700">Care Instructions  <span className="text-red-500">*</span></label>
-                    <textarea name="care" value={product.care} onChange={handleChange} rows={3} className="mt-1 block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required />
-                  </div>
-
                   <div>
                     <label className="block font-medium text-gray-700 mb-2">What's Excluded ✗</label>
                     <div className="space-y-2">
