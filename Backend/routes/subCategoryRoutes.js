@@ -62,8 +62,8 @@ router.get('/:categoryId/subcategories', async (req, res) => {
 });
 
 
-// PUT - Update a specific sub-category by its ID
-router.put('/subcategories/:subCategoryId', handleSubCategoryImage, async (req, res) => {
+// PUT/PATCH - Update a specific sub-category by its ID
+const updateSubCategoryHandler = async (req, res) => {
   try {
     const { subCategoryId } = req.params;
     const updates = { ...req.body };
@@ -84,7 +84,9 @@ router.put('/subcategories/:subCategoryId', handleSubCategoryImage, async (req, 
   } catch (error) {
     res.status(500).json({ message: 'Error updating sub-category', error: error.message });
   }
-});
+};
+router.put('/subcategories/:subCategoryId', handleSubCategoryImage, updateSubCategoryHandler);
+router.patch('/subcategories/:subCategoryId', handleSubCategoryImage, updateSubCategoryHandler);
 
 
 // DELETE - Delete a specific sub-category by its ID

@@ -54,12 +54,14 @@ router.get("/categories", getShopCategories);
 router.get("/categories/nested", getNestedShopCategories);
 router.post("/categories", handleUpload, createShopCategory);
 router.put("/categories/:id", handleUpload, updateShopCategory);
+router.patch("/categories/:id", handleUpload, updateShopCategory);
 router.delete("/categories/:id", deleteShopCategory);
 
 // --- Shop Subcategories Routes ---
 router.get("/categories/:categoryId/subcategories", getShopSubCategories);
 router.post("/categories/:categoryId/subcategories", handleUpload, createShopSubCategory);
 router.put("/subcategories/:id", handleUpload, updateShopSubCategory);
+router.patch("/subcategories/:id", handleUpload, updateShopSubCategory);
 router.delete("/subcategories/:id", deleteShopSubCategory);
 
 // --- Shop Products Routes ---
