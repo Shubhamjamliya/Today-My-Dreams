@@ -12,7 +12,6 @@ import { cityAPI } from '../../services/api';
 
 // --- CONFIG & ASSETS ---
 import config from '../../config/config.js';
-import logo from '/TodayMyDream.png';
 import Loader from '../Loader';
 import { slugify } from '../../utils/slugify';
 import ContactInfoBar from '../ContactInfoBar';
@@ -477,7 +476,7 @@ const Header = () => {
                             <div className="flex items-center gap-10 shrink-0">
                                 <Link to="/" onClick={closeAllMenus} className="flex-shrink-0 hover:opacity-90 transition-opacity">
                                     {/* Logo with brightness filter for dark mode compatibility if needed, or keeping original */}
-                                    <img src={logo} alt="Today My Dream" className="h-24 w-auto object-contain drop-shadow-md" />
+                                    <img src="/TodayMyDream.png" alt="Today My Dream" className="h-24 w-auto object-contain drop-shadow-md" />
                                 </Link>
 
                                 {/* Desktop Navigation Links (White text) */}
@@ -646,7 +645,7 @@ const Header = () => {
                                 <FiMenu size={24} />
                             </button>
                             <Link to="/" className="flex items-center gap-2">
-                                <img src={logo} alt="Today My Dream" className="h-8 w-auto object-contain" />
+                                <img src="/TodayMyDream.png" alt="Today My Dream" className="h-8 w-auto object-contain" />
                                 <span className="text-lg font-bold text-white leading-none">Today My Dream</span>
                             </Link>
                         </div>
@@ -742,7 +741,7 @@ const Header = () => {
                         className="fixed inset-0 bg-white z-[60] h-screen md:hidden"
                     >
                         <div className="flex justify-between items-center p-4 border-b border-slate-200">
-                            <img src={logo} alt="Logo" className="h-6" />
+                            <img src="/TodayMyDream.png" alt="Logo" className="h-6" />
                             <button onClick={closeAllMenus}><FiX size={24} className="text-slate-600" /></button>
                         </div>
                         <div className="p-4 overflow-y-auto h-[calc(100vh-65px)]">
