@@ -7,6 +7,8 @@ import {
   XMarkIcon,
   MagnifyingGlassIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   AdjustmentsHorizontalIcon
 } from '@heroicons/react/24/outline';
 import ProductCard from '../components/ProductCard/ProductCard.jsx';
@@ -270,6 +272,66 @@ const TopFilterSection = memo(({
   );
 });
 
+const Pagination = memo(({ currentPage, totalPages, onPageChange }) => {
+  if (totalPages <= 1) return null;
+
+  const pageNumbers = [];
+  const maxVisible = 5;
+  let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+  let end = Math.min(totalPages, start + maxVisible - 1);
+  start = Math.max(1, end - maxVisible + 1);
+  for (let i = start; i <= end; i++) pageNumbers.push(i);
+
+  return (
+    <div className="flex items-center justify-center gap-2 py-8">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+      >
+        <ChevronLeftIcon className="w-4 h-4" />
+      </button>
+
+      {start > 1 && (
+        <>
+          <button onClick={() => onPageChange(1)} className="w-10 h-10 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50">1</button>
+          {start > 2 && <span className="text-slate-400">...</span>}
+        </>
+      )}
+
+      {pageNumbers.map(page => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={`w-10 h-10 rounded-xl text-sm font-bold transition-colors ${page === currentPage
+            ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
+            : 'text-slate-600 hover:bg-slate-50 border border-slate-200 bg-white'
+            }`}
+        >
+          {page}
+        </button>
+      ))}
+
+      {end < totalPages && (
+        <>
+          {end < totalPages - 1 && <span className="text-slate-400">...</span>}
+          <button onClick={() => onPageChange(totalPages)} className="w-10 h-10 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50">{totalPages}</button>
+        </>
+      )}
+
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+      >
+        <ChevronRightIcon className="w-4 h-4" />
+      </button>
+    </div>
+  );
+});
+
+const PRODUCTS_PER_PAGE = 12;
+
 const Service = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -290,6 +352,7 @@ const Service = () => {
   const [dynamicCategories, setDynamicCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [totalProducts, setTotalProducts] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const categoryParam = searchParams.get('category');
@@ -404,6 +467,23 @@ const Service = () => {
     return filtered;
   }, [products, committedPriceRange, selectedCategories, sortBy]);
 
+  // Reset to page 1 whenever the filtered result set changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [committedPriceRange, selectedCategories, sortBy, searchQuery, products]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE));
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    return filteredProducts.slice(start, start + PRODUCTS_PER_PAGE);
+  }, [filteredProducts, currentPage]);
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleCategorySelect = (main, sub = null) => {
     if (main === selectedCategories.main && !sub) {
       setSelectedCategories({ main: null, sub: null, item: null });
@@ -494,7 +574,7 @@ const Service = () => {
               )}
             </AnimatePresence>
 
-            <div className="h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar scroll-smooth border border-slate-200/80 bg-white/50 rounded-3xl shadow-sm p-4 md:p-6 relative">
+            <div className="border border-slate-200/80 bg-white/50 rounded-3xl shadow-sm p-4 md:p-6 relative">
               {loading ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full">
                   {[...Array(6)].map((_, i) => (
@@ -518,18 +598,25 @@ const Service = () => {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full pb-8">
-                  {filteredProducts.map((product, index) => (
-                    <motion.div
-                      key={product._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                    >
-                      <ProductCard product={product} />
-                    </motion.div>
-                  ))}
-                </div>
+                <>
+                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 w-full pb-4">
+                    {paginatedProducts.map((product, index) => (
+                      <motion.div
+                        key={product._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                      >
+                        <ProductCard product={product} />
+                      </motion.div>
+                    ))}
+                  </div>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </>
               )}
             </div>
           </main>
