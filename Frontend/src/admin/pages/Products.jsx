@@ -268,7 +268,14 @@ const Products = ({ module }) => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
-        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">{module === 'shop' ? 'Shop Products' : 'Products'}</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">{module === 'shop' ? 'Shop Products' : 'Products'}</h1>
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-700">
+            {filteredProducts.length === products.length
+              ? `${products.length} ${products.length === 1 ? 'product' : 'products'}`
+              : `${filteredProducts.length} of ${products.length} products`}
+          </span>
+        </div>
         {module === 'shop' ? (
           <button
             onClick={() => setIsProductModalOpen(true)}
