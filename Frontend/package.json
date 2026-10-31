@@ -8,12 +8,12 @@
     "npm": ">=8.0.0"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node init && vite",
+    "build": "node init && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "vercel-build": "npm run build",
-    "start": "vite preview --port 3000"
+    "start": "node init && vite preview --port 3000"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",

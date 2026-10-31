@@ -225,8 +225,18 @@ const Cities = () => {
         setShowImportModal(true);
     };
 
-    const handleAddItemsToCity = async () => {
-        if (selectedItems.length === 0) {
+    // Products that aren't assigned to ANY city yet (orphaned products)
+    const getUnassignedProducts = () => {
+        return allProducts.filter(p => {
+            const hasNoCity = !p.cities || p.cities.length === 0;
+            const notInThisCity = !cityProducts.some(cp => cp._id === p._id);
+            return hasNoCity && notInThisCity;
+        });
+    };
+
+    const handleAddItemsToCity = async (overrideIds = null) => {
+        const itemIds = overrideIds || selectedItems;
+        if (itemIds.length === 0) {
             alert('Please select at least one item');
             return;
         }
@@ -255,7 +265,7 @@ const Cities = () => {
                     break;
             }
 
-            const response = await axios.post(endpoint, { [dataKey]: selectedItems });
+            const response = await axios.post(endpoint, { [dataKey]: itemIds });
 
             // Show detailed message for categories
             if (activeTab === 'categories' && response.data.subCategoriesAdded) {
@@ -272,6 +282,17 @@ const Cities = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleAddUnassignedProducts = async () => {
+        const unassigned = getUnassignedProducts();
+        if (unassigned.length === 0) {
+            alert('No unassigned products found — every product is already assigned to at least one city.');
+            return;
+        }
+        if (!window.confirm(`Add ${unassigned.length} product(s) with no city assigned to ${selectedCity.name}?`)) return;
+
+        await handleAddItemsToCity(unassigned.map(p => p._id));
     };
 
     const handleRemoveItemFromCity = async (itemId) => {
@@ -1138,12 +1159,22 @@ const Cities = () => {
                                                 >
                                                     <X size={18} /> Deselect All
                                                 </button>
+                                                {activeTab === 'products' && (
+                                                    <button
+                                                        onClick={handleAddUnassignedProducts}
+                                                        disabled={getUnassignedProducts().length === 0}
+                                                        title="Add every product that has no city assigned to it yet"
+                                                        className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                    >
+                                                        <Plus size={18} /> Add Products With No City ({getUnassignedProducts().length})
+                                                    </button>
+                                                )}
                                             </div>
 
                                             {/* Add Items Button */}
                                             {selectedItems.length > 0 && (
                                                 <button
-                                                    onClick={handleAddItemsToCity}
+                                                    onClick={() => handleAddItemsToCity()}
                                                     className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
                                                 >
                                                     <Plus size={20} /> Add {selectedItems.length} Selected Item(s)
@@ -1174,6 +1205,11 @@ const Cities = () => {
                                                                 <p className="font-medium text-sm text-gray-800">{displayInfo.title}</p>
                                                                 <p className="text-xs text-gray-500">{displayInfo.subtitle}</p>
                                                                 {displayInfo.price && <p className="text-sm font-semibold text-blue-600">{displayInfo.price}</p>}
+                                                                {activeTab === 'products' && (!item.cities || item.cities.length === 0) && (
+                                                                    <span className="inline-block mt-1 bg-amber-100 text-amber-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                                                                        No City
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                             {selectedItems.includes(item._id) && (
                                                                 <Check className="text-blue-600" size={20} />
