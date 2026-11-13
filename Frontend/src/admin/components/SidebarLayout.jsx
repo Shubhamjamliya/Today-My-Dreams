@@ -63,7 +63,7 @@ const SidebarLayout = ({ children }) => {
     { path: '/admin/shop/orders', icon: <ShoppingBag size={20} />, label: 'Shop Orders' },
     { path: '/admin/data', icon: <File size={20} />, label: 'Data' },
     { path: '/admin/coupons', icon: <Ticket size={20} />, label: 'Coupons' },
-    { path: '/admin/cities', icon: <MapPin size={20} />, label: 'City' },
+    { path: '/admin/cities', icon: <MapPin size={20} />, label: 'Manage by City' },
     { path: '/admin/blog', icon: <BookOpen size={20} />, label: 'Blog' },
     { path: '/admin/vendors', icon: <Users size={20} />, label: 'Vendors' },
     { path: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },

@@ -698,10 +698,13 @@ const Cities = () => {
             ) : (
                 <>
                     <div className="bg-white rounded-lg shadow-md p-6">
-                        <h1 className="text-2xl lg:text-3xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+                        <h1 className="text-2xl lg:text-3xl font-bold mb-2 text-gray-800 flex items-center gap-2">
                             <Package className="text-blue-600" size={32} />
-                            Manage Cities & Content
+                            Manage by City
                         </h1>
+                        <p className="text-sm text-gray-500 mb-6">
+                            New products are visible in every city by default. Use <strong>Manage</strong> below only if you want to limit something (a product, category, or carousel slide) to specific cities.
+                        </p>
 
                         {/* Add City Form */}
                         <form onSubmit={handleAddCity} className="mb-8 p-4 bg-blue-50 rounded-lg">
