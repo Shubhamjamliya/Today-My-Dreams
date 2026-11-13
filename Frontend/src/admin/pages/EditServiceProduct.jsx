@@ -284,7 +284,8 @@ const EditServiceProduct = () => {
 
     const formData = new FormData();
     Object.keys(product).forEach(key => {
-      if (key === 'included' || key === 'excluded') {
+      if (key === 'cities') return; // city assignment is managed from the Cities page, not here
+      if (Array.isArray(product[key])) {
         formData.append(key, JSON.stringify(product[key]));
       } else {
         formData.append(key, product[key]);
