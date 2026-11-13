@@ -3,7 +3,7 @@ const Category = require('../models/Category');
 const mongoose = require('mongoose');
 const fs = require('fs').promises;
 const path = require('path');
-const { resolveCities } = require('../utils/cityDefaults');
+const { resolveCities, parseCities } = require('../utils/cityDefaults');
 
 // Get all products (supports optional query filters: category (name or id), subCategory (name or id), limit, search, city, page)
 const getAllProducts = async (req, res) => {
@@ -750,7 +750,7 @@ const createProductWithFiles = async (req, res) => {
       isMostLoved: productData.isMostLoved === 'true',
       codAvailable: productData.codAvailable !== 'false',
       stock: Number(productData.stock) || 0,
-      cities: await resolveCities(productData.cities ? JSON.parse(productData.cities) : [])
+      cities: await resolveCities(parseCities(productData.cities) || [])
     };
 
     console.log('Product object to save:', productObject);
@@ -881,7 +881,7 @@ const updateProductWithFiles = async (req, res) => {
       isMostLoved: productData.isMostLoved !== undefined ? (productData.isMostLoved === 'true') : existingProduct.isMostLoved,
       codAvailable: productData.codAvailable !== undefined ? (productData.codAvailable !== 'false') : existingProduct.codAvailable,
       stock: productData.stock !== undefined ? Number(productData.stock) : existingProduct.stock,
-      cities: productData.cities !== undefined ? await resolveCities(JSON.parse(productData.cities)) : existingProduct.cities
+      cities: parseCities(productData.cities) !== null ? await resolveCities(parseCities(productData.cities)) : existingProduct.cities
     };
 
     const result = await Product.findByIdAndUpdate(id, updatedProductData, { new: true });
