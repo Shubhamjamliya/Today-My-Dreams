@@ -44,8 +44,27 @@ const EditProduct = () => {
     isMostLoved: false,
     codAvailable: true,
     stock: 10,
-    module: "service"
+    module: "service",
+    cities: [],
   });
+
+  const [allCities, setAllCities] = useState([]);
+
+  useEffect(() => {
+    apiService.getCities()
+      .then((response) => setAllCities(response.data.cities || []))
+      .catch((error) => console.error("Failed to fetch cities", error));
+  }, []);
+
+  const toggleCity = (cityId) => {
+    setProduct(prev => {
+      const isSelected = prev.cities.includes(cityId);
+      return {
+        ...prev,
+        cities: isSelected ? prev.cities.filter(c => c !== cityId) : [...prev.cities, cityId],
+      };
+    });
+  };
 
   const [files, setFiles] = useState({
     mainImage: null,
@@ -145,7 +164,8 @@ const EditProduct = () => {
               price: prod.price?.toString() || "",
               regularPrice: prod.regularPrice?.toString() || "",
               stock: prod.stock || 0,
-              module: prod.module || "service"
+              module: prod.module || "service",
+              cities: (prod.cities || []).map(c => (typeof c === 'string' ? c : c._id)),
             });
 
             // If a category is already set, fetch its sub-categories
@@ -331,7 +351,7 @@ const EditProduct = () => {
 
     const formData = new FormData();
     Object.keys(product).forEach(key => {
-      if (key === 'included' || key === 'excluded') {
+      if (key === 'included' || key === 'excluded' || key === 'cities') {
         formData.append(key, JSON.stringify(product[key]));
       } else {
         formData.append(key, product[key]);
@@ -799,6 +819,36 @@ Error: ${error.message}`;
                     <span className="text-sm text-gray-700">COD Available</span>
                   </label>
                 </div>
+              </div>
+
+              {/* Cities */}
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">Cities <span className="text-red-500">*</span></h2>
+                <p className="text-sm text-gray-500 mb-4">
+                  This product will only be visible on the storefront in the cities you select here.
+                </p>
+                {allCities.length === 0 ? (
+                  <p className="text-sm text-gray-400">No cities found. Add cities first.</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {allCities.map((c) => {
+                      const selected = product.cities.includes(c._id);
+                      return (
+                        <button
+                          key={c._id}
+                          type="button"
+                          onClick={() => toggleCity(c._id)}
+                          className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${selected
+                            ? 'bg-custom-dark-blue text-white border-custom-dark-blue'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                            }`}
+                        >
+                          {c.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Product Images */}

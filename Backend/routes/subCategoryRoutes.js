@@ -10,7 +10,7 @@ const { handleSubCategoryImage } = require('../middleware/subCategoryUpload');
 router.post('/:categoryId/subcategories', handleSubCategoryImage, async (req, res) => {
   try {
     const { categoryId } = req.params;
-    const { name, description, video, isActive, sortOrder } = req.body;
+    const { name, description, video, isActive, sortOrder, cities } = req.body;
 
     // 1. Check if the parent category exists
     const parentCategory = await Category.findById(categoryId);
@@ -32,6 +32,7 @@ router.post('/:categoryId/subcategories', handleSubCategoryImage, async (req, re
       video,
       isActive,
       sortOrder,
+      cities: cities ? JSON.parse(cities) : [],
       parentCategory: categoryId // Link to the parent
     });
 
@@ -71,6 +72,10 @@ const updateSubCategoryHandler = async (req, res) => {
     // Handle image upload if file is provided
     if (req.file) {
       updates.image = req.file.path; // Cloudinary URL
+    }
+
+    if (updates.cities) {
+      updates.cities = JSON.parse(updates.cities);
     }
 
     // The { new: true } option returns the document after the update is applied.

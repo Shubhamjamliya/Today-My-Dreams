@@ -30,7 +30,26 @@ const EditCategories = () => {
     video: "",
     sortOrder: 0,
     module: "service",
+    cities: [],
   });
+
+  const [allCities, setAllCities] = useState([]);
+
+  useEffect(() => {
+    apiService.getCities()
+      .then((response) => setAllCities(response.data.cities || []))
+      .catch((error) => console.error("Failed to fetch cities", error));
+  }, []);
+
+  const toggleCategoryCity = (cityId) => {
+    setCategory(prev => {
+      const isSelected = prev.cities.includes(cityId);
+      return {
+        ...prev,
+        cities: isSelected ? prev.cities.filter(c => c !== cityId) : [...prev.cities, cityId],
+      };
+    });
+  };
 
   // State for file uploads and previews
   const [files, setFiles] = useState({
@@ -54,7 +73,17 @@ const EditCategories = () => {
   // State for managing sub-categories
   const [subCategories, setSubCategories] = useState([]);
   const [subCategoryLoading, setSubCategoryLoading] = useState(false);
-  const [currentSubCategory, setCurrentSubCategory] = useState({ name: '', description: '', image: '' });
+  const [currentSubCategory, setCurrentSubCategory] = useState({ name: '', description: '', image: '', cities: [] });
+
+  const toggleSubCategoryCity = (cityId) => {
+    setCurrentSubCategory(prev => {
+      const isSelected = prev.cities.includes(cityId);
+      return {
+        ...prev,
+        cities: isSelected ? prev.cities.filter(c => c !== cityId) : [...prev.cities, cityId],
+      };
+    });
+  };
   const [editingSubCategoryId, setEditingSubCategoryId] = useState(null);
 
   // State for subcategory file uploads
@@ -88,6 +117,7 @@ const EditCategories = () => {
               video: cat.video || '',
               sortOrder: cat.sortOrder || 0,
               module: cat.module || 'service',
+              cities: (cat.cities || []).map(c => (typeof c === 'string' ? c : c._id)),
             });
             setPreviewUrls({ image: cat.image || '', video: cat.video || '' });
           } else {
@@ -186,6 +216,7 @@ const EditCategories = () => {
     formData.append('description', category.description);
     formData.append('sortOrder', category.sortOrder || 0);
     formData.append('module', category.module || 'service');
+    formData.append('cities', JSON.stringify(category.cities || []));
     if (files.image) formData.append('image', files.image);
     if (files.video) formData.append('video', files.video);
 
@@ -262,6 +293,7 @@ const EditCategories = () => {
       const formData = new FormData();
       formData.append('name', currentSubCategory.name);
       formData.append('description', currentSubCategory.description);
+      formData.append('cities', JSON.stringify(currentSubCategory.cities || []));
 
       // Add image file if available
       if (subCategoryFiles.image) {
@@ -287,13 +319,18 @@ const EditCategories = () => {
 
   const handleEditClick = (subCategory) => {
     setEditingSubCategoryId(subCategory._id);
-    setCurrentSubCategory({ name: subCategory.name, description: subCategory.description, image: subCategory.image });
+    setCurrentSubCategory({
+      name: subCategory.name,
+      description: subCategory.description,
+      image: subCategory.image,
+      cities: (subCategory.cities || []).map(c => (typeof c === 'string' ? c : c._id)),
+    });
     setSubCategoryPreviewUrls({ image: subCategory.image || "" });
   };
 
   const handleCancelEdit = () => {
     setEditingSubCategoryId(null);
-    setCurrentSubCategory({ name: '', description: '', image: '' });
+    setCurrentSubCategory({ name: '', description: '', image: '', cities: [] });
     setSubCategoryFiles({ image: null });
     setSubCategoryPreviewUrls({ image: "" });
   };
@@ -428,6 +465,36 @@ const EditCategories = () => {
                 </div>
               )}
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cities <span className="text-red-500">*</span>
+              </label>
+              <p className="text-xs text-gray-500 mb-2">
+                This category will only be visible on the storefront in the cities you select here.
+              </p>
+              {allCities.length === 0 ? (
+                <p className="text-sm text-gray-400">No cities found. Add cities first.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {allCities.map((c) => {
+                    const selected = category.cities.includes(c._id);
+                    return (
+                      <button
+                        key={c._id}
+                        type="button"
+                        onClick={() => toggleCategoryCity(c._id)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${selected
+                          ? 'bg-custom-dark-blue text-white border-custom-dark-blue'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                          }`}
+                      >
+                        {c.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -521,6 +588,31 @@ const EditCategories = () => {
                         </div>
                       )}
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Cities</label>
+                    {allCities.length === 0 ? (
+                      <p className="text-sm text-gray-400">No cities found.</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {allCities.map((c) => {
+                          const selected = currentSubCategory.cities.includes(c._id);
+                          return (
+                            <button
+                              key={c._id}
+                              type="button"
+                              onClick={() => toggleSubCategoryCity(c._id)}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${selected
+                                ? 'bg-custom-dark-blue text-white border-custom-dark-blue'
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                                }`}
+                            >
+                              {c.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-end space-x-3 pt-2">
                     {editingSubCategoryId && (

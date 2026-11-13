@@ -199,7 +199,8 @@ exports.createCategory = async (req, res) => {
       image: imageUrl,
       video: videoUrl,
       sortOrder: parseInt(categoryData.sortOrder) || 0,
-      isActive: categoryData.isActive !== 'false'
+      isActive: categoryData.isActive !== 'false',
+      cities: categoryData.cities ? JSON.parse(categoryData.cities) : []
     });
 
     console.log('Creating new category with data:', {
@@ -266,9 +267,10 @@ exports.updateCategory = async (req, res) => {
       image: imageUrl,
       video: videoUrl,
       sortOrder: categoryData.sortOrder ? parseInt(categoryData.sortOrder) : existingCategory.sortOrder,
-      isActive: categoryData.isActive !== undefined ? 
-        (typeof categoryData.isActive === 'boolean' ? categoryData.isActive : categoryData.isActive === 'true') 
-        : existingCategory.isActive
+      isActive: categoryData.isActive !== undefined ?
+        (typeof categoryData.isActive === 'boolean' ? categoryData.isActive : categoryData.isActive === 'true')
+        : existingCategory.isActive,
+      cities: categoryData.cities ? JSON.parse(categoryData.cities) : existingCategory.cities
     };
 
     console.log('Updating category with data:', {

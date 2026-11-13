@@ -748,7 +748,8 @@ const createProductWithFiles = async (req, res) => {
       isTrending: productData.isTrending === 'true',
       isMostLoved: productData.isMostLoved === 'true',
       codAvailable: productData.codAvailable !== 'false',
-      stock: Number(productData.stock) || 0
+      stock: Number(productData.stock) || 0,
+      cities: productData.cities ? JSON.parse(productData.cities) : []
     };
 
     console.log('Product object to save:', productObject);
@@ -878,7 +879,8 @@ const updateProductWithFiles = async (req, res) => {
       isTrending: productData.isTrending !== undefined ? (productData.isTrending === 'true') : existingProduct.isTrending,
       isMostLoved: productData.isMostLoved !== undefined ? (productData.isMostLoved === 'true') : existingProduct.isMostLoved,
       codAvailable: productData.codAvailable !== undefined ? (productData.codAvailable !== 'false') : existingProduct.codAvailable,
-      stock: productData.stock !== undefined ? Number(productData.stock) : existingProduct.stock
+      stock: productData.stock !== undefined ? Number(productData.stock) : existingProduct.stock,
+      cities: productData.cities ? JSON.parse(productData.cities) : existingProduct.cities
     };
 
     const result = await Product.findByIdAndUpdate(id, updatedProductData, { new: true });
