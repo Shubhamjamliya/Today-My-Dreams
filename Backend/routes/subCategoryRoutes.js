@@ -3,7 +3,7 @@ const router = express.Router();
 const Category = require('../models/Category'); // Adjust path if necessary
 const SubCategory = require('../models/SubCategory'); // The new model
 const { handleSubCategoryImage } = require('../middleware/subCategoryUpload');
-const { resolveCities } = require('../utils/cityDefaults');
+const { resolveCities, parseCities } = require('../utils/cityDefaults');
 
 // Note: It's a good practice to protect these routes with authentication middleware.
 
@@ -26,7 +26,7 @@ router.post('/:categoryId/subcategories', handleSubCategoryImage, async (req, re
     }
 
     // 3. Create the new sub-category
-    const parsedCities = cities ? JSON.parse(cities) : [];
+    const parsedCities = parseCities(cities) || [];
     const resolvedCities = parsedCities.length > 0
       ? parsedCities
       : await resolveCities(parentCategory.cities);
@@ -80,8 +80,11 @@ const updateSubCategoryHandler = async (req, res) => {
       updates.image = req.file.path; // Cloudinary URL
     }
 
-    if (updates.cities !== undefined) {
-      updates.cities = await resolveCities(JSON.parse(updates.cities));
+    const parsedUpdateCities = parseCities(updates.cities);
+    if (parsedUpdateCities !== null) {
+      updates.cities = await resolveCities(parsedUpdateCities);
+    } else {
+      delete updates.cities;
     }
 
     // The { new: true } option returns the document after the update is applied.

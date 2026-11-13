@@ -1,7 +1,7 @@
 const Category = require('../models/Category');
 
 const SubCategory = require('../models/SubCategory');
-const { resolveCities } = require('../utils/cityDefaults');
+const { resolveCities, parseCities } = require('../utils/cityDefaults');
 
 // Get all categories for admin (including inactive ones)
 exports.getAllCategoriesAdmin = async (req, res) => {
@@ -201,7 +201,7 @@ exports.createCategory = async (req, res) => {
       video: videoUrl,
       sortOrder: parseInt(categoryData.sortOrder) || 0,
       isActive: categoryData.isActive !== 'false',
-      cities: await resolveCities(categoryData.cities ? JSON.parse(categoryData.cities) : [])
+      cities: await resolveCities(parseCities(categoryData.cities) || [])
     });
 
     console.log('Creating new category with data:', {
@@ -271,7 +271,7 @@ exports.updateCategory = async (req, res) => {
       isActive: categoryData.isActive !== undefined ?
         (typeof categoryData.isActive === 'boolean' ? categoryData.isActive : categoryData.isActive === 'true')
         : existingCategory.isActive,
-      cities: categoryData.cities !== undefined ? await resolveCities(JSON.parse(categoryData.cities)) : existingCategory.cities
+      cities: parseCities(categoryData.cities) !== null ? await resolveCities(parseCities(categoryData.cities)) : existingCategory.cities
     };
 
     console.log('Updating category with data:', {
